@@ -1,0 +1,392 @@
+--------------------------------------------------------
+-- mcc V1.0.0926 - Custom microcode compiler (c)2020-... 
+--    https://github.com/zpekic/MicroCodeCompiler
+--------------------------------------------------------
+Compiling mem2hex.mcc, pass 1 out of 2.
+Line 98: resolved aliases:  noop
+L0098@0000._reset:  if true then next else next;
+
+Line 100: resolved aliases:  noop
+L0100@0001._reset1:  if true then next else next;
+
+Line 102: resolved aliases:  noop
+L0102@0002._reset2:  if true then next else next;
+
+Line 104: resolved aliases:  noop
+L0104@0003._reset3:  if true then next else next;
+
+Warning: mask value 255 detected. Range will be 0 to 255
+Line 132: resolved aliases:  printd
+L0132@000D.  d <= one, if false then printd else printd;
+
+Line 137: resolved aliases:  goto
+L0137@000F.  if false then next else deadloop;
+
+Line 141: resolved aliases:  noop
+L0141@0011.page_line:  if true then next else next;
+
+Line 151: resolved aliases:  printd
+L0151@0016.  d <= zero, if false then printd else printd;
+
+Line 155: resolved aliases:  printd
+L0155@0018.  if false then printd else printd;
+
+Line 171: resolved aliases:  back
+L0171@0022.  if true then return else return;
+
+Line 175: resolved aliases:  goto
+L0175@0025.  checksum <= count, if false then next else printspace;
+
+Line 182: resolved aliases:  back
+L0182@002B.  if true then return else return;
+
+Line 186: resolved aliases:  goto
+L0186@002E.  checksum <= add_d, if false then next else printspace;
+
+Success: pass 1 199 line(s) read, 83 statement(s) parsed.
+Compiling mem2hex.mcc, pass 2 out of 2.
+Field 'nBUSREQ' 33 .. 33
+Field 'nRD' 32 .. 32
+Field 'BUSY' 31 .. 31
+Field 'seq_cond' 30 .. 27
+Field 'seq_then' 26 .. 21
+Field 'seq_else' 20 .. 15
+Field 'mem_page' 14 .. 13
+Field 'mem_addr' 12 .. 11
+Field 'count' 10 .. 9
+Field 'checksum' 8 .. 6
+Field 'd' 5 .. 4
+Field 'CHAR' 3 .. 0
+Info: line 5 - code[0000] <= '1_1_1_0000_000000_000000_00_00_00_000_00_0000'
+Info: line 5 - code[0001] <= '1_1_1_0000_000000_000000_00_00_00_000_00_0000'
+Info: line 5 - code[0002] <= '1_1_1_0000_000000_000000_00_00_00_000_00_0000'
+Info: line 5 - code[0003] <= '1_1_1_0000_000000_000000_00_00_00_000_00_0000'
+Info: line 5 - code[0004] <= '1_1_0_0011_000011_000100_00_00_00_000_00_0101'
+Info: line 6 - mapper[0000] <= '000101'
+Info: line 6 - mapper[0001] <= '000101'
+Info: line 6 - mapper[0002] <= '000101'
+Info: line 6 - mapper[0003] <= '000101'
+Info: line 6 - mapper[0004] <= '000101'
+Info: line 6 - mapper[0005] <= '000101'
+Info: line 6 - mapper[0006] <= '000101'
+Info: line 6 - mapper[0007] <= '000101'
+Info: line 6 - mapper[0008] <= '000101'
+Info: line 6 - mapper[0009] <= '000101'
+Info: line 6 - mapper[000A] <= '000101'
+Info: line 6 - mapper[000B] <= '000101'
+Info: line 6 - mapper[000C] <= '000101'
+Info: line 6 - mapper[000D] <= '000101'
+Info: line 6 - mapper[000E] <= '000101'
+Info: line 6 - mapper[000F] <= '000101'
+Info: line 6 - mapper[0010] <= '000101'
+Info: line 6 - mapper[0011] <= '000101'
+Info: line 6 - mapper[0012] <= '000101'
+Info: line 6 - mapper[0013] <= '000101'
+Info: line 6 - mapper[0014] <= '000101'
+Info: line 6 - mapper[0015] <= '000101'
+Info: line 6 - mapper[0016] <= '000101'
+Info: line 6 - mapper[0017] <= '000101'
+Info: line 6 - mapper[0018] <= '000101'
+Info: line 6 - mapper[0019] <= '000101'
+Info: line 6 - mapper[001A] <= '000101'
+Info: line 6 - mapper[001B] <= '000101'
+Info: line 6 - mapper[001C] <= '000101'
+Info: line 6 - mapper[001D] <= '000101'
+Info: line 6 - mapper[001E] <= '000101'
+Info: line 6 - mapper[001F] <= '000101'
+Info: line 6 - mapper[0020] <= '000101'
+Info: line 6 - mapper[0021] <= '000101'
+Info: line 6 - mapper[0022] <= '000101'
+Info: line 6 - mapper[0023] <= '000101'
+Info: line 6 - mapper[0024] <= '000101'
+Info: line 6 - mapper[0025] <= '000101'
+Info: line 6 - mapper[0026] <= '000101'
+Info: line 6 - mapper[0027] <= '000101'
+Info: line 6 - mapper[0028] <= '000101'
+Info: line 6 - mapper[0029] <= '000101'
+Info: line 6 - mapper[002A] <= '000101'
+Info: line 6 - mapper[002B] <= '000101'
+Info: line 6 - mapper[002C] <= '000101'
+Info: line 6 - mapper[002D] <= '000101'
+Info: line 6 - mapper[002E] <= '000101'
+Info: line 6 - mapper[002F] <= '000101'
+Info: line 6 - mapper[0030] <= '000101'
+Info: line 6 - mapper[0031] <= '000101'
+Info: line 6 - mapper[0032] <= '000101'
+Info: line 6 - mapper[0033] <= '000101'
+Info: line 6 - mapper[0034] <= '000101'
+Info: line 6 - mapper[0035] <= '000101'
+Info: line 6 - mapper[0036] <= '000101'
+Info: line 6 - mapper[0037] <= '000101'
+Info: line 6 - mapper[0038] <= '000101'
+Info: line 6 - mapper[0039] <= '000101'
+Info: line 6 - mapper[003A] <= '000101'
+Info: line 6 - mapper[003B] <= '000101'
+Info: line 6 - mapper[003C] <= '000101'
+Info: line 6 - mapper[003D] <= '000101'
+Info: line 6 - mapper[003E] <= '000101'
+Info: line 6 - mapper[003F] <= '000101'
+Info: line 6 - mapper[0040] <= '000101'
+Info: line 6 - mapper[0041] <= '000101'
+Info: line 6 - mapper[0042] <= '000101'
+Info: line 6 - mapper[0043] <= '000101'
+Info: line 6 - mapper[0044] <= '000101'
+Info: line 6 - mapper[0045] <= '000101'
+Info: line 6 - mapper[0046] <= '000101'
+Info: line 6 - mapper[0047] <= '000101'
+Info: line 6 - mapper[0048] <= '000101'
+Info: line 6 - mapper[0049] <= '000101'
+Info: line 6 - mapper[004A] <= '000101'
+Info: line 6 - mapper[004B] <= '000101'
+Info: line 6 - mapper[004C] <= '000101'
+Info: line 6 - mapper[004D] <= '000101'
+Info: line 6 - mapper[004E] <= '000101'
+Info: line 6 - mapper[004F] <= '000101'
+Info: line 6 - mapper[0050] <= '000101'
+Info: line 6 - mapper[0051] <= '000101'
+Info: line 6 - mapper[0052] <= '000101'
+Info: line 6 - mapper[0053] <= '000101'
+Info: line 6 - mapper[0054] <= '000101'
+Info: line 6 - mapper[0055] <= '000101'
+Info: line 6 - mapper[0056] <= '000101'
+Info: line 6 - mapper[0057] <= '000101'
+Info: line 6 - mapper[0058] <= '000101'
+Info: line 6 - mapper[0059] <= '000101'
+Info: line 6 - mapper[005A] <= '000101'
+Info: line 6 - mapper[005B] <= '000101'
+Info: line 6 - mapper[005C] <= '000101'
+Info: line 6 - mapper[005D] <= '000101'
+Info: line 6 - mapper[005E] <= '000101'
+Info: line 6 - mapper[005F] <= '000101'
+Info: line 6 - mapper[0060] <= '000101'
+Info: line 6 - mapper[0061] <= '000101'
+Info: line 6 - mapper[0062] <= '000101'
+Info: line 6 - mapper[0063] <= '000101'
+Info: line 6 - mapper[0064] <= '000101'
+Info: line 6 - mapper[0065] <= '000101'
+Info: line 6 - mapper[0066] <= '000101'
+Info: line 6 - mapper[0067] <= '000101'
+Info: line 6 - mapper[0068] <= '000101'
+Info: line 6 - mapper[0069] <= '000101'
+Info: line 6 - mapper[006A] <= '000101'
+Info: line 6 - mapper[006B] <= '000101'
+Info: line 6 - mapper[006C] <= '000101'
+Info: line 6 - mapper[006D] <= '000101'
+Info: line 6 - mapper[006E] <= '000101'
+Info: line 6 - mapper[006F] <= '000101'
+Info: line 6 - mapper[0070] <= '000101'
+Info: line 6 - mapper[0071] <= '000101'
+Info: line 6 - mapper[0072] <= '000101'
+Info: line 6 - mapper[0073] <= '000101'
+Info: line 6 - mapper[0074] <= '000101'
+Info: line 6 - mapper[0075] <= '000101'
+Info: line 6 - mapper[0076] <= '000101'
+Info: line 6 - mapper[0077] <= '000101'
+Info: line 6 - mapper[0078] <= '000101'
+Info: line 6 - mapper[0079] <= '000101'
+Info: line 6 - mapper[007A] <= '000101'
+Info: line 6 - mapper[007B] <= '000101'
+Info: line 6 - mapper[007C] <= '000101'
+Info: line 6 - mapper[007D] <= '000101'
+Info: line 6 - mapper[007E] <= '000101'
+Info: line 6 - mapper[007F] <= '000101'
+Info: line 6 - mapper[0080] <= '000101'
+Info: line 6 - mapper[0081] <= '000101'
+Info: line 6 - mapper[0082] <= '000101'
+Info: line 6 - mapper[0083] <= '000101'
+Info: line 6 - mapper[0084] <= '000101'
+Info: line 6 - mapper[0085] <= '000101'
+Info: line 6 - mapper[0086] <= '000101'
+Info: line 6 - mapper[0087] <= '000101'
+Info: line 6 - mapper[0088] <= '000101'
+Info: line 6 - mapper[0089] <= '000101'
+Info: line 6 - mapper[008A] <= '000101'
+Info: line 6 - mapper[008B] <= '000101'
+Info: line 6 - mapper[008C] <= '000101'
+Info: line 6 - mapper[008D] <= '000101'
+Info: line 6 - mapper[008E] <= '000101'
+Info: line 6 - mapper[008F] <= '000101'
+Info: line 6 - mapper[0090] <= '000101'
+Info: line 6 - mapper[0091] <= '000101'
+Info: line 6 - mapper[0092] <= '000101'
+Info: line 6 - mapper[0093] <= '000101'
+Info: line 6 - mapper[0094] <= '000101'
+Info: line 6 - mapper[0095] <= '000101'
+Info: line 6 - mapper[0096] <= '000101'
+Info: line 6 - mapper[0097] <= '000101'
+Info: line 6 - mapper[0098] <= '000101'
+Info: line 6 - mapper[0099] <= '000101'
+Info: line 6 - mapper[009A] <= '000101'
+Info: line 6 - mapper[009B] <= '000101'
+Info: line 6 - mapper[009C] <= '000101'
+Info: line 6 - mapper[009D] <= '000101'
+Info: line 6 - mapper[009E] <= '000101'
+Info: line 6 - mapper[009F] <= '000101'
+Info: line 6 - mapper[00A0] <= '000101'
+Info: line 6 - mapper[00A1] <= '000101'
+Info: line 6 - mapper[00A2] <= '000101'
+Info: line 6 - mapper[00A3] <= '000101'
+Info: line 6 - mapper[00A4] <= '000101'
+Info: line 6 - mapper[00A5] <= '000101'
+Info: line 6 - mapper[00A6] <= '000101'
+Info: line 6 - mapper[00A7] <= '000101'
+Info: line 6 - mapper[00A8] <= '000101'
+Info: line 6 - mapper[00A9] <= '000101'
+Info: line 6 - mapper[00AA] <= '000101'
+Info: line 6 - mapper[00AB] <= '000101'
+Info: line 6 - mapper[00AC] <= '000101'
+Info: line 6 - mapper[00AD] <= '000101'
+Info: line 6 - mapper[00AE] <= '000101'
+Info: line 6 - mapper[00AF] <= '000101'
+Info: line 6 - mapper[00B0] <= '000101'
+Info: line 6 - mapper[00B1] <= '000101'
+Info: line 6 - mapper[00B2] <= '000101'
+Info: line 6 - mapper[00B3] <= '000101'
+Info: line 6 - mapper[00B4] <= '000101'
+Info: line 6 - mapper[00B5] <= '000101'
+Info: line 6 - mapper[00B6] <= '000101'
+Info: line 6 - mapper[00B7] <= '000101'
+Info: line 6 - mapper[00B8] <= '000101'
+Info: line 6 - mapper[00B9] <= '000101'
+Info: line 6 - mapper[00BA] <= '000101'
+Info: line 6 - mapper[00BB] <= '000101'
+Info: line 6 - mapper[00BC] <= '000101'
+Info: line 6 - mapper[00BD] <= '000101'
+Info: line 6 - mapper[00BE] <= '000101'
+Info: line 6 - mapper[00BF] <= '000101'
+Info: line 6 - mapper[00C0] <= '000101'
+Info: line 6 - mapper[00C1] <= '000101'
+Info: line 6 - mapper[00C2] <= '000101'
+Info: line 6 - mapper[00C3] <= '000101'
+Info: line 6 - mapper[00C4] <= '000101'
+Info: line 6 - mapper[00C5] <= '000101'
+Info: line 6 - mapper[00C6] <= '000101'
+Info: line 6 - mapper[00C7] <= '000101'
+Info: line 6 - mapper[00C8] <= '000101'
+Info: line 6 - mapper[00C9] <= '000101'
+Info: line 6 - mapper[00CA] <= '000101'
+Info: line 6 - mapper[00CB] <= '000101'
+Info: line 6 - mapper[00CC] <= '000101'
+Info: line 6 - mapper[00CD] <= '000101'
+Info: line 6 - mapper[00CE] <= '000101'
+Info: line 6 - mapper[00CF] <= '000101'
+Info: line 6 - mapper[00D0] <= '000101'
+Info: line 6 - mapper[00D1] <= '000101'
+Info: line 6 - mapper[00D2] <= '000101'
+Info: line 6 - mapper[00D3] <= '000101'
+Info: line 6 - mapper[00D4] <= '000101'
+Info: line 6 - mapper[00D5] <= '000101'
+Info: line 6 - mapper[00D6] <= '000101'
+Info: line 6 - mapper[00D7] <= '000101'
+Info: line 6 - mapper[00D8] <= '000101'
+Info: line 6 - mapper[00D9] <= '000101'
+Info: line 6 - mapper[00DA] <= '000101'
+Info: line 6 - mapper[00DB] <= '000101'
+Info: line 6 - mapper[00DC] <= '000101'
+Info: line 6 - mapper[00DD] <= '000101'
+Info: line 6 - mapper[00DE] <= '000101'
+Info: line 6 - mapper[00DF] <= '000101'
+Info: line 6 - mapper[00E0] <= '000101'
+Info: line 6 - mapper[00E1] <= '000101'
+Info: line 6 - mapper[00E2] <= '000101'
+Info: line 6 - mapper[00E3] <= '000101'
+Info: line 6 - mapper[00E4] <= '000101'
+Info: line 6 - mapper[00E5] <= '000101'
+Info: line 6 - mapper[00E6] <= '000101'
+Info: line 6 - mapper[00E7] <= '000101'
+Info: line 6 - mapper[00E8] <= '000101'
+Info: line 6 - mapper[00E9] <= '000101'
+Info: line 6 - mapper[00EA] <= '000101'
+Info: line 6 - mapper[00EB] <= '000101'
+Info: line 6 - mapper[00EC] <= '000101'
+Info: line 6 - mapper[00ED] <= '000101'
+Info: line 6 - mapper[00EE] <= '000101'
+Info: line 6 - mapper[00EF] <= '000101'
+Info: line 6 - mapper[00F0] <= '000101'
+Info: line 6 - mapper[00F1] <= '000101'
+Info: line 6 - mapper[00F2] <= '000101'
+Info: line 6 - mapper[00F3] <= '000101'
+Info: line 6 - mapper[00F4] <= '000101'
+Info: line 6 - mapper[00F5] <= '000101'
+Info: line 6 - mapper[00F6] <= '000101'
+Info: line 6 - mapper[00F7] <= '000101'
+Info: line 6 - mapper[00F8] <= '000101'
+Info: line 6 - mapper[00F9] <= '000101'
+Info: line 6 - mapper[00FA] <= '000101'
+Info: line 6 - mapper[00FB] <= '000101'
+Info: line 6 - mapper[00FC] <= '000101'
+Info: line 6 - mapper[00FD] <= '000101'
+Info: line 6 - mapper[00FE] <= '000101'
+Info: line 6 - mapper[00FF] <= '000101'
+Info: 256 mapper locations from 0 to 255 set to value '000101'
+Info: line 5 - code[0005] <= '1_1_1_0000_000000_000000_01_00_00_000_00_0000'
+Info: line 5 - code[0006] <= '1_1_1_0000_010000_010000_00_00_00_000_00_0000'
+Info: line 5 - code[0007] <= '1_1_1_0000_000000_000000_10_00_00_000_00_0000'
+Info: line 5 - code[0008] <= '1_1_1_1001_000000_000110_00_00_00_000_00_0000'
+Warning in line 6: overwriting '000101' with '001001' at mapper[0000]
+Info: Mapper location 0 set to value '001001'
+Info: line 5 - code[0009] <= '1_1_1_0000_101111_101111_01_01_00_000_00_0001'
+Info: line 5 - code[000A] <= '1_1_1_0000_101111_101111_00_00_00_000_00_0010'
+Info: line 5 - code[000B] <= '1_1_1_0000_100011_100011_00_00_11_000_00_0000'
+Info: line 5 - code[000C] <= '1_1_1_0000_100110_100110_00_00_00_000_00_0000'
+Info: line 5 - code[000D] <= '1_1_1_1111_101100_101100_00_00_00_000_11_0000'
+Info: line 5 - code[000E] <= '1_1_1_0000_011101_011101_00_00_00_000_00_0000'
+Info: line 5 - code[000F] <= '1_1_1_1111_000000_000100_00_00_00_000_00_0000'
+Info: line 5 - code[0010] <= '1_1_1_0100_000000_000010_00_01_00_000_00_0000'
+Info: line 5 - code[0011] <= '1_1_1_0000_000000_000000_00_00_00_000_00_0000'
+Info: line 5 - code[0012] <= '1_1_1_0000_101111_101111_00_00_00_000_00_0001'
+Info: line 5 - code[0013] <= '1_1_1_0000_101111_101111_00_00_00_000_00_0010'
+Info: line 5 - code[0014] <= '1_1_1_0000_100011_100011_00_00_01_000_00_0000'
+Info: line 5 - code[0015] <= '1_1_1_0000_100110_100110_00_00_00_000_00_0000'
+Info: line 5 - code[0016] <= '1_1_1_1111_101100_101100_00_00_00_000_10_0000'
+Info: line 5 - code[0017] <= '1_1_1_0000_110011_110011_00_00_00_000_00_0000'
+Info: line 5 - code[0018] <= '1_1_1_1111_101100_101100_00_00_00_000_00_0000'
+Info: line 5 - code[0019] <= '1_1_1_0000_000000_000000_00_10_10_000_00_0000'
+Info: line 5 - code[001A] <= '1_1_1_0110_000000_010111_00_00_00_000_00_0000'
+Info: line 5 - code[001B] <= '1_1_1_0000_011101_011101_00_00_00_000_00_0000'
+Info: line 5 - code[001C] <= '1_1_1_0101_000010_010001_00_00_00_000_00_0000'
+Info: line 5 - code[001D] <= '1_1_1_0000_000000_000000_00_00_00_101_00_0000'
+Info: line 5 - code[001E] <= '1_1_1_0000_101111_101111_00_00_00_000_00_1110'
+Info: line 5 - code[001F] <= '1_1_1_0000_101111_101111_00_00_00_000_00_1111'
+Info: line 5 - code[0020] <= '1_1_1_0000_101111_101111_00_00_00_000_00_0011'
+Info: line 5 - code[0021] <= '1_1_1_0000_101111_101111_00_00_00_000_00_0100'
+Info: line 5 - code[0022] <= '1_1_1_0000_000010_000010_00_00_00_000_00_0000'
+Info: line 5 - code[0023] <= '1_1_1_0000_101111_101111_00_00_00_000_00_1000'
+Info: line 5 - code[0024] <= '1_1_1_0000_101111_101111_00_00_00_000_00_1001'
+Info: line 5 - code[0025] <= '1_1_1_1111_000000_101010_00_00_00_001_00_0000'
+Info: line 5 - code[0026] <= '1_1_1_0000_101111_101111_00_00_00_000_00_1010'
+Info: line 5 - code[0027] <= '1_1_1_0000_101111_101111_00_00_00_011_00_1011'
+Info: line 5 - code[0028] <= '1_1_1_0000_101111_101111_00_00_00_000_00_1100'
+Info: line 5 - code[0029] <= '1_1_1_0000_101111_101111_00_00_00_010_00_1101'
+Info: line 5 - code[002A] <= '1_1_1_0000_101111_101111_00_00_00_000_00_0010'
+Info: line 5 - code[002B] <= '1_1_1_0000_000010_000010_00_00_00_000_00_0000'
+Info: line 5 - code[002C] <= '1_1_1_0000_101111_101111_00_00_00_000_00_0110'
+Info: line 5 - code[002D] <= '1_1_1_0000_101111_101111_00_00_00_000_00_0111'
+Info: line 5 - code[002E] <= '1_1_1_1111_000000_101010_00_00_00_100_00_0000'
+Info: line 5 - code[002F] <= '1_1_1_0111_000000_000001_00_00_00_000_00_0000'
+Info: line 5 - code[0030] <= '1_1_1_0111_000000_000001_00_00_00_000_00_0000'
+Info: line 5 - code[0031] <= '1_1_1_0111_000000_000001_00_00_00_000_00_0000'
+Info: line 5 - code[0032] <= '1_1_1_1000_000010_000010_00_00_00_000_00_0000'
+Info: line 5 - code[0033] <= '0_1_1_0000_000000_000000_00_00_00_000_00_0000'
+Info: line 5 - code[0034] <= '0_1_1_0010_000001_000000_00_00_00_000_00_0000'
+Info: line 5 - code[0035] <= '0_0_1_0000_000000_000000_00_00_00_000_00_0000'
+Info: line 5 - code[0036] <= '0_0_1_0001_000010_000001_00_00_00_000_01_0000'
+Generating code: 
+Warning in line 5: found 9 uninitialized locations:
+0037 .. 003F
+
+Writing 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_code.mif' ... Done.
+Writing 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_code.cgf' ... Done.
+Writing 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_code.coe' (LF only) ... Done (initialized locations: 55, empty locations: 9, total locations: 64).
+Generating code 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_code.vhd' ... Done.
+Writing 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_code.hex' ... Done.
+Writing 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_code_lendian.bin' ... Done.
+Writing 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_code_bendian.bin' ... Done.
+Generating mapping: 
+Writing 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_map.mif' ... Done.
+Writing 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_map.cgf' ... Done.
+Writing 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_map.coe' (LF only) ... Done (initialized locations: 256, empty locations: 0, total locations: 256).
+Generating mapper 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_map.vhd' ... Done.
+Writing 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_map.hex' ... Done.
+Writing 'C:\Users\zoltanp\Documents\HexCalc\Hex_IO\Hex_IO\Mem2Hex\mem2hex_map.bin' ... Done.
+Generating symbol:  skippe
