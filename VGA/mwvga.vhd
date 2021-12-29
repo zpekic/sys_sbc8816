@@ -40,6 +40,7 @@ entity mwvga is
            y : out  STD_LOGIC_VECTOR (7 downto 0);
 			  cursor_enable : in  STD_LOGIC;
 			  cursor_type : in  STD_LOGIC;
+			  color_index: in STD_LOGIC_VECTOR(1 downto 0);
 			  -- VGA connections
            rgb : out  STD_LOGIC_VECTOR (11 downto 0);
            hsync : out  STD_LOGIC;
@@ -65,17 +66,17 @@ constant color8_white : std_logic_vector(11 downto 0) := X"FFF";
 
 type rom4 is array(0 to 3) of std_logic_vector(11 downto 0);
 constant palette1: rom4 :=(
-	color8_red,
+	color8_white,
 	color8_cyan,
-	color8_blue,
-	color8_black
+	color8_yellow,
+	color8_red
 );
 
 constant palette0: rom4 :=(
-	color8_black,
+	color8_purple,
 	color8_blue,
-	color8_cyan,
-	color8_red
+	color8_green,
+	color8_black
 );
 
 signal color: std_logic_vector(11 downto 0);
@@ -98,7 +99,7 @@ y <= v(10 downto 3);
 
 active <= hactive and vactive;
 rgb <= X"000" when (active = '0') else color;
-color <= palette1(1) when (pixel = '1') else palette0(1);
+color <= palette1(to_integer(unsigned(color_index))) when (pixel = '1') else palette0(to_integer(unsigned(color_index)));
 
 h_clk <= clk;
 h_drive: process(reset, h_clk)

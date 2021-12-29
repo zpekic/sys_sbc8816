@@ -43,7 +43,7 @@
 	NET "BTN[2]"	LOC = A3		|	IOSTANDARD=LVCMOS18;		#Bank = 3, pin name = IO_L83P_3,	Sch name = BTN2
 	#NET "BTN[3]"	LOC = AB9	|	IOSTANDARD=LVCMOS33;
 	NET "BTN[3]"	LOC = AB9	|	IOSTANDARD=LVCMOS18;
-	NET "BTN<2>" CLOCK_DEDICATED_ROUTE = FALSE;
+	#NET "BTN<2>" CLOCK_DEDICATED_ROUTE = FALSE;
 
 ## 7 Segment Display
 	NET "SEG[0]"	LOC=AA21	|	IOSTANDARD=LVCMOS33;			#Bank = 1, pin name = IO_L63P_1,	Sch name = 7SD-AA
@@ -190,29 +190,29 @@
 
 ## JD
 	NET "JD1"	LOC = AB13	|	IOSTANDARD=LVCMOS33;	#Bank = 2, pin name = IO_L41N_VREF_2,			Sch name = JD1
-	NET "JD2"	LOC = Y12		|	IOSTANDARD=LVCMOS33;	#Bank = 2, pin name = IO_L42N_2,						Sch name = JD2
-	NET "JD3"	LOC = T11		|	IOSTANDARD=LVCMOS33;	#Bank = 2, pin name = IO_L43N_2,						Sch name = JD3
+	NET "JD2"	LOC = Y12	|	IOSTANDARD=LVCMOS33;	#Bank = 2, pin name = IO_L42N_2,						Sch name = JD2
+	NET "JD3"	LOC = T11	|	IOSTANDARD=LVCMOS33;	#Bank = 2, pin name = IO_L43N_2,						Sch name = JD3
 	NET "JD4"	LOC = W10	|	IOSTANDARD=LVCMOS33;	#Bank = 2, pin name = IO_L44N_2,						Sch name = JD4
 	NET "JD7"	LOC = W12	|	IOSTANDARD=LVCMOS33;	#Bank = 2, pin name = IO_L42P_2,						Sch name = JD7
-	NET "JD8"	LOC = R11		|	IOSTANDARD=LVCMOS33;	#Bank = 2, pin name = IO_L43P_2,						Sch name = JD8
-	NET "JD9"	LOC = V11		|	IOSTANDARD=LVCMOS33;	#Bank = 2, pin name = IO_L44P_2,						Sch name = JD9
+	NET "JD8"	LOC = R11	|	IOSTANDARD=LVCMOS33;	#Bank = 2, pin name = IO_L43P_2,						Sch name = JD8
+	NET "JD9"	LOC = V11	|	IOSTANDARD=LVCMOS33;	#Bank = 2, pin name = IO_L44P_2,						Sch name = JD9
 	NET "JD10"	LOC= T10		|	IOSTANDARD=LVCMOS33;	#Bank = 2, pin name = IO_L45P_2,						Sch name = JD10
 	
 ## JE
 	NET "JE1"	LOC = U10	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L45N_2,					Sch name = JE1
-	NET "JE2"	LOC = V9	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L46N_2,					Sch name = JE2
-	NET "JE3"	LOC = Y8	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L47N_2,					Sch name = JE3
+	NET "JE2"	LOC = V9		|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L46N_2,					Sch name = JE2
+	NET "JE3"	LOC = Y8		|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L47N_2,					Sch name = JE3
 	NET "JE4"	LOC = AA8	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L49P_D3_2,			Sch name = JE4
-	NET "JE7"	LOC = U9	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L46P_2,					Sch name = JE7
-	NET "JE8"	LOC = W9	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L47P_2,					Sch name = JE8
-	NET "JE9"	LOC = Y9	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L48P_D7_2,			Sch name = JE9
-	NET "JE10"	LOC= AB8	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L49N_D4_2,			Sch name = JE10
+	NET "JE7"	LOC = U9		|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L46P_2,					Sch name = JE7
+	NET "JE8"	LOC = W9		|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L47P_2,					Sch name = JE8
+	NET "JE9"	LOC = Y9		|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L48P_D7_2,			Sch name = JE9
+	NET "JE10"	LOC= AB8		|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L49N_D4_2,			Sch name = JE10
 
 ## JF
 	NET "JF1"	LOC = V7	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L50P_2,					Sch name = JF1
 	NET "JF2"	LOC = W6	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L62P_D5_2,			Sch name = JF2
-	NET "JF3"	LOC = Y7	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L63P_2,					Sch name = JF3
-	NET "JF4"	LOC = AA6	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L64P_D8_2,			Sch name = JF4
+	#NET "JF3"	LOC = Y7	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L63P_2,					Sch name = JF3
+	#NET "JF4"	LOC = AA6	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L64P_D8_2,			Sch name = JF4
 	#NET "JF7"	LOC = W8	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L50N_2,					Sch name = JF7
 	#NET "JF8"	LOC = Y6	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L62N_D6_2,			Sch name = JF8
 	#NET "JF9"	LOC = AB7	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L63N_2,					Sch name = JF9

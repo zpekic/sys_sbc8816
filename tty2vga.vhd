@@ -87,6 +87,7 @@ component mwvga is
            y : out  STD_LOGIC_VECTOR (7 downto 0);
 			  cursor_enable : in  STD_LOGIC;
 			  cursor_type : in  STD_LOGIC;
+			  color_index: in STD_LOGIC_VECTOR(1 downto 0);
 			  -- VGA connections
            rgb : out  STD_LOGIC_VECTOR (11 downto 0);
            hsync : out  STD_LOGIC;
@@ -164,7 +165,7 @@ ascii_sent <= '1' when (char = X"00") else '0';
 		);
 
 -- Allow MT8816 switch matrix to be displayed in 16*16 char block
-	vga_char <= mem_char when (switch_display = '0') else ("0010101" & switch_data); -- from v-ram or */+
+	vga_char <= mem_char when (switch_display = '0') else ("0011000" & switch_data); -- from v-ram or 0/1
 	vga_row <= vga_memaddr(15 downto 8);
 	vga_col <= vga_memaddr(7 downto 0);
 	
@@ -179,6 +180,8 @@ ascii_sent <= '1' when (char = X"00") else '0';
 		y => vga_memaddr(15 downto 8),
 		cursor_enable => cursor_enable, 
 		cursor_type => '1',	-- just for test
+		color_index(1) => '0',
+		color_index(0) => not switch_display,
 		-- VGA connections
 		rgb(3 downto 0) => vga_r,
 		rgb(7 downto 4) => vga_g,
