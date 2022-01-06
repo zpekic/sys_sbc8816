@@ -43,8 +43,8 @@ entity tty2vga is
            vga_g : out  STD_LOGIC_VECTOR (3 downto 0);
            vga_b : out  STD_LOGIC_VECTOR (3 downto 0);
 			  -- for MT8816
-			  vga_x: out STD_LOGIC_VECTOR(7 downto 0);
-			  vga_y: out STD_LOGIC_VECTOR(7 downto 0);
+			  vga_x: buffer STD_LOGIC_VECTOR(7 downto 0);
+			  vga_y: buffer STD_LOGIC_VECTOR(7 downto 0);
 			  switch_display: in STD_LOGIC;
 			  switch_data: in STD_LOGIC;
 			  -- debug --
@@ -166,6 +166,7 @@ ascii_sent <= '1' when (char = X"00") else '0';
 
 -- Allow MT8816 switch matrix to be displayed in 16*16 char block
 	vga_char <= mem_char when (switch_display = '0') else ("0011000" & switch_data); -- from v-ram or 0/1
+-- vga_char <= mem_char when (switch_display = '0') else (vga_y(3 downto 0) & vga_x(3 downto 0)); -- from v-ram or 0/1
 	vga_x <= vga_memaddr(7 downto 0);
 	vga_y <= vga_memaddr(15 downto 8);
 	

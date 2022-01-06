@@ -143,16 +143,16 @@
 	#NET	"ETH_RXD[1]"		LOC=C14	|	IOSTANDARD=LVCMOS33;			#Bank = 0, pin name = IO_L46N_0,					Sch name = ETH-RXD1
 	
 ## BREADBOARD
-	NET "BB1"		LOC=AB20	|	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L65N_1,		Sch name = BB1
-	NET "BB2"		LOC=P17	|	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L66P_1,		Sch name = BB2
-	NET "BB3"		LOC=P18	|	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L66N_1,		Sch name = BB3
-	NET "BB4"		LOC=Y19	|	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L67P_1,		Sch name = BB4
-	NET "BB5"		LOC=Y20	|	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L67N_1,		Sch name = BB5
-	NET "BB6"		LOC=R15	|	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L68P_1,		Sch name = BB6
-	NET "BB7"		LOC=R16	|	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L68N_1,		Sch name = BB7
-	NET "BB8"		LOC=R17	|	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L70P_1,		Sch name = BB8
-	NET "BB9"		LOC=R19	|	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L70N_1,		Sch name = BB9
-	NET "BB10"	LOC=V19	|	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L71P_1,		Sch name = BB10
+	NET "BB1"		LOC=AB20	|	PULLUP |	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L65N_1,		Sch name = BB1
+	NET "BB2"		LOC=P17	|	PULLUP |	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L66P_1,		Sch name = BB2
+	NET "BB3"		LOC=P18	|	PULLUP |	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L66N_1,		Sch name = BB3
+	NET "BB4"		LOC=Y19	|	PULLUP |	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L67P_1,		Sch name = BB4
+	NET "BB5"		LOC=Y20	|	PULLUP |	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L67N_1,		Sch name = BB5
+	NET "BB6"		LOC=R15	|	PULLUP |	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L68P_1,		Sch name = BB6
+	NET "BB7"		LOC=R16	|	PULLUP |	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L68N_1,		Sch name = BB7
+	NET "BB8"		LOC=R17	|	PULLUP |	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L70P_1,		Sch name = BB8
+	NET "BB9"		LOC=R19	|	PULLUP |	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L70N_1,		Sch name = BB9
+	NET "BB10"		LOC=V19	|	PULLUP |	IOSTANDARD=LVCMOS33;	#Bank = 1, pin name = IO_L71P_1,		Sch name = BB10
 	#NET "BB10" CLOCK_DEDICATED_ROUTE= FALSE;
 
 ## JA
