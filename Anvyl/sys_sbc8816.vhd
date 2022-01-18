@@ -59,7 +59,7 @@ entity sys_sbc8816 is
 				JA3: inout std_logic;	-- Connected to USB2UART
 				JA4: inout std_logic;	-- Connected to USB2UART
 				-- MT8816 OUTPUT ROWS 
-				JB1: out std_logic;	-- Y0
+				JB1: out std_logic;	-- X0
 				JB2: out std_logic;	-- 1
 				JB3: out std_logic;	-- 2
 				JB4: out std_logic;	-- 3
@@ -76,7 +76,7 @@ entity sys_sbc8816 is
 				JC9: out std_logic;	-- 14
 				JC10: out std_logic;	-- X15
 				-- MT8816 INPUT COLUMNS
-				JD1: in std_logic;	-- X0
+				JD1: in std_logic;	-- Y0
 				JD2: in std_logic;	-- 1
 				JD3: in std_logic;	-- 2
 				JD4: in std_logic;	-- 3
@@ -93,8 +93,7 @@ entity sys_sbc8816 is
 				JE9: in std_logic;	-- 14
 				JE10: in std_logic;	-- Y15
 				-- MT8816 control
-				JF1: buffer std_logic;	-- DATA
-				JF2: buffer std_logic;  -- STROBE
+				JF1: buffer std_logic;	-- RESET
 				--
 				BB1: buffer std_logic;	-- AX0
 				BB2: buffer std_logic;	-- AX1
@@ -103,9 +102,9 @@ entity sys_sbc8816 is
 				BB5: buffer std_logic;	-- AY0
 				BB6: buffer std_logic;	-- AY1
 				BB7: buffer std_logic;	-- AY2
-				BB8: buffer std_logic;	-- RESET
-				BB9: buffer std_logic;	-- CS0
-				BB10: buffer std_logic;	-- CS1
+				BB8: buffer std_logic;	-- DATA
+				BB9: buffer std_logic;	-- STROBE0
+				BB10: buffer std_logic;	-- STROBE1
 				--DIP switches
 				DIP_B4, DIP_B3, DIP_B2, DIP_B1: in std_logic;
 				DIP_A4, DIP_A3, DIP_A2, DIP_A1: in std_logic;
@@ -343,14 +342,13 @@ signal reset, reset_btn, reset_sw: std_logic;
 
 -- debug
 signal showdigit, showdot: std_logic_vector(3 downto 0);
-signal led_debug, led_sys, hexin_debug, hexout_debug, baudrate_debug, tty_debug: std_logic_vector(31 downto 0);
+signal led_debug, led_sys, led_con, hexin_debug, hexout_debug, baudrate_debug, tty_debug: std_logic_vector(31 downto 0);
 signal loopback_char, loopback_src: std_logic_vector(7 downto 0);
 signal loopback_send: std_logic;
 signal cnt512: std_logic_vector(8 downto 0);
 -- 16*16 matrix on VGA
 signal vga_x, vga_y: std_logic_vector(7 downto 0);
-signal switch_display, block_row, block_col: std_logic;
-signal switch_data: std_logic;
+signal block_row, block_col: std_logic;
 
 --- frequency signals
 signal freq_50M: std_logic_vector(11 downto 0);
@@ -358,14 +356,13 @@ alias debounce_clk: std_logic is freq_50M(9);
 signal freq4096: std_logic;		
 signal freq_2048: std_logic_vector(11 downto 0);
 alias freq1: std_logic is freq_2048(11);
-alias mt_cnt: std_logic_vector(1 downto 0) is freq_50M(4 downto 3);
+alias mt_cnt: std_logic_vector(1 downto 0) is freq_50M(11 downto 10);
 signal phi0, phi1, phi2, phi3: std_logic;
 signal prescale_baud, prescale_power: integer range 0 to 65535;
 
 -- input by switches and buttons
 signal switch_old: std_logic_vector(7 downto 0);
 signal switch, button: std_logic_vector(7 downto 0);
-alias btn_con is button(0);	-- console
 signal switch_sel:	std_logic_vector(1 downto 0);
 signal switch_uart_rate: std_logic_vector(2 downto 0);
 signal switch_uart_mode: std_logic_vector(2 downto 0);
@@ -381,9 +378,12 @@ signal switch_uart_mode: std_logic_vector(2 downto 0);
 --alias dip_page16k0: std_logic is DIP_A1;
 
 -- MT8816 connections
-signal x: std_logic_vector(15 downto 0);
-signal y: std_logic_vector(15 downto 0);
-signal ctrl, ctrl_sys, ctrl_con: std_logic_vector(9 downto 0);
+signal mt_mode_seldisplay: std_logic;
+signal mt_switch_state: std_logic;
+alias mt_mode_selsys: std_logic is button(3);
+signal mt_x, mt_x_sys, mt_x_con, mt_xout: std_logic_vector(15 downto 0);
+signal mt_y: std_logic_vector(15 downto 0);
+signal mt_ctrl, mt_ctrl_sys, mt_ctrl_con: std_logic_vector(9 downto 0);
 alias MT_AX0: std_logic is BB1;
 alias MT_AX1: std_logic is BB2;
 alias MT_AX2: std_logic is BB3;
@@ -391,11 +391,10 @@ alias MT_AX3: std_logic is BB4;
 alias MT_AY0: std_logic is BB5;
 alias MT_AY1: std_logic is BB6;
 alias MT_AY2: std_logic is BB7;
-alias MT_RESET: std_logic is BB8;
-alias MT_DATA: std_logic is BB9;
-alias MT_STROBE: std_logic is BB10;
-alias MT_CS0: std_logic is JF1;
-alias MT_CS1: std_logic is JF2;
+alias MT_DATA: std_logic is BB8;
+alias MT_STROBE0: std_logic is BB9;
+alias MT_STROBE1: std_logic is BB10;
+alias MT_RESET: std_logic is JF1;
 
 -- HEX common 
 signal baudrate_x1, baudrate_x2, baudrate_x4, baudrate_x8: std_logic;
@@ -417,12 +416,10 @@ signal hexin_debug_ready, hexin_debug_send: std_logic;
 signal hexin_debug_char: std_logic_vector(7 downto 0);
 signal hexin_busreq, hexin_busack: std_logic;
 
-
 -- TTY
 signal tty_sent, tty_send: std_logic;
 signal tty_char: std_logic_vector(7 downto 0);
 alias tty_clk: std_logic is freq_50M(2); --freq_2048(11);
-
 
 begin
 
@@ -435,7 +432,7 @@ switch_sel <= (DIP_B4 & DIP_A4);
 switch_uart_rate <= (DIP_B3 & DIP_B2 & DIP_B1);
 switch_uart_mode <= (DIP_A3 & DIP_A2 & DIP_A1);
 
-on_freq4096: process(freq4096, switch, ctrl)
+on_freq4096: process(freq4096, switch)
 begin
 	if (rising_edge(freq4096)) then
 		switch_old <= switch;
@@ -511,99 +508,63 @@ counter: freqcounter Port map (
 ----------------------------------------
 -- MT8816
 ----------------------------------------
-JB1 <= x(0);	-- X0
-JB2 <= x(1);	-- 1
-JB3 <= x(2);	-- 2
-JB4 <= x(3);	-- 3
-JB7 <= x(4);	-- 4
-JB8 <= x(5);	-- 5
-JB9 <= x(6);	-- 6
-JB10 <=x(7);	-- 7
-JC1 <= x(8);	-- 8
-JC2 <= x(9);	-- 9
-JC3 <= x(10);	-- 10
-JC4 <= x(11);	-- 11
-JC7 <= x(12);	-- 12
-JC8 <= x(13);	-- 13
-JC9 <= x(14);	-- 14
-JC10 <= x(15);	-- X15
+JB1 <= 	mt_xout(0);	-- X0
+JB2 <= 	mt_xout(1);	-- 1
+JB3 <= 	mt_xout(2);	-- 2
+JB4 <= 	mt_xout(3);	-- 3
+JB7 <= 	mt_xout(4);	-- 4
+JB8 <= 	mt_xout(5);	-- 5
+JB9 <= 	mt_xout(6);	-- 6
+JB10 <=	mt_xout(7);	-- 7
+JC1 <= 	mt_xout(8);	-- 8
+JC2 <= 	mt_xout(9);	-- 9
+JC3 <= 	mt_xout(10);	-- 10
+JC4 <= 	mt_xout(11);	-- 11
+JC7 <= 	mt_xout(12);	-- 12
+JC8 <= 	mt_xout(13);	-- 13
+JC9 <= 	mt_xout(14);	-- 14
+JC10 <= 	mt_xout(15);	-- X15
 
-y <= (JE10 & JE9 & JE8 & JE7 & JE4 & JE3 & JE2 & JE1 & JD10 & JD9 & JD8 & JD7 & JD4 & JD3 & JD2 & JD1);
+-- Drive X 
+mt_x <= mt_x_sys when (mt_mode_selsys = '1') else mt_x_con;
+mt_x_sys <= X"FFFF"; -- TODO
+mt_x_con <= X"FFFF"; -- TODO
+-- for screen, one row active at a time
+mt_xout <= decode4to16(to_integer(unsigned(vga_y(3 downto 0)))) when (mt_mode_seldisplay = '1') else mt_x;
 
-MT_AY0 <= switch(0);	-- A0
-MT_AY1 <= switch(1);
-MT_AY2 <= switch(2);
-MT_CS0 <= button(2) when (switch(3) = '0') else '0';
-MT_CS1 <= button(2) when (switch(3) = '1') else '0';
-MT_AX0 <= switch(4);
-MT_AX1 <= switch(5);
-MT_AX2 <= switch(6);	-- A6
-MT_AX3 <= switch(7);
-MT_DATA <= button(1);
-MT_STROBE <= button(2); 
-MT_RESET <= button(3); 
 
---MT_AX0 <= ctrl(0);	-- A0
---MT_AX1 <= ctrl(1);
---MT_AX2 <= ctrl(2);
---MT_AX3 <= ctrl(3);
---MT_AY0 <= ctrl(4);
---MT_AY1 <= ctrl(5);
---MT_AY2 <= ctrl(6);	-- A6
---MT_CS0 <= ctrl(7);
---MT_CS1 <= not ctrl(7);
---MT_DATA <= ctrl(8);
---MT_RESET <= ctrl(9) and ctrl(8); 
---MT_STROBE <= (ctrl(9) or ctrl(8)) and phi1; 
+-- Pick up Y
+mt_y <= (JE10 & JE9 & JE8 & JE7 & JE4 & JE3 & JE2 & JE1 & JD10 & JD9 & JD8 & JD7 & JD4 & JD3 & JD2 & JD1);
 
-phi0 <= '1' when (mt_cnt = "00") else '0';
-phi1 <= '1' when (mt_cnt = "01") else '0';
-phi2 <= '1' when (mt_cnt = "10") else '0';
-phi3 <= '1' when (mt_cnt = "11") else '0';
+-- for screen, one column at a time
+mt_switch_state <= mt_y(to_integer(unsigned(vga_x(3 downto 0))));
+-- care for switch data if in a specific 16*16 block on the screen
+block_row <= '1' when (vga_y(7 downto 4) = X"2") else '0';
+block_col <= '1' when (vga_x(7 downto 4) = X"3") else '0';
+mt_mode_seldisplay <= block_row and block_col;
 
-on_phi0: process(phi0, reset, ctrl_con, ctrl_sys, btn_con)
-begin
-	if (reset = '1') then
-		ctrl <= (others => '1');
-	else
-		if (rising_edge(phi0)) then
---			if (btn_con = '1') then
-				ctrl <= ctrl_con;
---				MT_AX0 <= ctrl_con(0);	-- A0
---				MT_AX1 <= ctrl_con(1);
---				MT_AX2 <= ctrl_con(2);
---				MT_AX3 <= ctrl_con(3);
---				MT_AY0 <= ctrl_con(4);
---				MT_AY1 <= ctrl_con(5);
---				MT_AY2 <= ctrl_con(6);	-- A6
---				MT_CS0 <= not ctrl_con(7);
---				MT_CS1 <= ctrl_con(7);
---				MT_DATA <= ctrl_con(8);
---			else
---				ctrl <= ctrl_sys;
---			end if;
-		end if;
-	end if;
-end process;
+-- control bus ('Z' with external 4k7 resistor and pull-up mode give 0.26V low and 5.0V hi)
+MT_AX0 <= 'Z' when (mt_ctrl(0) = '1') else '0';
+MT_AX1 <= 'Z' when (mt_ctrl(1) = '1') else '0';
+MT_AX2 <= 'Z' when (mt_ctrl(2) = '1') else '0';	
+MT_AX3 <= 'Z' when (mt_ctrl(3) = '1') else '0';
+MT_AY0 <= 'Z' when (mt_ctrl(4) = '1') else '0';	
+MT_AY1 <= 'Z' when (mt_ctrl(5) = '1') else '0';
+MT_AY2 <= 'Z' when (mt_ctrl(6) = '1') else '0';
+MT_DATA <= 'Z' when (mt_ctrl(8) = '1') else '0';
+MT_STROBE0 <= 'Z' when ((phi1 and (mt_ctrl(8) or mt_ctrl(9)) and (not mt_ctrl(7))) = '1') else '0'; 
+MT_STROBE1 <= 'Z' when ((phi1 and (mt_ctrl(8) or mt_ctrl(9)) and mt_ctrl(7)) = '1') else '0'; 
+MT_RESET <= 'Z' when ((mt_ctrl(8) and mt_ctrl(9)) = '1') else '0'; 
 
-on_freq1: process(reset, btn_con, freq1)
-begin
-	if (reset = '1') then
-		cnt512 <= (others => '0');
-	else
-		if (rising_edge(freq1) and (btn_con = '0')) then
-			cnt512 <= std_logic_vector(unsigned(cnt512) + 1);
-		end if;
-	end if;
-end process;
+mt_ctrl <= mt_ctrl_sys when (mt_mode_selsys = '1') else mt_ctrl_con;
 
 ---- system command
-ctrl_sys(7 downto 0) <= cnt512(7 downto 0);
-ctrl_sys(8) <= cnt512(8);
-ctrl_sys(9) <= not cnt512(8);
+mt_ctrl_sys(7 downto 0) <= cnt512(7 downto 0);
+mt_ctrl_sys(8) <= not cnt512(8);
+mt_ctrl_sys(9) <= cnt512(8);
 ---- manual command 
-ctrl_con(7 downto 0) <= switch;	
-with BTN(3 downto 1) select ctrl_con(9 downto 8) <=
+mt_ctrl_con(7 downto 0) <= switch;	
+with BTN(2 downto 0) select mt_ctrl_con(9 downto 8) <=
 	"11" when "100",
 	"11" when "101",
 	"11" when "110",
@@ -612,15 +573,22 @@ with BTN(3 downto 1) select ctrl_con(9 downto 8) <=
 	"01" when "001",	--	SWITCH ON
 	"00" when others;	-- NOP
 
--- Drive X to low one screen row at a time
-x <= decode4to16(to_integer(unsigned(vga_y(3 downto 0))));
---x <= X"FFFF" xor decode4to16(to_integer(unsigned(vga_y(3 downto 0))));
--- Pick up Y - if switch is on, it will be low
-switch_data <= y(to_integer(unsigned(vga_x(3 downto 0))));
--- care for switch data if in a specific 16*16 block on the screen
-block_row <= '1' when (vga_y(7 downto 4) = X"2") else '0';
-block_col <= '1' when (vga_x(7 downto 4) = X"3") else '0';
-switch_display <= block_row and block_col;
+-- 4 phase clock to activate strobe at right time
+phi0 <= '1' when (mt_cnt = "00") else '0';
+phi1 <= '1' when (mt_cnt = "01") else '0';
+phi2 <= '1' when (mt_cnt = "10") else '0';
+phi3 <= '1' when (mt_cnt = "11") else '0';
+
+on_freq1: process(reset, mt_mode_selsys, freq1)
+begin
+	if (reset = '1') then
+		cnt512 <= (others => '0');
+	else
+		if (rising_edge(freq1) and (mt_mode_selsys = '1')) then
+			cnt512 <= std_logic_vector(unsigned(cnt512) + 1);
+		end if;
+	end if;
+end process;
 
 ----------------------------------------
 -- UART input
@@ -683,25 +651,22 @@ tty: tty2vga Port map(
 		-- for MT8816
 		vga_x => vga_x,
 		vga_y => vga_y,
-		switch_display => switch_display,
-		switch_data => switch_data,
+		switch_display => mt_mode_seldisplay,
+		switch_data => mt_switch_state,
 		-- debug
 		debug => tty_debug
 		);
 
 -- 8 single LEDs
---with switch_sel select LED <= 
---	tx_char when sel_hexout,
---	rx_char when others;
-LED <= MT_RESET & MT_STROBE & MT_DATA & MT_CS1 & MT_CS0 & MT_AY2 & MT_AY1 & MT_AY0;
+LED <= mt_ctrl_sys(7 downto 0) when (mt_mode_selsys = '1') else mt_ctrl_con(7 downto 0);
 
 -- traffic light LEDs
-LDT1G <= button(1);
-LDT1Y <= button(2);
-LDT1R <= button(3);
-LDT2G <= not button(1);
-LDT2Y <= not button(2);
-LDT2R <= not button(3);
+LDT1G <= MT_DATA;
+LDT1Y <= MT_STROBE0;
+LDT1R <= MT_RESET;
+LDT2G <= MT_DATA;
+LDT2Y <= MT_STROBE1;
+LDT2R <= MT_RESET;
 
 -- 7 seg LED debug display		
 with switch_sel select led_sys <= 
@@ -710,7 +675,8 @@ with switch_sel select led_sys <=
 	hexout_debug when sel_hexout,
 	hexin_debug when sel_hexin;
 
-led_debug <= ("00000101" & X"00" & "000000" & ctrl);-- when (btn_con = '1') else led_sys; 
+led_con <= ("00000001" & X"BEEFED");
+led_debug <= led_sys when (mt_mode_selsys = '1') else led_con;
 	
 led6: sixdigitsevensegled Port map ( 
 		-- inputs

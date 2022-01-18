@@ -209,8 +209,8 @@
 	NET "JE10"	LOC= AB8		|	PULLDOWN	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L49N_D4_2,			Sch name = JE10
 
 ## JF
-	NET "JF1"	LOC = V7	|	PULLDOWN |	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L50P_2,					Sch name = JF1
-	NET "JF2"	LOC = W6	|	PULLDOWN |	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L62P_D5_2,			Sch name = JF2
+	NET "JF1"	LOC = V7	|	PULLUP |	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L50P_2,					Sch name = JF1
+	#NET "JF2"	LOC = W6	|	PULLDOWN |	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L62P_D5_2,			Sch name = JF2
 	#NET "JF3"	LOC = Y7	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L63P_2,					Sch name = JF3
 	#NET "JF4"	LOC = AA6	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L64P_D8_2,			Sch name = JF4
 	#NET "JF7"	LOC = W8	|	IOSTANDARD=LVCMOS33;		#Bank = 2, pin name = IO_L50N_2,					Sch name = JF7
