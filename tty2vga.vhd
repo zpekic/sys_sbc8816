@@ -45,8 +45,8 @@ entity tty2vga is
 			  -- for MT8816
 			  vga_x: buffer STD_LOGIC_VECTOR(7 downto 0);
 			  vga_y: buffer STD_LOGIC_VECTOR(7 downto 0);
-			  switch_display: in STD_LOGIC;
-			  switch_data: in STD_LOGIC;
+			  win_char: in STD_LOGIC_VECTOR(7 downto 0);
+			  win_index: in STD_LOGIC_VECTOR(2 downto 0);
 			  -- debug --
 			  debug : out  STD_LOGIC_VECTOR (31 downto 0)
 			  );
@@ -87,7 +87,7 @@ component mwvga is
            y : out  STD_LOGIC_VECTOR (7 downto 0);
 			  cursor_enable : in  STD_LOGIC;
 			  cursor_type : in  STD_LOGIC;
-			  color_index: in STD_LOGIC_VECTOR(1 downto 0);
+			  color_index: in STD_LOGIC_VECTOR(2 downto 0);
 			  -- VGA connections
            rgb : out  STD_LOGIC_VECTOR (11 downto 0);
            hsync : out  STD_LOGIC;
@@ -116,10 +116,15 @@ signal tty_char, char: std_logic_vector(7 downto 0);
 
 signal vga_hactive, vga_vactive: std_logic;
 signal vga_memaddr: std_logic_vector(15 downto 0);
+signal vga_index: std_logic_vector(2 downto 0);
 signal vga_char, mem_char: std_logic_vector(7 downto 0);
 signal cursor_enable: std_logic;
 
 begin
+
+-- external will need it to paint the hardware window
+vga_x <= vga_memaddr(7 downto 0);
+vga_y <= vga_memaddr(15 downto 8);
 
 on_ascii_send: process(ascii_send, ascii, char_sent, char_sent_delayed)
 begin
@@ -164,11 +169,9 @@ ascii_sent <= '1' when (char = X"00") else '0';
 			debug => debug
 		);
 
--- Allow MT8816 switch matrix to be displayed in 16*16 char block
-	vga_char <= mem_char when (switch_display = '0') else ("0011000" & switch_data); -- from v-ram or 0/1
--- vga_char <= mem_char when (switch_display = '0') else (vga_y(3 downto 0) & vga_x(3 downto 0)); -- from v-ram or 0/1
-	vga_x <= vga_memaddr(7 downto 0);
-	vga_y <= vga_memaddr(15 downto 8);
+-- Allow MT8816 switch matrix to be displayed in 32*32 char block
+	vga_char 	<= mem_char when (win_char = X"00") else win_char; 
+	vga_index 	<= "000"		when (win_char = X"00") else win_index; -- points to palette
 	
 	vga_controller: mwvga 
 	port map ( 
@@ -181,8 +184,7 @@ ascii_sent <= '1' when (char = X"00") else '0';
 		y => vga_memaddr(15 downto 8),
 		cursor_enable => cursor_enable, 
 		cursor_type => '1',	-- just for test
-		color_index(1) => '0',
-		color_index(0) => not switch_display,
+		color_index => vga_index,
 		-- VGA connections
 		rgb(3 downto 0) => vga_r,
 		rgb(7 downto 4) => vga_g,

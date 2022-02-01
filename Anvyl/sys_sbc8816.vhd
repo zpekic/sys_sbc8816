@@ -109,8 +109,8 @@ entity sys_sbc8816 is
 				DIP_B4, DIP_B3, DIP_B2, DIP_B1: in std_logic;
 				DIP_A4, DIP_A3, DIP_A2, DIP_A1: in std_logic;
 --				-- Hex keypad
-				--KYPD_COL: out std_logic_vector(3 downto 0);
-				--KYPD_ROW: in std_logic_vector(3 downto 0);
+				KYPD_COL: out std_logic_vector(3 downto 0);
+				KYPD_ROW: in std_logic_vector(3 downto 0);
 				-- SRAM --
 				--SRAM_CS1: out std_logic;
 				--SRAM_CS2: out std_logic;
@@ -269,14 +269,38 @@ component tty2vga is
            vga_r : out  STD_LOGIC_VECTOR (3 downto 0);
            vga_g : out  STD_LOGIC_VECTOR (3 downto 0);
            vga_b : out  STD_LOGIC_VECTOR (3 downto 0);
-			  -- for MT8816
+			  -- for system hardware window
 			  vga_x: out STD_LOGIC_VECTOR(7 downto 0);
 			  vga_y: out STD_LOGIC_VECTOR(7 downto 0);
-			  switch_display: in STD_LOGIC;
-			  switch_data: in STD_LOGIC;			  
+			  win_char: in STD_LOGIC_VECTOR(7 downto 0);
+			  win_index: in STD_LOGIC_VECTOR(2 downto 0);			  
 			  -- debug only --
 			  debug : out STD_LOGIC_VECTOR(31 downto 0)
 			  );
+end component;
+	
+component hardwin is
+    Port ( left : in  STD_LOGIC_VECTOR (7 downto 0);
+           top : in  STD_LOGIC_VECTOR (7 downto 0);
+           vga_x : in  STD_LOGIC_VECTOR (7 downto 0);
+           vga_y : in  STD_LOGIC_VECTOR (7 downto 0);
+           active : out  STD_LOGIC;
+			  matrix : out  STD_LOGIC;
+           char : out  STD_LOGIC_VECTOR (7 downto 0);
+           index : out  STD_LOGIC_VECTOR (2 downto 0);
+           win_x : out  STD_LOGIC_VECTOR (4 downto 0);
+           win_y : out  STD_LOGIC_VECTOR (4 downto 0);
+           mt_x : in  STD_LOGIC;
+           mt_y : in  STD_LOGIC;
+           mt_hex : in  STD_LOGIC_VECTOR (3 downto 0));
+end component;
+	
+component keypad4x4 is
+    Port ( clk : in  STD_LOGIC;
+           row : in  STD_LOGIC_VECTOR (3 downto 0);
+           col : out  STD_LOGIC_VECTOR (3 downto 0);
+           hex : out  STD_LOGIC_VECTOR (3 downto 0);
+           keypressed : out  STD_LOGIC);
 end component;
 	
 type table_8x16 is array (0 to 7) of std_logic_vector(15 downto 0);
@@ -346,9 +370,18 @@ signal led_debug, led_sys, led_con, hexin_debug, hexout_debug, baudrate_debug, t
 signal loopback_char, loopback_src: std_logic_vector(7 downto 0);
 signal loopback_send: std_logic;
 signal cnt512: std_logic_vector(8 downto 0);
--- 16*16 matrix on VGA
+signal digit: std_logic_vector(3 downto 0);
+signal input: std_logic_vector(23 downto 0);
+signal keypressed, clear: std_logic;
+
+-- VGA
 signal vga_x, vga_y: std_logic_vector(7 downto 0);
-signal block_row, block_col: std_logic;
+
+-- 32*32 matrix on VGA
+signal win_x, win_y: std_logic_vector(4 downto 0);
+signal win_active, win_matrix: std_logic;
+signal win_char: std_logic_vector(7 downto 0);
+signal win_index: std_logic_vector(2 downto 0);
 
 --- frequency signals
 signal freq_50M: std_logic_vector(11 downto 0);
@@ -356,13 +389,15 @@ alias debounce_clk: std_logic is freq_50M(9);
 signal freq4096: std_logic;		
 signal freq_2048: std_logic_vector(11 downto 0);
 alias freq1: std_logic is freq_2048(11);
+alias freq64: std_logic is freq_2048(5);
 alias mt_cnt: std_logic_vector(1 downto 0) is freq_50M(11 downto 10);
 signal phi0, phi1, phi2, phi3: std_logic;
 signal prescale_baud, prescale_power: integer range 0 to 65535;
 
 -- input by switches and buttons
 signal switch_old: std_logic_vector(7 downto 0);
-signal switch, button: std_logic_vector(7 downto 0);
+signal switch: std_logic_vector(7 downto 0);
+signal keypad_row, button: std_logic_vector(3 downto 0);
 signal switch_sel:	std_logic_vector(1 downto 0);
 signal switch_uart_rate: std_logic_vector(2 downto 0);
 signal switch_uart_mode: std_logic_vector(2 downto 0);
@@ -381,7 +416,7 @@ signal switch_uart_mode: std_logic_vector(2 downto 0);
 signal mt_mode_seldisplay: std_logic;
 signal mt_switch_state: std_logic;
 alias mt_mode_selsys: std_logic is button(3);
-signal mt_x, mt_x_sys, mt_x_con, mt_xout: std_logic_vector(15 downto 0);
+signal mt_x, mt_x_sys, mt_x_con: std_logic_vector(15 downto 0);
 signal mt_y: std_logic_vector(15 downto 0);
 signal mt_ctrl, mt_ctrl_sys, mt_ctrl_con: std_logic_vector(9 downto 0);
 alias MT_AX0: std_logic is BB1;
@@ -489,9 +524,10 @@ baudgen: sn74hc4040 port map (
 	debounce_btn: debouncer8channel Port map ( 
 		clock => debounce_clk, 
 		reset => RESET,
-		signal_raw(7 downto 4) => "0000",
+		signal_raw(7 downto 4) => KYPD_ROW,
 		signal_raw(3 downto 0) => BTN,
-		signal_debounced => button
+		signal_debounced(7 downto 4) => keypad_row,
+		signal_debounced(3 downto 0) => button
 	);
 	
 counter: freqcounter Port map ( 
@@ -508,40 +544,29 @@ counter: freqcounter Port map (
 ----------------------------------------
 -- MT8816
 ----------------------------------------
-JB1 <= 	mt_xout(0);	-- X0
-JB2 <= 	mt_xout(1);	-- 1
-JB3 <= 	mt_xout(2);	-- 2
-JB4 <= 	mt_xout(3);	-- 3
-JB7 <= 	mt_xout(4);	-- 4
-JB8 <= 	mt_xout(5);	-- 5
-JB9 <= 	mt_xout(6);	-- 6
-JB10 <=	mt_xout(7);	-- 7
-JC1 <= 	mt_xout(8);	-- 8
-JC2 <= 	mt_xout(9);	-- 9
-JC3 <= 	mt_xout(10);	-- 10
-JC4 <= 	mt_xout(11);	-- 11
-JC7 <= 	mt_xout(12);	-- 12
-JC8 <= 	mt_xout(13);	-- 13
-JC9 <= 	mt_xout(14);	-- 14
-JC10 <= 	mt_xout(15);	-- X15
+JB1 <= 	mt_x(0);	-- X0
+JB2 <= 	mt_x(1);	-- 1
+JB3 <= 	mt_x(2);	-- 2
+JB4 <= 	mt_x(3);	-- 3
+JB7 <= 	mt_x(4);	-- 4
+JB8 <= 	mt_x(5);	-- 5
+JB9 <= 	mt_x(6);	-- 6
+JB10 <=	mt_x(7);	-- 7
+JC1 <= 	mt_x(8);	-- 8
+JC2 <= 	mt_x(9);	-- 9
+JC3 <= 	mt_x(10);	-- 10
+JC4 <= 	mt_x(11);	-- 11
+JC7 <= 	mt_x(12);	-- 12
+JC8 <= 	mt_x(13);	-- 13
+JC9 <= 	mt_x(14);	-- 14
+JC10 <= 	mt_x(15);	-- X15
 
 -- Drive X 
-mt_x <= mt_x_sys when (mt_mode_selsys = '1') else mt_x_con;
-mt_x_sys <= X"FFFF"; -- TODO
-mt_x_con <= X"FFFF"; -- TODO
 -- for screen, one row active at a time
-mt_xout <= decode4to16(to_integer(unsigned(vga_y(3 downto 0)))) when (mt_mode_seldisplay = '1') else mt_x;
-
+mt_x <= decode4to16(to_integer(unsigned(win_y(3 downto 0)))) when (win_matrix = '1') else X"5555";
 
 -- Pick up Y
 mt_y <= (JE10 & JE9 & JE8 & JE7 & JE4 & JE3 & JE2 & JE1 & JD10 & JD9 & JD8 & JD7 & JD4 & JD3 & JD2 & JD1);
-
--- for screen, one column at a time
-mt_switch_state <= mt_y(to_integer(unsigned(vga_x(3 downto 0))));
--- care for switch data if in a specific 16*16 block on the screen
-block_row <= '1' when (vga_y(7 downto 4) = X"2") else '0';
-block_col <= '1' when (vga_x(7 downto 4) = X"3") else '0';
-mt_mode_seldisplay <= block_row and block_col;
 
 -- control bus ('Z' with external 4k7 resistor and pull-up mode give 0.26V low and 5.0V hi)
 MT_AX0 <= 'Z' when (mt_ctrl(0) = '1') else '0';
@@ -563,7 +588,7 @@ mt_ctrl_sys(7 downto 0) <= cnt512(7 downto 0);
 mt_ctrl_sys(8) <= not cnt512(8);
 mt_ctrl_sys(9) <= cnt512(8);
 ---- manual command 
-mt_ctrl_con(7 downto 0) <= switch;	
+mt_ctrl_con(7 downto 0) <= input(7 downto 0);--switch;	
 with BTN(2 downto 0) select mt_ctrl_con(9 downto 8) <=
 	"11" when "100",
 	"11" when "101",
@@ -635,6 +660,7 @@ with switch_sel select tty_send <=
 	'0' when sel_hexout,			-- not used
 	rx_ready when others;		-- echo incoming char
 	
+-- simple write only console on VGA	
 tty: tty2vga Port map(
 		reset => reset,
 		tty_clk => tty_clk,
@@ -648,13 +674,30 @@ tty: tty2vga Port map(
 		vga_r => RED_O,
 		vga_g => GREEN_O,
 		vga_b => BLUE_O,
-		-- for MT8816
+		-- for system hardware window
 		vga_x => vga_x,
 		vga_y => vga_y,
-		switch_display => mt_mode_seldisplay,
-		switch_data => mt_switch_state,
+		win_char => win_char,
+		win_index => win_index,
 		-- debug
 		debug => tty_debug
+		);
+
+-- hardware window that shows the system state
+syswin: hardwin Port map( 
+		left => X"20", -- col 32, TODO make it dynamic
+		top  => X"10",	-- row 16, TODO make it dynamic
+		vga_x => vga_x,
+		vga_y => vga_y,
+		active => win_active,
+		matrix => win_matrix,
+		char	 => win_char,
+		index  => win_index,	-- color index
+		win_x  => win_x,
+		win_y  => win_y,
+		mt_x   => mt_x(to_integer(unsigned(win_y(3 downto 0)))),
+		mt_y   => mt_y(to_integer(unsigned(win_x(3 downto 0)))),
+		mt_hex => win_x(3 downto 0)-- xor win_y(3 downto 0)
 		);
 
 -- 8 single LEDs
@@ -675,7 +718,7 @@ with switch_sel select led_sys <=
 	hexout_debug when sel_hexout,
 	hexin_debug when sel_hexin;
 
-led_con <= ("00000001" & X"BEEFED");
+led_con <= ("00000001" & input);
 led_debug <= led_sys when (mt_mode_selsys = '1') else led_con;
 	
 led6: sixdigitsevensegled Port map ( 
@@ -689,6 +732,27 @@ led6: sixdigitsevensegled Port map (
 		anode => AN,
 		segment(6 downto 0) => SEG,
 		segment(7) => DP
+		);
+
+on_keypressed: process(keypressed, input, digit, reset, clear)
+begin
+	if ((reset or clear) = '1')
+	then
+		input <= X"000000";
+	else
+		if (rising_edge(keypressed)) then
+--			input <= input(15 downto 0) & "0000001" & button(3) & digit;
+			input <= input(19 downto 0) & digit;
+		end if;
+	end if;
+end process;
+
+kypd: keypad4x4 Port map ( 
+		clk => freq64,
+		row => keypad_row, --KYPD_ROW,
+		col => KYPD_COL,
+		hex => digit,
+		keypressed => keypressed
 		);
 
 end;
