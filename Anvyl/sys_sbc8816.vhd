@@ -168,55 +168,28 @@ component uart_par2ser is
            txd : out  STD_LOGIC);
 end component;
 
-component mem2hex is
+component hexcalc is
     Port ( clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
+			  status : out STD_LOGIC_VECTOR(1 downto 0);
 			  --
    		  debug: out STD_LOGIC_VECTOR(15 downto 0);
 			  --
-           nRD : out  STD_LOGIC;
-           nBUSREQ : out  STD_LOGIC;
-           nBUSACK : in  STD_LOGIC;
-           nWAIT : in  STD_LOGIC;
-           ABUS : out  STD_LOGIC_VECTOR (15 downto 0);
-           DBUS : in  STD_LOGIC_VECTOR (7 downto 0);
-           START : in  STD_LOGIC;
-			  BUSY: out STD_LOGIC;
-           PAGE : in  STD_LOGIC_VECTOR (7 downto 0);
-           COUNTSEL : in  STD_LOGIC;
-           TXDREADY : in  STD_LOGIC;
-			  TXDSEND: out STD_LOGIC;
-           CHAR : buffer  STD_LOGIC_VECTOR (7 downto 0));
-end component;
-
-component hex2mem is
-    Port ( clk : in  STD_LOGIC;
-           reset_in : in  STD_LOGIC;
-			  reset_out: buffer STD_LOGIC;
-			  reset_page: in STD_LOGIC_VECTOR(7 downto 0);
+			  mt_ctrl: out STD_LOGIC_VECTOR(9 downto 0);
+			  mt_x: out STD_LOGIC_VECTOR(15 downto 0);
+			  mt_y: in STD_LOGIC_VECTOR(15 downto 0);
 			  --
-   		  debug: out STD_LOGIC_VECTOR(15 downto 0);
-			  --
-           nWR : out  STD_LOGIC;
-           nBUSREQ : out  STD_LOGIC;
-           nBUSACK : in  STD_LOGIC;
-           nWAIT : in  STD_LOGIC;
-           ABUS : out  STD_LOGIC_VECTOR (15 downto 0);
-           DBUS : out  STD_LOGIC_VECTOR (7 downto 0);
-			  BUSY: out STD_LOGIC;
-			  --
-			  HEXIN_READY: in STD_LOGIC;
-			  HEXIN_CHAR: in STD_LOGIC_VECTOR (7 downto 0);
-			  HEXIN_ZERO: buffer STD_LOGIC;
+			  input: in STD_LOGIC_VECTOR(7 downto 0);
+			  clear: out STD_LOGIC;
 			  --
 			  TRACE_ERROR: in STD_LOGIC;
-			  TRACE_WRITE: in STD_LOGIC;
 			  TRACE_CHAR: in STD_LOGIC;
            ERROR : buffer  STD_LOGIC;
            TXDREADY : in  STD_LOGIC;
 			  TXDSEND: out STD_LOGIC;
            TXDCHAR : buffer  STD_LOGIC_VECTOR (7 downto 0));
 end component;
+
 
 -- Misc components
 component sn74hc4040 is
@@ -337,10 +310,19 @@ constant decode4to16: table_16x16 := (
 
 constant clk_board: integer := 100000000;
 
-constant sel_hexout: std_logic_vector(1 downto 0) := "00";
-constant sel_hexin: std_logic_vector(1 downto 0) := "01";
-constant sel_loopback0: std_logic_vector(1 downto 0) := "10";
-constant sel_loopback1: std_logic_vector(1 downto 0) := "11";
+------------------------------------------------------------
+--	Display on: LED TTY UART
+------------------------------------------------------------
+constant mode_st_tr_hc: std_logic_vector(1 downto 0) := "11";
+constant mode_st_hc_tr: std_logic_vector(1 downto 0) := "10";
+constant mode_ua_lb_lb: std_logic_vector(1 downto 0) := "01";
+constant mode_bd_lb_lb: std_logic_vector(1 downto 0) := "00";
+
+--with sw_mode select ... <= 
+--... when mode_st_tr_hc,
+--... when mode_st_hc_tr,
+--... when mode_ua_lb_lb,
+--... when mode_bd_lb_lb;
 
 type prescale_lookup is array (0 to 7) of integer range 0 to 65535;
 constant prescale_value: prescale_lookup := (
@@ -362,17 +344,13 @@ alias PMOD_TXD: std_logic is JA3;
 alias PMOD_CTS: std_logic is JA4;	
 
 -- 
-signal reset, reset_btn, reset_sw: std_logic;
+signal reset, reset_btn: std_logic;
 
 -- debug
 signal showdigit, showdot: std_logic_vector(3 downto 0);
-signal led_debug, led_sys, led_con, hexin_debug, hexout_debug, baudrate_debug, tty_debug: std_logic_vector(31 downto 0);
-signal loopback_char, loopback_src: std_logic_vector(7 downto 0);
-signal loopback_send: std_logic;
-signal cnt512: std_logic_vector(8 downto 0);
-signal digit: std_logic_vector(3 downto 0);
-signal input: std_logic_vector(23 downto 0);
-signal keypressed, clear: std_logic;
+signal led_data: std_logic_vector(23 downto 0);
+signal led_dot: std_logic_vector(5 downto 0);
+--signal digit: std_logic_vector(3 downto 0);
 
 -- VGA
 signal vga_x, vga_y: std_logic_vector(7 downto 0);
@@ -393,32 +371,85 @@ alias freq64: std_logic is freq_2048(5);
 alias mt_cnt: std_logic_vector(1 downto 0) is freq_50M(11 downto 10);
 signal phi0, phi1, phi2, phi3: std_logic;
 signal prescale_baud, prescale_power: integer range 0 to 65535;
+signal counter_value: std_logic_vector(31 downto 0);
 
 -- input by switches and buttons
-signal switch_old: std_logic_vector(7 downto 0);
 signal switch: std_logic_vector(7 downto 0);
-signal keypad_row, button: std_logic_vector(3 downto 0);
-signal switch_sel:	std_logic_vector(1 downto 0);
-signal switch_uart_rate: std_logic_vector(2 downto 0);
-signal switch_uart_mode: std_logic_vector(2 downto 0);
---signal btn_command, btn_window: std_logic_vector(3 downto 0);
---signal page_sel: std_logic_vector(7 downto 0);
---alias dip_iom: std_logic is DIP_B4; 
---alias dip_traceerror: std_logic is DIP_B3; 
---alias dip_tracewrite: std_logic is DIP_B2; 
---alias dip_tracechar: std_logic is DIP_B1; 
---alias dip_page16k3: std_logic is DIP_A4; 
---alias dip_page16k2: std_logic is DIP_A3; 
---alias dip_page16k1: std_logic is DIP_A2; 
---alias dip_page16k0: std_logic is DIP_A1;
+alias sw_32: std_logic is switch(7);
+alias sw_mode: std_logic_vector(1 downto 0) is switch(6 downto 5);
+alias sw_traceerror: std_logic is switch(4);
+alias sw_tracechar: std_logic is switch(3);
+alias sw_clksel: std_logic_vector(2 downto 0) is switch(2 downto 0);
+
+signal button: std_logic_vector(3 downto 0);
+signal dip_uart_rate: std_logic_vector(2 downto 0);
+signal dip_uart_mode: std_logic_vector(2 downto 0);
+
+-- keypad and input
+signal kypd_keypressed, input_clear, key, key_delayed: std_logic;
+signal keypad_row, kypd_hex: std_logic_vector(3 downto 0);
+alias kypd_shift: std_logic is button(3);
+signal input: std_logic_vector(7 downto 0);
+
+-----------------------------------------------------------------
+-- Calculator commands, each is a single ASCII char
+-----------------------------------------------------------------
+type table_32x8 is array(0 to 31) of std_logic_vector(7 downto 0);
+constant kypd2ascii: table_32x8 := (
+	-- no "shift", entering hex digits
+	std_logic_vector(to_unsigned(natural(character'pos('0')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('1')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('2')), 8)), 	
+	std_logic_vector(to_unsigned(natural(character'pos('3')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('4')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('5')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('6')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('7')), 8)),
+	std_logic_vector(to_unsigned(natural(character'pos('8')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('9')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('A')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('B')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('C')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('D')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('E')), 8)),	
+	std_logic_vector(to_unsigned(natural(character'pos('F')), 8)),
+	-- with "shift", entering a command
+	std_logic_vector(to_unsigned(natural(character'pos('Z')), 8)),	-- 0 == clear
+	X"00",	-- 1 == not used
+	X"00",	-- 2 == not used
+	X"00",	-- 3 == not used
+	X"00",	-- 4 == not used
+	X"00",	-- 5 == not used
+	X"00",	-- 6 == not used
+	X"00",	-- 7 == not used
+	X"00",	-- 8 == not used
+	X"00",	-- 9 == not used
+	std_logic_vector(to_unsigned(natural(character'pos('+')), 8)),	-- A == add
+	std_logic_vector(to_unsigned(natural(character'pos('-')), 8)),	-- B == subtract
+	std_logic_vector(to_unsigned(natural(character'pos('*')), 8)),	-- C == multiply
+	std_logic_vector(to_unsigned(natural(character'pos('/')), 8)),	-- D == divide	
+	X"0D",	-- E == enter
+	std_logic_vector(to_unsigned(natural(character'pos('S')), 8))  -- F == swap
+);
+
+-- HC (hexcalc core) connections
+signal hc_status: std_logic_vector(1 downto 0);
+constant status_ready: std_logic_vector(1 downto 0) := "00";
+constant status_done: std_logic_vector(1 downto 0) := "01";
+constant status_busy: std_logic_vector(1 downto 0) := "10";
+constant status_busy_using_mt: std_logic_vector(1 downto 0) := "11";
+signal stacktop: std_logic_vector(31 downto 0); -- capture value of R0
+signal hc_txdsend, hc_txdready: std_logic;
+signal hc_txdchar: std_logic_vector(7 downto 0);
+signal hc_mt_x: std_logic_vector(15 downto 0);
 
 -- MT8816 connections
 signal mt_mode_seldisplay: std_logic;
 signal mt_switch_state: std_logic;
 alias mt_mode_selsys: std_logic is button(3);
-signal mt_x, mt_x_sys, mt_x_con: std_logic_vector(15 downto 0);
+signal mt_x: std_logic_vector(15 downto 0);
 signal mt_y: std_logic_vector(15 downto 0);
-signal mt_ctrl, mt_ctrl_sys, mt_ctrl_con: std_logic_vector(9 downto 0);
+signal hc_mt_ctrl, co_mt_ctrl, mt_ctrl: std_logic_vector(9 downto 0);
 alias MT_AX0: std_logic is BB1;
 alias MT_AX1: std_logic is BB2;
 alias MT_AX2: std_logic is BB3;
@@ -431,48 +462,43 @@ alias MT_STROBE0: std_logic is BB9;
 alias MT_STROBE1: std_logic is BB10;
 alias MT_RESET: std_logic is JF1;
 
--- HEX common 
+-- UART common 
 signal baudrate_x1, baudrate_x2, baudrate_x4, baudrate_x8: std_logic;
 signal hex_clk: std_logic; 
 
--- HEX output path
-signal tx_send, tx_ready: std_logic;
+-- UART TX output path
+signal tx_send, tx_sent: std_logic;
 signal tx_char: std_logic_vector(7 downto 0);
-signal hexout_char: std_logic_vector(7 downto 0);
-signal hexout_busreq, hexout_busack: std_logic;
-signal hexout_ready, hexout_send: std_logic;
 
--- HEX input path
+-- UART RX input path
 signal rx_ready, rx_valid: std_logic; 
 signal rx_char: std_logic_vector(7 downto 0);
-signal hexin_ready, hexin_busy: std_logic;
-signal hexin_char: std_logic_vector(7 downto 0);
-signal hexin_debug_ready, hexin_debug_send: std_logic;
-signal hexin_debug_char: std_logic_vector(7 downto 0);
-signal hexin_busreq, hexin_busack: std_logic;
 
 -- TTY
 signal tty_sent, tty_send: std_logic;
 signal tty_char: std_logic_vector(7 downto 0);
 alias tty_clk: std_logic is freq_50M(2); --freq_2048(11);
 
+-- Microcode tracer
+signal tr_txdsent, tr_txdsend: std_logic;
+signal tr_txdchar: std_logic_vector(7 downto 0);
+
 begin
 
 -- no separate reset button
 reset		<= '1' when (BTN = "1111") else '0';
-reset_sw	<= '0' when (switch = switch_old) else '1';
+--reset_sw	<= '0' when (switch = switch_old) else '1';
 
 -- some configuration
-switch_sel <= (DIP_B4 & DIP_A4);
-switch_uart_rate <= (DIP_B3 & DIP_B2 & DIP_B1);
-switch_uart_mode <= (DIP_A3 & DIP_A2 & DIP_A1);
+dip_uart_rate <= (DIP_B3 & DIP_B2 & DIP_B1);
+dip_uart_mode <= (DIP_A3 & DIP_A2 & DIP_A1);
 
-on_freq4096: process(freq4096, switch)
-begin
-	if (rising_edge(freq4096)) then
-		switch_old <= switch;
-	end if;
-end process;
+--on_freq4096: process(freq4096, switch)
+--begin
+--	if (rising_edge(freq4096)) then
+--		switch_old <= switch;
+--	end if;
+--end process;
 
 -- various clock signal generation
 clockgen: sn74hc4040 port map (
@@ -481,12 +507,12 @@ clockgen: sn74hc4040 port map (
 			q => freq_50M
 		);
 		
-prescale: process(CLK, baudrate_x8, freq4096, switch_uart_rate)
+prescale: process(CLK, baudrate_x8, freq4096, dip_uart_rate)
 begin
 	if (rising_edge(CLK)) then
 		if (prescale_baud = 0) then
 			baudrate_x8 <= not baudrate_x8;
-			prescale_baud <= prescale_value(to_integer(unsigned(switch_uart_rate)));
+			prescale_baud <= prescale_value(to_integer(unsigned(dip_uart_rate)));
 		else
 			prescale_baud <= prescale_baud - 1;
 		end if;
@@ -495,6 +521,7 @@ begin
 			prescale_power <= (clk_board / (2 * 4096));
 		else
 			prescale_power <= prescale_power - 1;
+			key_delayed <= key;
 		end if;
 	end if;
 end process;
@@ -538,7 +565,7 @@ counter: freqcounter Port map (
 		add => X"00000001",
 		cin => '1',
 		cout => open,
-      value => baudrate_debug
+      value => counter_value
 	);
 		
 ----------------------------------------
@@ -563,7 +590,7 @@ JC10 <= 	mt_x(15);	-- X15
 
 -- Drive X 
 -- for screen, one row active at a time
-mt_x <= decode4to16(to_integer(unsigned(win_y(3 downto 0)))) when (win_matrix = '1') else X"5555";
+mt_x <= decode4to16(to_integer(unsigned(win_y(3 downto 0)))) when (win_matrix = '1') else hc_mt_x;
 
 -- Pick up Y
 mt_y <= (JE10 & JE9 & JE8 & JE7 & JE4 & JE3 & JE2 & JE1 & JD10 & JD9 & JD8 & JD7 & JD4 & JD3 & JD2 & JD1);
@@ -581,15 +608,14 @@ MT_STROBE0 <= 'Z' when ((phi1 and (mt_ctrl(8) or mt_ctrl(9)) and (not mt_ctrl(7)
 MT_STROBE1 <= 'Z' when ((phi1 and (mt_ctrl(8) or mt_ctrl(9)) and mt_ctrl(7)) = '1') else '0'; 
 MT_RESET <= 'Z' when ((mt_ctrl(8) and mt_ctrl(9)) = '1') else '0'; 
 
-mt_ctrl <= mt_ctrl_sys when (mt_mode_selsys = '1') else mt_ctrl_con;
+with sw_mode select mt_ctrl <= 
+		hc_mt_ctrl when mode_st_tr_hc,		-- from hexcalc
+		hc_mt_ctrl when mode_st_hc_tr,		-- from hexcalc
+		co_mt_ctrl when others;					-- from console
 
----- system command
-mt_ctrl_sys(7 downto 0) <= cnt512(7 downto 0);
-mt_ctrl_sys(8) <= not cnt512(8);
-mt_ctrl_sys(9) <= cnt512(8);
----- manual command 
-mt_ctrl_con(7 downto 0) <= input(7 downto 0);--switch;	
-with BTN(2 downto 0) select mt_ctrl_con(9 downto 8) <=
+---- console command 
+co_mt_ctrl(7 downto 0) <= input;	
+with BTN(2 downto 0) select co_mt_ctrl(9 downto 8) <=
 	"11" when "100",
 	"11" when "101",
 	"11" when "110",
@@ -604,63 +630,61 @@ phi1 <= '1' when (mt_cnt = "01") else '0';
 phi2 <= '1' when (mt_cnt = "10") else '0';
 phi3 <= '1' when (mt_cnt = "11") else '0';
 
-on_freq1: process(reset, mt_mode_selsys, freq1)
-begin
-	if (reset = '1') then
-		cnt512 <= (others => '0');
-	else
-		if (rising_edge(freq1) and (mt_mode_selsys = '1')) then
-			cnt512 <= std_logic_vector(unsigned(cnt512) + 1);
-		end if;
-	end if;
-end process;
-
-----------------------------------------
--- UART input
-----------------------------------------
-uart_rx: uart_ser2par Port map ( 
-		reset => reset, 
-		rxd_clk => baudrate_x4,
-		mode => switch_uart_mode,
-		char => rx_char,
-		ready => rx_ready,
-		valid => rx_valid,
-		rxd => PMOD_TXD
+--
+hc: hexcalc Port map (
+			clk => phi0,
+			reset => reset,
+			status => hc_status,
+			--
+			debug => open,
+			--
+			mt_ctrl => hc_mt_ctrl,
+			mt_x => hc_mt_x,
+			mt_y => mt_y,
+			--
+			input => input,
+			--
+			TRACE_ERROR => sw_traceerror,
+			TRACE_CHAR  => sw_tracechar,
+			ERROR => open,
+			TXDREADY => hc_txdready,
+			TXDSEND => hc_txdsend,
+			TXDCHAR => hc_txdchar
 		);
+
+with sw_mode select hc_txdready <= 
+		tx_sent when mode_st_tr_hc,		
+		tty_sent when mode_st_hc_tr,
+		'1' when others;
 
 -----------------------------------------
 -- UART output
------------------------------------------
-with switch_sel select tx_send <=
-	hexout_send when sel_hexout,
-	rx_ready when others;
-	
-with switch_sel select tx_char <=
-	hexout_char when sel_hexout,
-	rx_char when others;
-	
+-----------------------------------------	
 uart_tx: uart_par2ser Port map (
 		reset => reset,
 		txd_clk => baudrate_x1,
 		send => tx_send,
-		mode => switch_uart_mode,
+		mode => dip_uart_mode,
 		data => tx_char,
-		ready => tx_ready,
+		ready => tx_sent,
 		txd => PMOD_RXD
 		);
-		
--- echo to VGA
-with switch_sel select tty_char <=
-	hexin_debug_char when sel_hexin,	
-	X"00" when sel_hexout,		-- not used
-	rx_char when others;			-- echo incoming char
 
-with switch_sel select tty_send <=
-	hexin_debug_send when sel_hexin,	
-	'0' when sel_hexout,			-- not used
-	rx_ready when others;		-- echo incoming char
-	
--- simple write only console on VGA	
+with sw_mode select tx_char <= 
+		hc_txdchar when mode_st_tr_hc,		
+		tr_txdchar when mode_st_hc_tr,
+		input when mode_ua_lb_lb,
+		input when mode_bd_lb_lb;
+
+with sw_mode select tx_send <= 
+		hc_txdsend when mode_st_tr_hc,		
+		tr_txdsend when mode_st_hc_tr,
+		key_delayed when mode_ua_lb_lb,
+		key_delayed when mode_bd_lb_lb;
+		
+---------------------------------------
+-- TTY output (writes to VGA)
+---------------------------------------
 tty: tty2vga Port map(
 		reset => reset,
 		tty_clk => tty_clk,
@@ -680,11 +704,23 @@ tty: tty2vga Port map(
 		win_char => win_char,
 		win_index => win_index,
 		-- debug
-		debug => tty_debug
+		debug => open
 		);
 
+with sw_mode select tty_char <= 
+		tr_txdchar when mode_st_tr_hc,		
+		hc_txdchar when mode_st_hc_tr,
+		input when mode_ua_lb_lb,
+		input when mode_bd_lb_lb;
+
+with sw_mode select tty_send <= 
+		tr_txdsend when mode_st_tr_hc,		
+		hc_txdsend when mode_st_hc_tr,
+		key_delayed when mode_ua_lb_lb,
+		key_delayed when mode_bd_lb_lb;
+
 -- hardware window that shows the system state
-syswin: hardwin Port map( 
+win: hardwin Port map( 
 		left => X"20", -- col 32, TODO make it dynamic
 		top  => X"10",	-- row 16, TODO make it dynamic
 		vga_x => vga_x,
@@ -697,11 +733,11 @@ syswin: hardwin Port map(
 		win_y  => win_y,
 		mt_x   => mt_x(to_integer(unsigned(win_y(3 downto 0)))),
 		mt_y   => mt_y(to_integer(unsigned(win_x(3 downto 0)))),
-		mt_hex => win_x(3 downto 0)-- xor win_y(3 downto 0)
+		mt_hex => win_x(3 downto 0)-- TODO, connect to hc output
 		);
 
 -- 8 single LEDs
-LED <= mt_ctrl_sys(7 downto 0) when (mt_mode_selsys = '1') else mt_ctrl_con(7 downto 0);
+LED <= mt_ctrl(7 downto 0);
 
 -- traffic light LEDs
 LDT1G <= MT_DATA;
@@ -711,22 +747,13 @@ LDT2G <= MT_DATA;
 LDT2Y <= MT_STROBE1;
 LDT2R <= MT_RESET;
 
--- 7 seg LED debug display		
-with switch_sel select led_sys <= 
-	baudrate_debug when sel_loopback0,
-	X"0000" & uartmode_debug(to_integer(unsigned(switch_uart_mode))) when sel_loopback1,
-	hexout_debug when sel_hexout,
-	hexin_debug when sel_hexin;
-
-led_con <= ("00000001" & input);
-led_debug <= led_sys when (mt_mode_selsys = '1') else led_con;
-	
+-- 7 seg LED debug display			
 led6: sixdigitsevensegled Port map ( 
 		-- inputs
-		hexdata => led_debug(23 downto 0),
+		hexdata => led_data,
 		digsel => freq_2048(3 downto 1),
 		showdigit => "111111",
-		showdot => led_debug(29 downto 24),
+		showdot => led_dot,
 		showsegments => '1',
 		-- outputs
 		anode => AN,
@@ -734,25 +761,55 @@ led6: sixdigitsevensegled Port map (
 		segment(7) => DP
 		);
 
-on_keypressed: process(keypressed, input, digit, reset, clear)
-begin
-	if ((reset or clear) = '1')
-	then
-		input <= X"000000";
-	else
-		if (rising_edge(keypressed)) then
---			input <= input(15 downto 0) & "0000001" & button(3) & digit;
-			input <= input(19 downto 0) & digit;
-		end if;
-	end if;
-end process;
+with sw_mode select led_data <= 
+		X"00" & uartmode_debug(to_integer(unsigned(dip_uart_mode))) when mode_ua_lb_lb,
+		counter_value(23 downto 0) when mode_bd_lb_lb,
+--		stacktop(23 downto 0) when others;
+		X"0000" & input when others;
+
+with sw_mode select led_dot <= 
+		"001111" when mode_ua_lb_lb,
+		"000001" when mode_bd_lb_lb,
+		"000000" when others;
+
+--------------------------------------------
+-- input either from hex keypad or from UART
+--------------------------------------------
+uart_rx: uart_ser2par Port map ( 
+		reset => reset, 
+		rxd_clk => baudrate_x4,
+		mode => dip_uart_mode,
+		char => rx_char,
+		ready => rx_ready,
+		valid => rx_valid,
+		rxd => PMOD_TXD
+		);
 
 kypd: keypad4x4 Port map ( 
 		clk => freq64,
 		row => keypad_row, --KYPD_ROW,
 		col => KYPD_COL,
-		hex => digit,
-		keypressed => keypressed
+		hex => kypd_hex,
+		keypressed => kypd_keypressed
 		);
+		
+key <= rx_ready or kypd_keypressed;
+input_clear <= '1' when (hc_status = status_done) else reset;
+
+on_key: process(key, kypd_hex, kypd_shift, rx_char, input_clear)
+begin
+	if (input_clear = '1') then
+		input <= X"00";
+	else
+		if (rising_edge(key)) then
+			if (kypd_keypressed = '1') then
+				input <= kypd2ascii(to_integer(unsigned(kypd_shift & kypd_hex)));
+			else
+				input <= rx_char;
+			end if;
+		end if;
+	end if;
+end process;
+
 
 end;

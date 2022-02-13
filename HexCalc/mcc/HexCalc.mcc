@@ -1,0 +1,314 @@
+//----------------------------------------------------------
+//	hexcalc Microcode (c) 2021-... zpekic@hotmail.com
+//  Compile with https://github.com/zpekic/MicroCodeCompiler
+//----------------------------------------------------------
+			.code 7, 48, hexcalc_code.mif, hexcalc_code.cgf, hexcalc_code.coe, hxc:hexcalc_code.vhd, hexcalc_code.hex, hexcalc_code.bin, 8;
+			.mapper 8, 7, hexcalc_map.mif, hexcalc_map.cgf, hexcalc_map.coe, hxc:hexcalc_map.vhd, hexcalc_map.hex, hexcalc_map.bin, 1;
+			.controller hexcalc_control_unit.vhd, 4;
+			.symbol 7, 256, hexcalc_sym.mif, hexcalc_sym.cgf, hexcalc_sym.coe, hxc:hexcalc_sym.vhd, hexcalc_sym.hex, hexcalc_sym.bin, 32;
+
+// System interface signals
+MT_CTRL			.valfield 2 values 
+				nop,
+				off,
+				on,
+				clear default nop;
+				
+MT_ROW			.valfield 4 values * default 0;
+MT_COL			.valfield 4 values * default 0;
+
+//d_value			.valfield MT_ROW values * default 0;
+//c_value			.valfield MT_COL values * default 0;
+
+bitcnt			.regfield 2 values
+				same,
+				zero,		
+				inc,	
+				-
+				default same;
+				
+// Component interface signals
+STATUS			.valfield 2 values
+				ready,	// waiting for input character
+				done,	// input processed, will go ready on next clock cycle
+				busy,	// processing
+				busy_using_mt default busy;	// processing and needing the MT_8816
+				
+// RXD_READY	load input register on low to high transition
+
+// Serial UART sender interface signals
+// CHAR			8-bit ASCII or 0x00 if no char is to be sent
+// TXDREADY		sender is ready
+
+seq_cond:		.if 4 values 
+				true, 			// hard-code to 1
+				input_is_zero,	// do not process 0x00 input char
+				TRACE_ERROR,
+				TRACE_CHAR,
+				TXDREADY,
+				TXDSEND,
+				bitcnt_is_zero,
+				cond_07,
+				cond_08,
+				cond_09,
+				cond_10,
+				cond_11,
+				cond_12,
+				cond_13,
+				cond_14,
+				false			// hard-code to 0
+				default true;
+seq_then:	.then 7 values next, repeat, return, fork, @ default next;				// any label
+seq_else:	.else 7 values next, repeat, return, fork, 0b0000000..0b1111111, @ default next;	// any value as it can be a trace char
+			
+// contains ASCII char for UART trasmit
+TXDCHAR		.regfield 4 values 
+				same,
+				char_space,
+				char_cr,
+				char_lf,
+				char_E,			// 'E' in "ERR"
+				char_R,			// 'R' in "ERR"
+				char_EQU,		// '='
+				char_I,			// 'I'
+				char_zero,		// 0x00
+				// use bit 4 to lookup using HEX2ASCII table
+				inp0,			// input character LSN
+				inp1,			// input character MSN
+				-,
+				-,
+				-,
+				-,
+				errcode
+				default same;
+				
+//regs_07			.regfield 2 values
+//				same,
+//				-,
+//				div2,
+//				mul2 default same;
+
+regs			.regfield 2 values
+				same,
+				load,
+				div2,
+				mul2 default same;
+
+//	error codes are 1 to 6, 0 means no error
+errcode:		.regfield 3 values
+				ok, 
+				err_badchar,			// ERR1
+				err_2,					// ERR2
+				err_3,					// ERR3
+				err_4,					// ERR4
+				err_5,					// ERR5
+				same
+				default same;
+
+				
+// placeholder
+dummy:			.valfield 7 values * default 0;
+						
+//	useful aliases, these are evaluated as simple text replacement of label with everything between .alias and ; 
+goto:		.alias if false then next else;
+noop:		.alias if true then next else next;
+back:	    .alias if true then return else return;
+digit:		.alias regs <= load, MT_ROW = 0b1110, MT_COL =;	// c_value of 0b1110 will result in mask 0xFFF0
+
+// switches in the matrix
+nuke		.alias STATUS = busy_using_mt, MT_CTRL = clear;
+connect:	.alias STATUS = busy_using_mt, MT_CTRL = on,;
+disconnect: .alias STATUS = busy_using_mt, MT_CTRL = off,;
+to:			.alias ,;
+from:		.alias ,;
+
+row_tos:	.alias MT_ROW = 0;
+row_nos:	.alias MT_ROW = 1;
+row_r2:		.alias MT_ROW = 2;
+row_r3:		.alias MT_ROW = 3;
+row_r4:		.alias MT_ROW = 4;
+row_r5:		.alias MT_ROW = 5;
+row_r6:		.alias MT_ROW = 6;
+row_r7:		.alias MT_ROW = 7;
+row_direct:	.alias MT_ROW = 0xD;
+row_const:	.alias MT_ROW = 0xC;
+row_and:	.alias MT_ROW = 0xA;
+
+col_tos:	.alias MT_COL = 0;
+col_nos:	.alias MT_COL = 1;
+col_r2:		.alias MT_COL = 2;
+col_r3:		.alias MT_COL = 3;
+col_r4:		.alias MT_COL = 4;
+col_r5:		.alias MT_COL = 5;
+col_r6:		.alias MT_COL = 6;
+col_r7:		.alias MT_COL = 7;
+col_and1:	.alias MT_COL = 0xE;
+col_and2:	.alias MT_COL = 0xF;
+
+// gosub definitions - this works because "jump" pushes return address to stack if both then/else are same
+emit:		.sub TXDCHAR;
+print_crlf:	.sub;	
+trace:		.sub;	
+matrix_nop:	.sub;
+matrix_push:.sub;
+matrix_swap:.sub;
+run_div2:	.sub;
+
+// other
+reset:		.alias MT_CTRL = clear, errcode <= ok;
+
+			.org 0;
+//	First 4 microcode locations can't be used branch destinations
+//	---------------------------------------------------------------------------
+_reset:		reset;  
+
+_reset1:	reset;
+
+_reset2:	reset;
+
+_reset3:	reset;
+
+//	indicate availability and wait for start signal
+//	---------------------------------------------------------------------------
+deadloop:	STATUS = ready, if input_is_zero then repeat else next;
+			trace();
+			if true then fork else fork;	// jump to entry point per character code (see .map statements below)
+
+			.map 0b????????;
+badchar:	errcode <= err_badchar, if TRACE_ERROR then printerror else nextchar;		// ERR1
+printerror:	emit(char_E);		// ERR
+			emit(char_R);
+			emit(char_R);
+			emit(errcode);
+			emit(char_space);
+			emit(inp1);			// FF hex code of offending char
+			print_crlf();
+
+			.map 0;
+			.map 0x09;	// treat tabs and spaces same way (ignore them)	
+			.map ' ';
+nextchar:	STATUS = done, errcode <= ok, goto deadloop;
+					
+			
+			// TOS <=> NOS
+			.map 's';
+			.map 'S';
+swap:		nuke, matrix_swap();
+			goto exec;
+			
+			// enter: push all down, TOS <= 0
+			.map 0x0D;
+enter:		nuke, matrix_push();
+			goto exec;
+			
+			// load digits to stack top (R0)
+			.map '0';
+			digit 0, goto hexchar;
+
+			.map '1';
+			digit 1, goto hexchar;
+
+			.map '2';
+			digit 2, goto hexchar;
+
+			.map '3';
+			digit 3, goto hexchar;
+
+			.map '4';
+			digit 4, goto hexchar;
+
+			.map '5';
+			digit 5, goto hexchar;
+
+			.map '6';
+			digit 6, goto hexchar;
+
+			.map '7';
+			digit 7, goto hexchar;
+
+			.map '8';
+			digit 8, goto hexchar;
+
+			.map '9';
+			digit 9, goto hexchar;
+
+			.map 'a';
+			.map 'A';
+			digit 10, goto hexchar;
+
+			.map 'b';
+			.map 'B';
+			digit 11, goto hexchar;
+
+			.map 'c';
+			.map 'C';
+			digit 12, goto hexchar;
+
+			.map 'd';
+			.map 'D';
+			digit 13, goto hexchar;
+
+			.map 'e';
+			.map 'E';
+			digit 14, goto hexchar;
+
+			.map 'f';
+			.map 'F';
+			digit 15;
+			
+hexchar:	nuke, matrix_nop();
+			// R0 <= (R0 & mask) | digit;
+			connect row_tos to col_and1;
+			connect row_const to col_and2;
+			connect row_and to col_tos;
+			connect row_direct to col_tos;
+exec:		run_div2();
+			goto nextchar;		
+
+			.map 'z';	// clear TOS
+			.map 'Z';
+			nuke, matrix_nop();
+			connect row_nos to col_tos;	// no switch on TOS means pull down, so it 0
+			run_div2();
+			goto nextchar;
+			
+// rotate all registers right (LSB first) through switch matrix;
+run_div2:	bitcnt <= zero;
+run_loop:	STATUS = busy_using_mt, regs <= div2, bitcnt <= inc;
+			if bitcnt_is_zero then return else run_loop;
+				
+// swap TOS and NOS
+matrix_swap:connect row_tos to col_nos;
+			connect row_nos to col_tos;
+			// fallthrough!
+// set the diagonal switches for R2..R7, which means after shift up or down these regs will be the same
+matrix_nop: connect row_r2 to col_r2;	
+			connect row_r3 to col_r3;	
+			connect row_r4 to col_r4;	
+			connect row_r5 to col_r5;	
+			connect row_r6 to col_r6;	
+			connect row_r7 to col_r7, back;	
+			
+// push all towards R7, TOS is 0, R7 is lost
+matrix_push:connect row_tos to col_nos;	// R0 <= R1;
+			connect row_nos to col_r2;	// R1 <= R0;
+			connect row_r2 to col_r3;	
+			connect row_r3 to col_r4;	
+			connect row_r4 to col_r5;	
+			connect row_r5 to col_r6;	
+			connect row_r6 to col_r7, back;	
+			
+trace:		if TRACE_CHAR then next else return;
+			emit(char_I);		// I=<received char>
+			emit(char_EQU);
+			emit(inp1);			
+			emit(inp0);
+
+print_crlf: emit(char_cr);
+			TXDCHAR <= char_lf;	// save 1 return microinstruction
+
+emit:		if TXDREADY then next else repeat;	// sync with baudrate clock that drives UART
+			if TXDREADY then next else repeat;
+			if TXDREADY then next else repeat;
+			if TXDSEND then return else return;	// generate a send pulse for UART sender	
+			

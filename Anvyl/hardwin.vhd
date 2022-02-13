@@ -28,6 +28,7 @@ use IEEE.NUMERIC_STD.ALL;
 -- any Xilinx primitives in this code.
 --library UNISIM;
 --use UNISIM.VComponents.all;
+use work.sbc8816_package.all;
 
 entity hardwin is
     Port ( left : in  STD_LOGIC_VECTOR (7 downto 0);
@@ -46,27 +47,6 @@ entity hardwin is
 end hardwin;
 
 architecture Behavioral of hardwin is
-
--- TODO: move to a package
-type lookup is array(0 to 15) of std_logic_vector(7 downto 0);
-constant hex2ascii: lookup := (
-	std_logic_vector(to_unsigned(natural(character'pos('0')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('1')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('2')), 8)), 	
-	std_logic_vector(to_unsigned(natural(character'pos('3')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('4')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('5')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('6')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('7')), 8)),
-	std_logic_vector(to_unsigned(natural(character'pos('8')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('9')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('A')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('B')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('C')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('D')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('E')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('F')), 8))
-);
 
 constant bin2ascii: lookup := (
 	std_logic_vector(to_unsigned(natural(character'pos('0')), 8)),	

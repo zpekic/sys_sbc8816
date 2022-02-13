@@ -7,6 +7,8 @@
    <ItemView engineview="SynthesisOnly" guiview="Source" compilemode="AutoCompile" >
       <ClosedNodes>
          <ClosedNodesVersion>2</ClosedNodesVersion>
+         <ClosedNode>/hex2mem - Behavioral C:|Users|zoltanp|Documents|HexCalc|sys_sbc8816|sys_sbc8816|Hex2Mem|hex2mem.vhd</ClosedNode>
+         <ClosedNode>/mem2hex - Behavioral C:|Users|zoltanp|Documents|HexCalc|sys_sbc8816|sys_sbc8816|Mem2Hex|mem2hex.vhd</ClosedNode>
          <ClosedNode>/sys_sbc8085 - Structural C:|Users|zoltanp|Documents|HexCalc|MiniMax8085|sys_sbc8085|Anvyl|sys_sbc8085.vhd/counter - freqcounter - Behavioral</ClosedNode>
          <ClosedNode>/sys_sbc8085 - Structural C:|Users|zoltanp|Documents|HexCalc|MiniMax8085|sys_sbc8085|Anvyl|sys_sbc8085.vhd/debounce_btn - debouncer8channel - Behavioral</ClosedNode>
          <ClosedNode>/sys_sbc8085 - Structural C:|Users|zoltanp|Documents|HexCalc|MiniMax8085|sys_sbc8085|Anvyl|sys_sbc8085.vhd/debounce_sw - debouncer8channel - Behavioral</ClosedNode>
@@ -15,13 +17,13 @@
          <ClosedNode>/sys_sbc8085 - Structural C:|Users|zoltanp|Documents|HexCalc|MiniMax8085|sys_sbc8085|Anvyl|sys_sbc8085.vhd/tty - tty2vga - Behavioral/vga_controller - mwvga - Behavioral</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem>sys_sbc8816 - Structural (C:/Users/zoltanp/Documents/HexCalc/sys_sbc8816/Anvyl/sys_sbc8816.vhd)</SelectedItem>
+         <SelectedItem>cu_hxc - hexcalc_control_unit - Behavioral (C:/Users/zoltanp/Documents/HexCalc/sys_sbc8816/sys_sbc8816/HexCalc/mcc/hexcalc_control_unit.vhd)</SelectedItem>
       </SelectedItems>
-      <ScrollbarPosition orientation="vertical" >14</ScrollbarPosition>
+      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000020200000001000000010000006400000335000000020000000000000000000000000200000064ffffffff000000810000000300000002000003350000000100000003000000000000000100000003</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff0000000000000001000000010000000000000000000000000000000002020000000100000001000000640000037f000000020000000000000000000000000200000064ffffffff0000008100000003000000020000037f0000000100000003000000000000000100000003</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >true</UserChangedColumnWidths>
-      <CurrentItem>sys_sbc8816 - Structural (C:/Users/zoltanp/Documents/HexCalc/sys_sbc8816/Anvyl/sys_sbc8816.vhd)</CurrentItem>
+      <CurrentItem>cu_hxc - hexcalc_control_unit - Behavioral (C:/Users/zoltanp/Documents/HexCalc/sys_sbc8816/sys_sbc8816/HexCalc/mcc/hexcalc_control_unit.vhd)</CurrentItem>
    </ItemView>
    <ItemView engineview="SynthesisOnly" sourcetype="DESUT_VHDL_ARCHITECTURE" guiview="Process" >
       <ClosedNodes>
@@ -33,26 +35,26 @@
          <ClosedNode>User Constraints</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem>Generate Programming File</SelectedItem>
+         <SelectedItem></SelectedItem>
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000139000000010000000100000000000000000000000064ffffffff000000810000000000000001000001390000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000173000000010000000100000000000000000000000064ffffffff000000810000000000000001000001730000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
-      <CurrentItem>Generate Programming File</CurrentItem>
+      <CurrentItem></CurrentItem>
    </ItemView>
    <ItemView guiview="File" >
       <ClosedNodes>
          <ClosedNodesVersion>1</ClosedNodesVersion>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem>C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\Anvyl\Anvyl_Master.ucf</SelectedItem>
+         <SelectedItem>C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\hexcalc_sym.vhd</SelectedItem>
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
       <ViewHeaderState orientation="horizontal" >000000ff0000000000000001000000000000000001000000000000000000000000000000000000036c000000040101000100000000000000000000000064ffffffff0000008100000000000000040000020f00000001000000000000009d00000001000000000000006600000001000000000000005a0000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
-      <CurrentItem>C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\Anvyl\Anvyl_Master.ucf</CurrentItem>
+      <CurrentItem>C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\hexcalc_sym.vhd</CurrentItem>
    </ItemView>
    <ItemView guiview="Library" >
       <ClosedNodes>
@@ -66,6 +68,44 @@
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
       <CurrentItem>work</CurrentItem>
    </ItemView>
-   <SourceProcessView>000000ff00000000000000020000011b0000011b01000000050100000002</SourceProcessView>
+   <SourceProcessView>000000ff0000000000000002000001010000007b01000000050100000002</SourceProcessView>
    <CurrentView>Implementation</CurrentView>
+   <ItemView engineview="SynthesisOnly" sourcetype="DESUT_VERILOG" guiview="Process" >
+      <ClosedNodes>
+         <ClosedNodesVersion>1</ClosedNodesVersion>
+      </ClosedNodes>
+      <SelectedItems/>
+      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
+      <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
+      <ViewHeaderState orientation="horizontal" />
+      <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
+      <CurrentItem/>
+   </ItemView>
+   <ItemView engineview="SynthesisOnly" sourcetype="DESUT_VHDL_PACKAGE_DECL" guiview="Process" >
+      <ClosedNodes>
+         <ClosedNodesVersion>1</ClosedNodesVersion>
+      </ClosedNodes>
+      <SelectedItems>
+         <SelectedItem/>
+      </SelectedItems>
+      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
+      <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000173000000010000000100000000000000000000000064ffffffff000000810000000000000001000001730000000100000000</ViewHeaderState>
+      <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
+      <CurrentItem/>
+   </ItemView>
+   <ItemView engineview="SynthesisOnly" sourcetype="" guiview="Process" >
+      <ClosedNodes>
+         <ClosedNodesVersion>1</ClosedNodesVersion>
+         <ClosedNode>Design Utilities</ClosedNode>
+      </ClosedNodes>
+      <SelectedItems>
+         <SelectedItem/>
+      </SelectedItems>
+      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
+      <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000173000000010000000100000000000000000000000064ffffffff000000810000000000000001000001730000000100000000</ViewHeaderState>
+      <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
+      <CurrentItem/>
+   </ItemView>
 </Project>
