@@ -169,19 +169,24 @@ component uart_par2ser is
 end component;
 
 component hexcalc is
-    Port ( clk : in  STD_LOGIC;
+    Port ( -- GENERIC
+			  clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
 			  status : out STD_LOGIC_VECTOR(1 downto 0);
-			  --
-   		  debug: out STD_LOGIC_VECTOR(15 downto 0);
-			  --
+			  -- DEBUG
+   		  dbg: out STD_LOGIC_VECTOR(15 downto 0);
+   		  dbg_row: out STD_LOGIC_VECTOR(3 downto 0);
+   		  dbg_col: out STD_LOGIC_VECTOR(3 downto 0);
+   		  dbg_reg: out STD_LOGIC_VECTOR(3 downto 0);
+			  -- MATRIX CONTROL
 			  mt_ctrl: out STD_LOGIC_VECTOR(9 downto 0);
+			  -- MATRIX DATA
 			  mt_x: out STD_LOGIC_VECTOR(15 downto 0);
 			  mt_y: in STD_LOGIC_VECTOR(15 downto 0);
-			  --
+			  -- INSTRUCTION
 			  input: in STD_LOGIC_VECTOR(7 downto 0);
 			  clear: out STD_LOGIC;
-			  --
+			  -- TRACING
 			  TRACE_ERROR: in STD_LOGIC;
 			  TRACE_CHAR: in STD_LOGIC;
            ERROR : buffer  STD_LOGIC;
@@ -368,7 +373,7 @@ signal freq4096: std_logic;
 signal freq_2048: std_logic_vector(11 downto 0);
 alias freq1: std_logic is freq_2048(11);
 alias freq64: std_logic is freq_2048(5);
-alias mt_cnt: std_logic_vector(1 downto 0) is freq_50M(11 downto 10);
+signal mt_cnt: std_logic_vector(1 downto 0);
 signal phi0, phi1, phi2, phi3: std_logic;
 signal prescale_baud, prescale_power: integer range 0 to 65535;
 signal counter_value: std_logic_vector(31 downto 0);
@@ -442,6 +447,7 @@ signal stacktop: std_logic_vector(31 downto 0); -- capture value of R0
 signal hc_txdsend, hc_txdready: std_logic;
 signal hc_txdchar: std_logic_vector(7 downto 0);
 signal hc_mt_x: std_logic_vector(15 downto 0);
+signal hc_reg: std_logic_vector(3 downto 0);
 
 -- MT8816 connections
 signal mt_mode_seldisplay: std_logic;
@@ -624,6 +630,17 @@ with BTN(2 downto 0) select co_mt_ctrl(9 downto 8) <=
 	"01" when "001",	--	SWITCH ON
 	"00" when others;	-- NOP
 
+-- select the clock
+with sw_clksel select mt_cnt <= 
+	freq_2048(11 downto 10) when "000",
+	freq_2048(9 downto 8) when "001",
+	freq_2048(7 downto 6) when "010",
+	freq_2048(5 downto 4) when "011",
+	freq_50M(11 downto 10) when "100",
+	freq_50M(9 downto 8) when "101",
+	freq_50M(7 downto 6) when "110",
+	freq_50M(5 downto 4) when others;
+	
 -- 4 phase clock to activate strobe at right time
 phi0 <= '1' when (mt_cnt = "00") else '0';
 phi1 <= '1' when (mt_cnt = "01") else '0';
@@ -636,7 +653,10 @@ hc: hexcalc Port map (
 			reset => reset,
 			status => hc_status,
 			--
-			debug => open,
+			dbg => stacktop(15 downto 0),	-- TODO 
+			dbg_row => win_y(3 downto 0),
+			dbg_col => win_x(3 downto 0),
+			dbg_reg => hc_reg,
 			--
 			mt_ctrl => hc_mt_ctrl,
 			mt_x => hc_mt_x,
@@ -733,7 +753,7 @@ win: hardwin Port map(
 		win_y  => win_y,
 		mt_x   => mt_x(to_integer(unsigned(win_y(3 downto 0)))),
 		mt_y   => mt_y(to_integer(unsigned(win_x(3 downto 0)))),
-		mt_hex => win_x(3 downto 0)-- TODO, connect to hc output
+		mt_hex => hc_reg
 		);
 
 -- 8 single LEDs
@@ -764,8 +784,7 @@ led6: sixdigitsevensegled Port map (
 with sw_mode select led_data <= 
 		X"00" & uartmode_debug(to_integer(unsigned(dip_uart_mode))) when mode_ua_lb_lb,
 		counter_value(23 downto 0) when mode_bd_lb_lb,
---		stacktop(23 downto 0) when others;
-		X"0000" & input when others;
+		stacktop(23 downto 0) when others;
 
 with sw_mode select led_dot <= 
 		"001111" when mode_ua_lb_lb,

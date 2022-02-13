@@ -33,19 +33,24 @@ use work.hexcalc_code.all;
 use work.hexcalc_map.all;
 
 entity hexcalc is
-    Port ( clk : in  STD_LOGIC;
+    Port ( -- GENERIC
+			  clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
 			  status : out STD_LOGIC_VECTOR(1 downto 0);
-			  --
-   		  debug: out STD_LOGIC_VECTOR(15 downto 0);
-			  --
+			  -- DEBUG
+   		  dbg: out STD_LOGIC_VECTOR(15 downto 0);
+   		  dbg_row: in STD_LOGIC_VECTOR(3 downto 0);
+   		  dbg_col: in STD_LOGIC_VECTOR(3 downto 0);
+   		  dbg_reg: out STD_LOGIC_VECTOR(3 downto 0);
+			  -- MATRIX CONTROL
 			  mt_ctrl: out STD_LOGIC_VECTOR(9 downto 0);
+			  -- MATRIX DATA
 			  mt_x: out STD_LOGIC_VECTOR(15 downto 0);
 			  mt_y: in STD_LOGIC_VECTOR(15 downto 0);
-			  --
+			  -- INSTRUCTION
 			  input: in STD_LOGIC_VECTOR(7 downto 0);
 			  clear: out STD_LOGIC;
-			  --
+			  -- TRACING
 			  TRACE_ERROR: in STD_LOGIC;
 			  TRACE_CHAR: in STD_LOGIC;
            ERROR : buffer  STD_LOGIC;
@@ -55,6 +60,25 @@ entity hexcalc is
 end hexcalc;
 
 architecture Behavioral of hexcalc is
+
+component shiftreg is
+    Port ( clk : in  STD_LOGIC;
+           opr : in  STD_LOGIC_VECTOR (1 downto 0);
+           so : out  STD_LOGIC;
+           si : in  STD_LOGIC;
+           hexsel : in  STD_LOGIC_VECTOR (1 downto 0);
+           hexout : out  STD_LOGIC_VECTOR (3 downto 0));
+end component;
+
+component shiftregp is
+    Port ( clk : in  STD_LOGIC;
+           opr : in  STD_LOGIC_VECTOR (1 downto 0);
+           so : out  STD_LOGIC;
+           si : in  STD_LOGIC;
+			  pi : in  STD_LOGIC_VECTOR(15 downto 0);
+           hexsel : in  STD_LOGIC_VECTOR (1 downto 0);
+           hexout : out  STD_LOGIC_VECTOR (3 downto 0));
+end component;
 
 component hexcalc_control_unit is
      Generic (
@@ -90,10 +114,60 @@ signal errcode: std_logic_vector(2 downto 0);
 -- conditions
 signal input_is_zero, bitcnt_is_zero: std_logic;
 
+-- just for visualisation
+type table_16x4 is array (0 to 15) of std_logic_vector(3 downto 0);
+signal reg: table_16x4;
+
 begin
 
-debug <= input & '0' & ui_address;
+-- outputs
+status <= hxc_status;
+dbg <= input & '0' & ui_address;
+dbg_reg <= reg(to_integer(unsigned(dbg_row)));
+mt_ctrl <= hxc_MT_CTRL & hxc_MT_COL & hxc_MT_ROW;
 
+-- shift only registers
+sr_generate: for i in 0 to 7 generate
+	sr: shiftreg port map (
+				clk => clk, 
+				opr => hxc_regs, 
+				so => mt_x(i), 
+				si => mt_y(i), 
+				hexsel => dbg_col(1 downto 0), 
+				hexout => reg(i)
+			);
+end generate;
+
+-- shift registers with load
+	sr_c: shiftregp port map (
+				clk => clk, 
+				opr => hxc_regs, 
+				so => mt_x(12), 
+				si => '0',
+				pi(15 downto 12) => (others => hxc_MT_ROW(3)),
+				pi(11 downto 8) => (others => hxc_MT_ROW(2)),
+				pi(7 downto 4) => (others => hxc_MT_ROW(1)),
+				pi(3 downto 0) => (others => hxc_MT_ROW(0)),
+				hexsel => dbg_col(1 downto 0), 
+				hexout => reg(12)
+			);
+
+	sr_d: shiftregp port map (
+				clk => clk, 
+				opr => hxc_regs, 
+				so => mt_x(13), 
+				si => '0',
+				pi => X"000" & hxc_MT_COL, -- constant data for now
+				hexsel => dbg_col(1 downto 0), 
+				hexout => reg(13)
+			);
+
+-- ALU!
+mt_x(10) <= mt_y(14) and mt_y(15);
+ 
+ERROR <= '0' when (errcode = errcode_ok) else '1';
+ 
+-- microcontrol unit
 hxc_instructionstart <= hxc_mapper(to_integer(unsigned(input))); -- hex char input is the "instruction"
 hxc_uinstruction <= hxc_microcode(to_integer(unsigned(ui_address))); -- copy to file containing the control unit. TODO is typically replace with 'ui_address' control unit output
 
@@ -133,13 +207,10 @@ cu_hxc: hexcalc_control_unit
           ui_address => ui_address
 		);
 
-
 -- conditions
 
 -- hack that saves 1 microcode bit width
 TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
-
----- Start boilerplate code (use with utmost caution!)
 
 ---- Start boilerplate code (use with utmost caution!)
  update_TXDCHAR: process(clk, hxc_TXDCHAR)
@@ -171,31 +242,11 @@ TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
 end process;
 ---- End boilerplate code
 
---with hxc_TXDCHAR select hexout <= 
---			pos_ram(3 downto 0) when TXDCHAR_pos_ram0,
---			pos_ram(7 downto 4) when TXDCHAR_pos_ram1,
---			input(3 downto 0) when TXDCHAR_inp0,
---			input(7 downto 4) when TXDCHAR_inp1,
---			lin_chk(3 downto 0) when TXDCHAR_lin_chk0,
---			lin_chk(7 downto 4) when TXDCHAR_lin_chk1,
---			lin_chk(11 downto 8) when TXDCHAR_lin_chk2,
---			lin_chk(15 downto 12) when TXDCHAR_lin_chk3,
---			bytecnt(3 downto 0) when TXDCHAR_bytecnt0,
---			"00" & bytecnt(5 downto 4) when TXDCHAR_bytecnt1,
---			address(3 downto 0) when TXDCHAR_addr0,
---			address(7 downto 4) when TXDCHAR_addr1,
---			address(11 downto 8) when TXDCHAR_addr2,
---			address(15 downto 12) when TXDCHAR_addr3,
---			flags when TXDCHAR_flags,
---			'0' & errcode when TXDCHAR_errcode,
---			X"F" when others;
-			
 ascii <= hex2ascii(to_integer(unsigned(hexout)));
 
 ---- Start boilerplate code (use with utmost caution!)
 ---- End boilerplate code
 
-ERROR <= '0' when (errcode = errcode_ok) else '1';
 -- Start boilerplate code (use with utmost caution!)
  update_errcode: process(clk, hxc_errcode)
  begin
