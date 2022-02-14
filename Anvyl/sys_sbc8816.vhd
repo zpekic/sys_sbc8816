@@ -31,6 +31,7 @@ use IEEE.NUMERIC_STD.ALL;
 -- any Xilinx leaf cells in this code.
 --library UNISIM;
 --use UNISIM.VComponents.all;
+use work.hexcalc_code.all;
 
 entity sys_sbc8816 is
     Port ( 
@@ -323,12 +324,6 @@ constant mode_st_hc_tr: std_logic_vector(1 downto 0) := "10";
 constant mode_ua_lb_lb: std_logic_vector(1 downto 0) := "01";
 constant mode_bd_lb_lb: std_logic_vector(1 downto 0) := "00";
 
---with sw_mode select ... <= 
---... when mode_st_tr_hc,
---... when mode_st_hc_tr,
---... when mode_ua_lb_lb,
---... when mode_bd_lb_lb;
-
 type prescale_lookup is array (0 to 7) of integer range 0 to 65535;
 constant prescale_value: prescale_lookup := (
 		(clk_board / (16 * 600)),
@@ -352,7 +347,7 @@ alias PMOD_CTS: std_logic is JA4;
 signal reset, reset_btn: std_logic;
 
 -- debug
-signal showdigit, showdot: std_logic_vector(3 downto 0);
+signal showdigit, showdot: std_logic_vector(5 downto 0);
 signal led_data: std_logic_vector(23 downto 0);
 signal led_dot: std_logic_vector(5 downto 0);
 --signal digit: std_logic_vector(3 downto 0);
@@ -372,8 +367,9 @@ alias debounce_clk: std_logic is freq_50M(9);
 signal freq4096: std_logic;		
 signal freq_2048: std_logic_vector(11 downto 0);
 alias freq1: std_logic is freq_2048(11);
+alias freq2: std_logic is freq_2048(10);
 alias freq64: std_logic is freq_2048(5);
-signal mt_cnt: std_logic_vector(1 downto 0);
+signal mt_cnt, ss_cnt: std_logic_vector(1 downto 0);
 signal phi0, phi1, phi2, phi3: std_logic;
 signal prescale_baud, prescale_power: integer range 0 to 65535;
 signal counter_value: std_logic_vector(31 downto 0);
@@ -428,7 +424,7 @@ constant kypd2ascii: table_32x8 := (
 	X"00",	-- 6 == not used
 	X"00",	-- 7 == not used
 	X"00",	-- 8 == not used
-	X"00",	-- 9 == not used
+	std_logic_vector(to_unsigned(natural(character'pos('N')), 8)),	-- 9 == nuke all
 	std_logic_vector(to_unsigned(natural(character'pos('+')), 8)),	-- A == add
 	std_logic_vector(to_unsigned(natural(character'pos('-')), 8)),	-- B == subtract
 	std_logic_vector(to_unsigned(natural(character'pos('*')), 8)),	-- C == multiply
@@ -444,7 +440,7 @@ constant status_done: std_logic_vector(1 downto 0) := "01";
 constant status_busy: std_logic_vector(1 downto 0) := "10";
 constant status_busy_using_mt: std_logic_vector(1 downto 0) := "11";
 signal stacktop: std_logic_vector(31 downto 0); -- capture value of R0
-signal hc_txdsend, hc_txdready: std_logic;
+signal hc_txdsend, hc_txdready, hc_error: std_logic;
 signal hc_txdchar: std_logic_vector(7 downto 0);
 signal hc_mt_x: std_logic_vector(15 downto 0);
 signal hc_reg: std_logic_vector(3 downto 0);
@@ -498,13 +494,6 @@ reset		<= '1' when (BTN = "1111") else '0';
 -- some configuration
 dip_uart_rate <= (DIP_B3 & DIP_B2 & DIP_B1);
 dip_uart_mode <= (DIP_A3 & DIP_A2 & DIP_A1);
-
---on_freq4096: process(freq4096, switch)
---begin
---	if (rising_edge(freq4096)) then
---		switch_old <= switch;
---	end if;
---end process;
 
 -- various clock signal generation
 clockgen: sn74hc4040 port map (
@@ -596,7 +585,7 @@ JC10 <= 	mt_x(15);	-- X15
 
 -- Drive X 
 -- for screen, one row active at a time
-mt_x <= decode4to16(to_integer(unsigned(win_y(3 downto 0)))) when (win_matrix = '1') else hc_mt_x;
+mt_x <= hc_mt_x when ((hc_status = STATUS_busy_using_mt) or (win_matrix = '0')) else decode4to16(to_integer(unsigned(win_y(3 downto 0))));
 
 -- Pick up Y
 mt_y <= (JE10 & JE9 & JE8 & JE7 & JE4 & JE3 & JE2 & JE1 & JD10 & JD9 & JD8 & JD7 & JD4 & JD3 & JD2 & JD1);
@@ -636,7 +625,8 @@ with sw_clksel select mt_cnt <=
 	freq_2048(9 downto 8) when "001",
 	freq_2048(7 downto 6) when "010",
 	freq_2048(5 downto 4) when "011",
-	freq_50M(11 downto 10) when "100",
+	--freq_50M(11 downto 10) when "100",
+	ss_cnt	when "100",
 	freq_50M(9 downto 8) when "101",
 	freq_50M(7 downto 6) when "110",
 	freq_50M(5 downto 4) when others;
@@ -647,7 +637,17 @@ phi1 <= '1' when (mt_cnt = "01") else '0';
 phi2 <= '1' when (mt_cnt = "10") else '0';
 phi3 <= '1' when (mt_cnt = "11") else '0';
 
---
+-- single step cnt
+on_button3: process(button(3), ss_cnt)
+begin
+	if (rising_edge(button(3))) then
+		ss_cnt <= std_logic_vector(unsigned(ss_cnt) + 1);
+	end if;
+end process;
+
+--stacktop(23 downto 16) <= "000000" & hc_status; -- TODO
+stacktop(23 downto 16) <= hc_mt_ctrl(7 downto 0); -- TODO
+
 hc: hexcalc Port map (
 			clk => phi0,
 			reset => reset,
@@ -666,7 +666,7 @@ hc: hexcalc Port map (
 			--
 			TRACE_ERROR => sw_traceerror,
 			TRACE_CHAR  => sw_tracechar,
-			ERROR => open,
+			ERROR => hc_error,
 			TXDREADY => hc_txdready,
 			TXDSEND => hc_txdsend,
 			TXDCHAR => hc_txdchar
@@ -711,8 +711,8 @@ tty: tty2vga Port map(
 		ascii => tty_char,
 		ascii_send => tty_send,
 		ascii_sent => tty_sent,
-		cur_clk => freq_2048(10),	-- 2Hz
-		vga_clk => freq_50M(1),		-- 25MHz
+		cur_clk => freq2,			-- 2Hz
+		vga_clk => freq_50M(1),	-- 25MHz
 		vga_hsync => HSYNC_O,
 		vga_vsync => VSYNC_O,
 		vga_r => RED_O,
@@ -760,19 +760,20 @@ win: hardwin Port map(
 LED <= mt_ctrl(7 downto 0);
 
 -- traffic light LEDs
-LDT1G <= MT_DATA;
-LDT1Y <= MT_STROBE0;
-LDT1R <= MT_RESET;
-LDT2G <= MT_DATA;
-LDT2Y <= MT_STROBE1;
-LDT2R <= MT_RESET;
+LDT1G <= hc_status(1);
+LDT1Y <= mt_cnt(1);
+LDT1R <= mt_ctrl(9);
+LDT2G <= hc_status(0);
+LDT2Y <= mt_cnt(0);
+LDT2R <= mt_ctrl(8);
 
--- 7 seg LED debug display			
+-- 7 seg LED debug display	
+showdigit <= "000000" when ((hc_error and freq2) = '1') else "111111"; -- flash LEDs on error!		
 led6: sixdigitsevensegled Port map ( 
 		-- inputs
 		hexdata => led_data,
 		digsel => freq_2048(3 downto 1),
-		showdigit => "111111",
+		showdigit => showdigit,
 		showdot => led_dot,
 		showsegments => '1',
 		-- outputs

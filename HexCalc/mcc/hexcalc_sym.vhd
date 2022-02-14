@@ -103,259 +103,265 @@ constant hxc_symbol_entry: t_hxc_symbol_entry := (
 -- emit(inp1);
 13 => X"65_6D_69_74_28_69_6E_70_31_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
--- L0185@000E.  print_crlf();
+-- L0185@000E.  emit(inp0);
+-- emit(inp0);
+14 => X"65_6D_69_74_28_69_6E_70_30_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
+
+-- L0186@000F.  print_crlf();
 -- print_crlf();
-14 => X"70_72_69_6E_74_5F_63_72_6C_66_28_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
+15 => X"70_72_69_6E_74_5F_63_72_6C_66_28_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
--- L0190@000F.nextchar:  STATUS = done, errcode <= ok, if false then next else deadloop;
--- nextchar: STATUS = done, errcode <= ok, if false then next else deadloop;
-15 => X"6E_65_78_74_63_68_61_72_3A_20_53_54_41_54_55_53_20_3D_20_64_6F_6E_65_2C_20_65_72_72_63_6F_64_65",
+-- L0191@0010.nextchar:  STATUS = done, if false then next else deadloop;
+-- nextchar: STATUS = done, if false then next else deadloop;
+16 => X"6E_65_78_74_63_68_61_72_3A_20_53_54_41_54_55_53_20_3D_20_64_6F_6E_65_2C_20_69_66_20_66_61_6C_73",
 
--- L0196@0010.swap:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_swap();
+-- L0196@0011.swap:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_swap();
 -- swap: STATUS = busy_using_mt, MT_CTRL = clear, matrix_swap();
-16 => X"73_77_61_70_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54",
+17 => X"73_77_61_70_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54",
 
--- L0197@0011.  if false then next else exec;
+-- L0197@0012.  if false then next else exec;
 -- if false then next else exec;
-17 => X"69_66_20_66_61_6C_73_65_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_65_78_65_63_3B_20_20_20",
+18 => X"69_66_20_66_61_6C_73_65_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_65_78_65_63_3B_20_20_20",
 
--- L0201@0012.enter:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
+-- L0202@0013.nukeall:  STATUS = busy_using_mt, MT_CTRL = clear, run_div2();
+-- nukeall: STATUS = busy_using_mt, MT_CTRL = clear, run_div2();
+19 => X"6E_75_6B_65_61_6C_6C_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C",
+
+-- L0203@0014.  errcode <= ok, if false then next else nextchar;
+-- errcode <= ok, if false then next else nextchar;
+20 => X"65_72_72_63_6F_64_65_20_3C_3D_20_6F_6B_2C_20_69_66_20_66_61_6C_73_65_20_74_68_65_6E_20_6E_65_78",
+
+-- L0207@0015.enter:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
 -- enter: STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
-18 => X"65_6E_74_65_72_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D",
+21 => X"65_6E_74_65_72_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D",
 
--- L0202@0013.  if false then next else exec;
+-- L0208@0016.  if false then next else exec;
 -- if false then next else exec;
-19 => X"69_66_20_66_61_6C_73_65_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_65_78_65_63_3B_20_20_20",
+22 => X"69_66_20_66_61_6C_73_65_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_65_78_65_63_3B_20_20_20",
 
--- L0206@0014.  regs <= load, MT_ROW = 0b1110, MT_COL = 0, if false then next else hexchar;
+-- L0212@0017.  regs <= load, MT_ROW = 0b1110, MT_COL = 0, if false then next else hexchar;
 -- regs <= load, MT_ROW = 0b1110, MT_COL = 0, if false then next else hexchar;
-20 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
-
--- L0209@0015.  regs <= load, MT_ROW = 0b1110, MT_COL = 1, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 1, if false then next else hexchar;
-21 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
-
--- L0212@0016.  regs <= load, MT_ROW = 0b1110, MT_COL = 2, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 2, if false then next else hexchar;
-22 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
-
--- L0215@0017.  regs <= load, MT_ROW = 0b1110, MT_COL = 3, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 3, if false then next else hexchar;
 23 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0218@0018.  regs <= load, MT_ROW = 0b1110, MT_COL = 4, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 4, if false then next else hexchar;
+-- L0215@0018.  regs <= load, MT_ROW = 0b1110, MT_COL = 1, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 1, if false then next else hexchar;
 24 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0221@0019.  regs <= load, MT_ROW = 0b1110, MT_COL = 5, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 5, if false then next else hexchar;
+-- L0218@0019.  regs <= load, MT_ROW = 0b1110, MT_COL = 2, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 2, if false then next else hexchar;
 25 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0224@001A.  regs <= load, MT_ROW = 0b1110, MT_COL = 6, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 6, if false then next else hexchar;
+-- L0221@001A.  regs <= load, MT_ROW = 0b1110, MT_COL = 3, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 3, if false then next else hexchar;
 26 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0227@001B.  regs <= load, MT_ROW = 0b1110, MT_COL = 7, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 7, if false then next else hexchar;
+-- L0224@001B.  regs <= load, MT_ROW = 0b1110, MT_COL = 4, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 4, if false then next else hexchar;
 27 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0230@001C.  regs <= load, MT_ROW = 0b1110, MT_COL = 8, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 8, if false then next else hexchar;
+-- L0227@001C.  regs <= load, MT_ROW = 0b1110, MT_COL = 5, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 5, if false then next else hexchar;
 28 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0233@001D.  regs <= load, MT_ROW = 0b1110, MT_COL = 9, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 9, if false then next else hexchar;
+-- L0230@001D.  regs <= load, MT_ROW = 0b1110, MT_COL = 6, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 6, if false then next else hexchar;
 29 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0237@001E.  regs <= load, MT_ROW = 0b1110, MT_COL = 10, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 10, if false then next else hexchar;
+-- L0233@001E.  regs <= load, MT_ROW = 0b1110, MT_COL = 7, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 7, if false then next else hexchar;
 30 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0241@001F.  regs <= load, MT_ROW = 0b1110, MT_COL = 11, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 11, if false then next else hexchar;
+-- L0236@001F.  regs <= load, MT_ROW = 0b1110, MT_COL = 8, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 8, if false then next else hexchar;
 31 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0245@0020.  regs <= load, MT_ROW = 0b1110, MT_COL = 12, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 12, if false then next else hexchar;
+-- L0239@0020.  regs <= load, MT_ROW = 0b1110, MT_COL = 9, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 9, if false then next else hexchar;
 32 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0249@0021.  regs <= load, MT_ROW = 0b1110, MT_COL = 13, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 13, if false then next else hexchar;
+-- L0243@0021.  regs <= load, MT_ROW = 0b1110, MT_COL = 10, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 10, if false then next else hexchar;
 33 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0253@0022.  regs <= load, MT_ROW = 0b1110, MT_COL = 14, if false then next else hexchar;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 14, if false then next else hexchar;
+-- L0247@0022.  regs <= load, MT_ROW = 0b1110, MT_COL = 11, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 11, if false then next else hexchar;
 34 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0257@0023.  regs <= load, MT_ROW = 0b1110, MT_COL = 15;
--- regs <= load, MT_ROW = 0b1110, MT_COL = 15;
+-- L0251@0023.  regs <= load, MT_ROW = 0b1110, MT_COL = 12, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 12, if false then next else hexchar;
 35 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
 
--- L0259@0024.hexchar:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+-- L0255@0024.  regs <= load, MT_ROW = 0b1110, MT_COL = 13, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 13, if false then next else hexchar;
+36 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
+
+-- L0259@0025.  regs <= load, MT_ROW = 0b1110, MT_COL = 14, if false then next else hexchar;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 14, if false then next else hexchar;
+37 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
+
+-- L0263@0026.  regs <= load, MT_ROW = 0b1110, MT_COL = 15;
+-- regs <= load, MT_ROW = 0b1110, MT_COL = 15;
+38 => X"72_65_67_73_20_3C_3D_20_6C_6F_61_64_2C_20_4D_54_5F_52_4F_57_20_3D_20_30_62_31_31_31_30_2C_20_4D",
+
+-- L0265@0027.hexchar:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
 -- hexchar: STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
-36 => X"68_65_78_63_68_61_72_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C",
+39 => X"68_65_78_63_68_61_72_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C",
 
--- L0261@0025.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xE;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xE;
-37 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
-
--- L0262@0026.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xC , MT_COL = 0xF;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xC , MT_COL = 0xF;
-38 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
-
--- L0263@0027.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xA , MT_COL = 0;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xA , MT_COL = 0;
-39 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
-
--- L0264@0028.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0;
+-- L0267@0028.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
 40 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0265@0029.exec:  run_div2();
--- exec: run_div2();
-41 => X"65_78_65_63_3A_20_72_75_6E_5F_64_69_76_32_28_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
+-- L0268@0029.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xE;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xE;
+41 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0266@002A.  if false then next else nextchar;
--- if false then next else nextchar;
-42 => X"69_66_20_66_61_6C_73_65_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_6E_65_78_74_63_68_61_72",
+-- L0269@002A.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xC , MT_COL = 0xF;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xC , MT_COL = 0xF;
+42 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0270@002B.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
--- STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+-- L0270@002B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xA , MT_COL = 0;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xA , MT_COL = 0;
 43 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0271@002C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
+-- L0271@002C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0;
 44 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0272@002D.  run_div2();
--- run_div2();
-45 => X"72_75_6E_5F_64_69_76_32_28_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
+-- L0272@002D.exec:  run_div2();
+-- exec: run_div2();
+45 => X"65_78_65_63_3A_20_72_75_6E_5F_64_69_76_32_28_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
 -- L0273@002E.  if false then next else nextchar;
 -- if false then next else nextchar;
 46 => X"69_66_20_66_61_6C_73_65_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_6E_65_78_74_63_68_61_72",
 
--- L0276@002F.run_div2:  bitcnt <= zero;
+-- L0277@002F.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+-- STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+47 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
+
+-- L0278@0030.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1, if false then next else exec;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1, if false then next else exec;
+48 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
+
+-- L0281@0031.run_div2:  bitcnt <= zero;
 -- run_div2: bitcnt <= zero;
-47 => X"72_75_6E_5F_64_69_76_32_3A_20_62_69_74_63_6E_74_20_3C_3D_20_7A_65_72_6F_3B_20_20_20_20_20_20_20",
+49 => X"72_75_6E_5F_64_69_76_32_3A_20_62_69_74_63_6E_74_20_3C_3D_20_7A_65_72_6F_3B_20_20_20_20_20_20_20",
 
--- L0277@0030.run_loop:  STATUS = busy_using_mt, regs <= div2, bitcnt <= inc;
+-- L0282@0032.run_loop:  STATUS = busy_using_mt, regs <= div2, bitcnt <= inc;
 -- run_loop: STATUS = busy_using_mt, regs <= div2, bitcnt <= inc;
-48 => X"72_75_6E_5F_6C_6F_6F_70_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74",
+50 => X"72_75_6E_5F_6C_6F_6F_70_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74",
 
--- L0278@0031.  if bitcnt_is_zero then return else run_loop;
+-- L0283@0033.  if bitcnt_is_zero then return else run_loop;
 -- if bitcnt_is_zero then return else run_loop;
-49 => X"69_66_20_62_69_74_63_6E_74_5F_69_73_5F_7A_65_72_6F_20_74_68_65_6E_20_72_65_74_75_72_6E_20_65_6C",
+51 => X"69_66_20_62_69_74_63_6E_74_5F_69_73_5F_7A_65_72_6F_20_74_68_65_6E_20_72_65_74_75_72_6E_20_65_6C",
 
--- L0281@0032.matrix_swap:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+-- L0286@0034.matrix_swap:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
 -- matrix_swap: STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
-50 => X"6D_61_74_72_69_78_5F_73_77_61_70_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67",
+52 => X"6D_61_74_72_69_78_5F_73_77_61_70_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67",
 
--- L0282@0033.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
+-- L0287@0035.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
-51 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
-
--- L0285@0034.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
--- matrix_nop: STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
-52 => X"6D_61_74_72_69_78_5F_6E_6F_70_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F",
-
--- L0286@0035.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
 53 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0287@0036.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
-54 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
+-- L0290@0036.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
+-- matrix_nop: STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
+54 => X"6D_61_74_72_69_78_5F_6E_6F_70_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F",
 
--- L0288@0037.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
+-- L0291@0037.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
 55 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0289@0038.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
+-- L0292@0038.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
 56 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0290@0039.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
+-- L0293@0039.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
 57 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0293@003A.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
--- matrix_push: STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
-58 => X"6D_61_74_72_69_78_5F_70_75_73_68_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67",
+-- L0294@003A.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
+58 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0294@003B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
+-- L0295@003B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
 59 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0295@003C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
-60 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
+-- L0298@003C.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+-- matrix_push: STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+60 => X"6D_61_74_72_69_78_5F_70_75_73_68_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67",
 
--- L0296@003D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
+-- L0299@003D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
 61 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0297@003E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
+-- L0300@003E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
 62 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0298@003F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
+-- L0301@003F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
 63 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0299@0040.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
--- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
+-- L0302@0040.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
 64 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0301@0041.trace:  if TRACE_CHAR then next else return;
+-- L0303@0041.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
+65 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
+
+-- L0304@0042.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
+-- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
+66 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
+
+-- L0306@0043.trace:  if TRACE_CHAR then next else return;
 -- trace: if TRACE_CHAR then next else return;
-65 => X"74_72_61_63_65_3A_20_69_66_20_54_52_41_43_45_5F_43_48_41_52_20_74_68_65_6E_20_6E_65_78_74_20_65",
+67 => X"74_72_61_63_65_3A_20_69_66_20_54_52_41_43_45_5F_43_48_41_52_20_74_68_65_6E_20_6E_65_78_74_20_65",
 
--- L0302@0042.  emit(char_I);
+-- L0307@0044.  emit(char_I);
 -- emit(char_I);
-66 => X"65_6D_69_74_28_63_68_61_72_5F_49_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
+68 => X"65_6D_69_74_28_63_68_61_72_5F_49_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
--- L0303@0043.  emit(char_EQU);
+-- L0308@0045.  emit(char_EQU);
 -- emit(char_EQU);
-67 => X"65_6D_69_74_28_63_68_61_72_5F_45_51_55_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
+69 => X"65_6D_69_74_28_63_68_61_72_5F_45_51_55_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
--- L0304@0044.  emit(inp1);
+-- L0309@0046.  emit(inp1);
 -- emit(inp1);
-68 => X"65_6D_69_74_28_69_6E_70_31_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
+70 => X"65_6D_69_74_28_69_6E_70_31_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
--- L0305@0045.  emit(inp0);
+-- L0310@0047.  emit(inp0);
 -- emit(inp0);
-69 => X"65_6D_69_74_28_69_6E_70_30_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
+71 => X"65_6D_69_74_28_69_6E_70_30_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
--- L0307@0046.print_crlf:  emit(char_cr);
+-- L0312@0048.print_crlf:  emit(char_cr);
 -- print_crlf: emit(char_cr);
-70 => X"70_72_69_6E_74_5F_63_72_6C_66_3A_20_65_6D_69_74_28_63_68_61_72_5F_63_72_29_3B_20_20_20_20_20_20",
+72 => X"70_72_69_6E_74_5F_63_72_6C_66_3A_20_65_6D_69_74_28_63_68_61_72_5F_63_72_29_3B_20_20_20_20_20_20",
 
--- L0308@0047.  TXDCHAR <= char_lf;
--- TXDCHAR <= char_lf;
-71 => X"54_58_44_43_48_41_52_20_3C_3D_20_63_68_61_72_5F_6C_66_3B_20_20_20_20_20_20_20_20_20_20_20_20_20",
+-- L0313@0049.  emit(char_lf);
+-- emit(char_lf);
+73 => X"65_6D_69_74_28_63_68_61_72_5F_6C_66_29_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
--- L0310@0048.emit:  if TXDREADY then next else repeat;
+-- L0314@004A.  if true then return else return;
+-- if true then return else return;
+74 => X"69_66_20_74_72_75_65_20_74_68_65_6E_20_72_65_74_75_72_6E_20_65_6C_73_65_20_72_65_74_75_72_6E_3B",
+
+-- L0316@004B.emit:  if TXDREADY then next else repeat;
 -- emit: if TXDREADY then next else repeat;
-72 => X"65_6D_69_74_3A_20_69_66_20_54_58_44_52_45_41_44_59_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65",
+75 => X"65_6D_69_74_3A_20_69_66_20_54_58_44_52_45_41_44_59_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65",
 
--- L0311@0049.  if TXDREADY then next else repeat;
+-- L0317@004C.  if TXDREADY then next else repeat;
 -- if TXDREADY then next else repeat;
-73 => X"69_66_20_54_58_44_52_45_41_44_59_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_72_65_70_65_61",
+76 => X"69_66_20_54_58_44_52_45_41_44_59_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_72_65_70_65_61",
 
--- L0312@004A.  if TXDREADY then next else repeat;
+-- L0318@004D.  if TXDREADY then next else repeat;
 -- if TXDREADY then next else repeat;
-74 => X"69_66_20_54_58_44_52_45_41_44_59_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_72_65_70_65_61",
+77 => X"69_66_20_54_58_44_52_45_41_44_59_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_72_65_70_65_61",
 
--- L0313@004B.  if TXDSEND then return else return;
+-- L0319@004E.  if TXDSEND then return else return;
 -- if TXDSEND then return else return;
-75 => X"69_66_20_54_58_44_53_45_4E_44_20_74_68_65_6E_20_72_65_74_75_72_6E_20_65_6C_73_65_20_72_65_74_75",
-
-76 => X"20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
-
-77 => X"20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
-
-78 => X"20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
+78 => X"69_66_20_54_58_44_53_45_4E_44_20_74_68_65_6E_20_72_65_74_75_72_6E_20_65_6C_73_65_20_72_65_74_75",
 
 79 => X"20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 

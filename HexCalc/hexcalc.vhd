@@ -107,9 +107,10 @@ signal ui_nextinstr: std_logic_vector(CODE_ADDRESS_WIDTH -1  downto 0);
 
 
 -- internal signals
-signal ascii: std_logic_vector(7 downto 0);
-signal hexout: std_logic_vector(3 downto 0);
+--signal ascii: std_logic_vector(7 downto 0);
+signal hexchar: std_logic_vector(3 downto 0);
 signal errcode: std_logic_vector(2 downto 0);
+signal bitcnt: std_logic_vector(3 downto 0);
 
 -- conditions
 signal input_is_zero, bitcnt_is_zero: std_logic;
@@ -163,7 +164,14 @@ end generate;
 			);
 
 -- ALU!
+mt_x(8) <= '0'; -- TODO
+mt_x(9) <= '0'; -- TODO
 mt_x(10) <= mt_y(14) and mt_y(15);
+mt_x(11) <= '0'; -- TODO
+-- 12 is constant register
+-- 13 is data register
+mt_x(14) <= '0'; -- TODO
+mt_x(15) <= '0'; -- TODO
  
 ERROR <= '0' when (errcode = errcode_ok) else '1';
  
@@ -208,10 +216,31 @@ cu_hxc: hexcalc_control_unit
 		);
 
 -- conditions
+input_is_zero <= '1' when (input = char_zero) else '0';
+bitcnt_is_zero <= '1' when (bitcnt = X"0") else '0';
 
 -- hack that saves 1 microcode bit width
 TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
 
+---- Start boilerplate code (use with utmost caution!)
+ update_bitcnt: process(clk, hxc_bitcnt)
+ begin
+	if (rising_edge(clk)) then
+		case hxc_bitcnt is
+--			when bitcnt_same =>
+--				bitcnt <= bitcnt;
+			when bitcnt_zero =>
+				bitcnt <= (others => '0');
+			when bitcnt_inc =>
+				bitcnt <= std_logic_vector(unsigned(bitcnt) + 1);
+			when others =>
+				null;
+		end case;
+ end if;
+ end process;
+---- End boilerplate code
+
+--ascii <= hex2ascii(to_integer(unsigned(hexchar)));
 ---- Start boilerplate code (use with utmost caution!)
  update_TXDCHAR: process(clk, hxc_TXDCHAR)
  begin
@@ -220,34 +249,42 @@ TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
 			when TXDCHAR_same =>
 				TXDCHAR <= TXDCHAR;
 			when TXDCHAR_char_space =>
-				TXDCHAR <= std_logic_vector(to_unsigned(natural(character'pos(' ')), 8));
+				TXDCHAR <= char_space;
 			when TXDCHAR_char_cr =>
-				TXDCHAR <= X"0D";
+				TXDCHAR <= char_cr;
 			when TXDCHAR_char_lf =>
-				TXDCHAR <= X"0A";
+				TXDCHAR <= char_lf;
 			when TXDCHAR_char_E =>
-				TXDCHAR <= std_logic_vector(to_unsigned(natural(character'pos('E')), 8));
+				TXDCHAR <= char_E;
 			when TXDCHAR_char_R =>
-				TXDCHAR <= std_logic_vector(to_unsigned(natural(character'pos('R')), 8));
-			when TXDCHAR_char_I =>
-				TXDCHAR <= std_logic_vector(to_unsigned(natural(character'pos('I')), 8));
+				TXDCHAR <= char_R;
 			when TXDCHAR_char_EQU =>
-				TXDCHAR <= std_logic_vector(to_unsigned(natural(character'pos('=')), 8));
+				TXDCHAR <= char_EQU;
+			when TXDCHAR_char_I =>
+				TXDCHAR <= char_I;
 			when TXDCHAR_char_zero =>
-				TXDCHAR <= (others => '0');
+				TXDCHAR <= char_zero;
+--			when TXDCHAR_inp0 =>
+--				TXDCHAR <= inp0;
+--			when TXDCHAR_inp1 =>
+--				TXDCHAR <= inp1;
+--			when TXDCHAR_errcode =>
+--				TXDCHAR <= errcode;
 			when others =>
-				TXDCHAR <= ascii;	-- go through lookup table
+				TXDCHAR <= hex2ascii(to_integer(unsigned(hexchar)));
 		end case;
  end if;
-end process;
+ end process;
 ---- End boilerplate code
 
-ascii <= hex2ascii(to_integer(unsigned(hexout)));
+with hxc_TXDCHAR select hexchar <= 
+	input(3 downto 0) when TXDCHAR_inp0,
+	input(7 downto 4) when TXDCHAR_inp1,
+	'0' & errcode when TXDCHAR_errcode,
+	X"F" when others;
+
 
 ---- Start boilerplate code (use with utmost caution!)
----- End boilerplate code
-
--- Start boilerplate code (use with utmost caution!)
  update_errcode: process(clk, hxc_errcode)
  begin
 	if (rising_edge(clk)) then
@@ -256,6 +293,14 @@ ascii <= hex2ascii(to_integer(unsigned(hexout)));
 				errcode <= errcode_ok;
 			when errcode_err_badchar =>
 				errcode <= errcode_err_badchar;
+			when errcode_err_2 =>
+				errcode <= errcode_err_2;
+			when errcode_err_3 =>
+				errcode <= errcode_err_3;
+			when errcode_err_4 =>
+				errcode <= errcode_err_4;
+			when errcode_err_5 =>
+				errcode <= errcode_err_5;
 --			when errcode_same =>
 --				errcode <= errcode;
 			when others =>
@@ -263,7 +308,8 @@ ascii <= hex2ascii(to_integer(unsigned(hexout)));
 		end case;
  end if;
  end process;
--- End boilerplate code
+---- End boilerplate code
+
 
 			
 end Behavioral;

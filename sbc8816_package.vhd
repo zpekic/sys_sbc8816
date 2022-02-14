@@ -13,6 +13,15 @@ use IEEE.NUMERIC_STD.ALL;
 
 package sbc8816_package is
 
+constant char_zero: std_logic_vector(7 downto 0) := X"00";
+constant char_lf: std_logic_vector(7 downto 0) := X"0A";
+constant char_cr: std_logic_vector(7 downto 0) := X"0D";
+constant char_e: std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(natural(character'pos('E')), 8));
+constant char_i: std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(natural(character'pos('I')), 8));
+constant char_r: std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(natural(character'pos('R')), 8));
+constant char_equ: std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(natural(character'pos('=')), 8));
+constant char_space: std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(natural(character'pos(' ')), 8));
+
 --type t_ascii is std_logic_vector(7 downto 0);
 
 type lookup is array(0 to 15) of std_logic_vector(7 downto 0);

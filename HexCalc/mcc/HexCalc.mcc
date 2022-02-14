@@ -10,8 +10,8 @@
 // System interface signals
 MT_CTRL			.valfield 2 values 
 				nop,
-				off,
 				on,
+				off,
 				clear default nop;
 				
 MT_ROW			.valfield 4 values * default 0;
@@ -182,19 +182,25 @@ printerror:	emit(char_E);		// ERR
 			emit(errcode);
 			emit(char_space);
 			emit(inp1);			// FF hex code of offending char
+			emit(inp0);			// FF hex code of offending char
 			print_crlf();
 
 			.map 0;
 			.map 0x09;	// treat tabs and spaces same way (ignore them)	
 			.map ' ';
-nextchar:	STATUS = done, errcode <= ok, goto deadloop;
+nextchar:	STATUS = done, goto deadloop;
 					
-			
 			// TOS <=> NOS
 			.map 's';
 			.map 'S';
 swap:		nuke, matrix_swap();
 			goto exec;
+			
+			// clear all registers and error code
+			.map 'n';
+			.map 'N';
+nukeall:	nuke, run_div2();
+			errcode <= ok, goto nextchar;
 			
 			// enter: push all down, TOS <= 0
 			.map 0x0D;
@@ -258,6 +264,7 @@ enter:		nuke, matrix_push();
 			
 hexchar:	nuke, matrix_nop();
 			// R0 <= (R0 & mask) | digit;
+			connect row_nos to col_nos;
 			connect row_tos to col_and1;
 			connect row_const to col_and2;
 			connect row_and to col_tos;
@@ -268,9 +275,7 @@ exec:		run_div2();
 			.map 'z';	// clear TOS
 			.map 'Z';
 			nuke, matrix_nop();
-			connect row_nos to col_tos;	// no switch on TOS means pull down, so it 0
-			run_div2();
-			goto nextchar;
+			connect row_nos to col_nos, goto exec;	// no switch on TOS means pull down, so it 0
 			
 // rotate all registers right (LSB first) through switch matrix;
 run_div2:	bitcnt <= zero;
@@ -305,7 +310,8 @@ trace:		if TRACE_CHAR then next else return;
 			emit(inp0);
 
 print_crlf: emit(char_cr);
-			TXDCHAR <= char_lf;	// save 1 return microinstruction
+			emit(char_lf);
+			back;
 
 emit:		if TXDREADY then next else repeat;	// sync with baudrate clock that drives UART
 			if TXDREADY then next else repeat;
