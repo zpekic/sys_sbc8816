@@ -31,6 +31,7 @@ use IEEE.NUMERIC_STD.ALL;
 -- any Xilinx leaf cells in this code.
 --library UNISIM;
 --use UNISIM.VComponents.all;
+use work.sbc8816_package.all;
 use work.hexcalc_code.all;
 
 entity sys_sbc8816 is
@@ -292,26 +293,6 @@ constant uartmode_debug: table_8x16 := (
 	X"8002",	-- 8, parity mark, 1 == 8, no parity, 2 stop
 	X"8101",	-- 8, parity even, 1 stop
 	X"8011"	-- 8, parity odd, 1 stop
-);
-
-type table_16x16 is array (0 to 15) of std_logic_vector(15 downto 0);
-constant decode4to16: table_16x16 := (
-	"0000000000000001",
-	"0000000000000010",
-	"0000000000000100",
-	"0000000000001000",
-	"0000000000010000",
-	"0000000000100000",
-	"0000000001000000",
-	"0000000010000000",
-	"0000000100000000",
-	"0000001000000000",
-	"0000010000000000",
-	"0000100000000000",
-	"0001000000000000",
-	"0010000000000000",
-	"0100000000000000",
-	"1000000000000000"
 );
 
 constant clk_board: integer := 100000000;
@@ -751,7 +732,7 @@ win: hardwin Port map(
 		index  => win_index,	-- color index
 		win_x  => win_x,
 		win_y  => win_y,
-		mt_x   => mt_x(to_integer(unsigned(win_y(3 downto 0)))),
+		mt_x   => hc_mt_x(to_integer(unsigned(win_y(3 downto 0)))),
 		mt_y   => mt_y(to_integer(unsigned(win_x(3 downto 0)))),
 		mt_hex => hc_reg
 		);

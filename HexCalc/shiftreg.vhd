@@ -47,8 +47,8 @@ begin
 
 -- serial outputs
 with opr select so <=
-	r(0) when regs_div2,
-	r(15) when others;
+	r(15) when regs_mul2,
+	r(0) when others;			-- usually LSB is projected out which makes sense to display
 	
 -- shift up and down only
 on_clk: process(clk, opr, r, si)

@@ -111,6 +111,7 @@ signal ui_nextinstr: std_logic_vector(CODE_ADDRESS_WIDTH -1  downto 0);
 signal hexchar: std_logic_vector(3 downto 0);
 signal errcode: std_logic_vector(2 downto 0);
 signal bitcnt: std_logic_vector(3 downto 0);
+signal delay: std_logic;
 
 -- conditions
 signal input_is_zero, bitcnt_is_zero: std_logic;
@@ -128,10 +129,19 @@ dbg_reg <= reg(to_integer(unsigned(dbg_row)));
 mt_ctrl <= hxc_MT_CTRL & hxc_MT_COL & hxc_MT_ROW;
 
 -- shift only registers
-sr_generate: for i in 0 to 7 generate
+	sr0: shiftreg port map (
+				clk => clk, 
+				opr => hxc_reg0,	-- TOS register can shift independently 
+				so => mt_x(0), 
+				si => mt_y(0), 
+				hexsel => dbg_col(1 downto 0), 
+				hexout => reg(0)
+			);
+
+sr_generate: for i in 1 to 7 generate
 	sr: shiftreg port map (
 				clk => clk, 
-				opr => hxc_regs, 
+				opr => hxc_regs, -- R1..15 shift in unison
 				so => mt_x(i), 
 				si => mt_y(i), 
 				hexsel => dbg_col(1 downto 0), 
@@ -145,10 +155,7 @@ end generate;
 				opr => hxc_regs, 
 				so => mt_x(12), 
 				si => '0',
-				pi(15 downto 12) => (others => hxc_MT_ROW(3)),
-				pi(11 downto 8) => (others => hxc_MT_ROW(2)),
-				pi(7 downto 4) => (others => hxc_MT_ROW(1)),
-				pi(3 downto 0) => (others => hxc_MT_ROW(0)),
+				pi => decode4to16(to_integer(unsigned(hxc_MT_ROW))),	-- one hot bit
 				hexsel => dbg_col(1 downto 0), 
 				hexout => reg(12)
 			);
@@ -158,13 +165,14 @@ end generate;
 				opr => hxc_regs, 
 				so => mt_x(13), 
 				si => '0',
-				pi => X"000" & hxc_MT_COL, -- constant data for now
+				pi(15 downto 4) => (others => hxc_MT_COL(3)),	-- sign extend
+				pi(3 downto 0) => hxc_MT_COL,							-- constant data
 				hexsel => dbg_col(1 downto 0), 
 				hexout => reg(13)
 			);
 
 -- ALU!
-mt_x(8) <= '0'; -- TODO
+mt_x(8) <= delay; 
 mt_x(9) <= '0'; -- TODO
 mt_x(10) <= mt_y(14) and mt_y(15);
 mt_x(11) <= '0'; -- TODO
@@ -229,10 +237,12 @@ TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
 		case hxc_bitcnt is
 --			when bitcnt_same =>
 --				bitcnt <= bitcnt;
-			when bitcnt_zero =>
-				bitcnt <= (others => '0');
+			when bitcnt_load => 
+				bitcnt <= hxc_MT_COL;
 			when bitcnt_inc =>
 				bitcnt <= std_logic_vector(unsigned(bitcnt) + 1);
+			when bitcnt_dec =>
+				bitcnt <= std_logic_vector(unsigned(bitcnt) - 1);
 			when others =>
 				null;
 		end case;
@@ -310,6 +320,24 @@ with hxc_TXDCHAR select hexchar <=
  end process;
 ---- End boilerplate code
 
-
+---- Start boilerplate code (use with utmost caution!)
+ update_delay: process(clk, hxc_delay)
+ begin
+	if (rising_edge(clk)) then
+		case hxc_delay is
+--			when delay_same =>
+--				delay <= delay;
+			when delay_column =>
+				delay <= mt_y(8);
+			when delay_zero =>
+				delay <= '0';
+			when delay_one =>
+				delay <= '1';
+			when others =>
+				null;
+		end case;
+ end if;
+ end process;
+---- End boilerplate code
 			
 end Behavioral;
