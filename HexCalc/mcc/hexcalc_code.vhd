@@ -341,10 +341,38 @@ constant delay_one: 	std_logic_vector(1 downto 0) := "11";
 ---- End boilerplate code
 
 --
--- L0115.dummy: .valfield 3 values * default 0;
+-- L0114.carry: .regfield 2 values same, adc, zero, one default same;
 --
-alias hxc_dummy: 	std_logic_vector(2 downto 0) is hxc_uinstruction(2 downto 0);
--- Values from "000" to "111" allowed
+alias hxc_carry: 	std_logic_vector(1 downto 0) is hxc_uinstruction(2 downto 1);
+constant carry_same: 	std_logic_vector(1 downto 0) := "00";
+constant carry_adc: 	std_logic_vector(1 downto 0) := "01";
+constant carry_zero: 	std_logic_vector(1 downto 0) := "10";
+constant carry_one: 	std_logic_vector(1 downto 0) := "11";
+---- Start boilerplate code (use with utmost caution!)
+-- update_carry: process(clk, hxc_carry)
+-- begin
+--	if (rising_edge(clk)) then
+--		case hxc_carry is
+----			when carry_same =>
+----				carry <= carry;
+--			when carry_adc =>
+--				carry <= adc;
+--			when carry_zero =>
+--				carry <= (others => '0');
+--			when carry_one =>
+--				carry <= one;
+--			when others =>
+--				null;
+--		end case;
+-- end if;
+-- end process;
+---- End boilerplate code
+
+--
+-- L0121.dummy: .valfield 1 values * default 0;
+--
+alias hxc_dummy: 	std_logic is hxc_uinstruction(0);
+-- Values from '0' to '1' allowed
 ---- Start boilerplate code (use with utmost caution!)
 --  dummy <= hxc_dummy;
 ---- End boilerplate code
@@ -353,322 +381,390 @@ alias hxc_dummy: 	std_logic_vector(2 downto 0) is hxc_uinstruction(2 downto 0);
 
 constant hxc_microcode: hxc_code_memory := (
 
--- L0180@0000._reset:  MT_CTRL = clear, errcode <= ok;
---  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 000, delay <= 00, dummy = 000;
-0 => "11" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"0" & "00" & O"0",
-
--- L0182@0001._reset1:  MT_CTRL = clear, errcode <= ok;
---  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 000, delay <= 00, dummy = 000;
-1 => "11" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"0" & "00" & O"0",
-
--- L0184@0002._reset2:  MT_CTRL = clear, errcode <= ok;
---  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 000, delay <= 00, dummy = 000;
-2 => "11" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"0" & "00" & O"0",
-
--- L0186@0003._reset3:  MT_CTRL = clear, errcode <= ok;
---  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 000, delay <= 00, dummy = 000;
-3 => "11" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"0" & "00" & O"0",
-
--- L0190@0004.deadloop:  STATUS = ready, if input_is_zero then repeat else next;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 00, if (0001) then 0000001 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-4 => "00" & X"0" & X"0" & "00" & "00" & X"1" & "0000001" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0191@0005.  trace();
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1000010 else 1000010, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-5 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1000010" & "1000010" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0192@0006.  if true then fork else fork;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000011 else 0000011, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-6 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "0000011" & "0000011" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0195@0007.badchar:  errcode <= err_badchar, if TRACE_ERROR then printerror else nextchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0010) then 0001000 else 0010000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 001, delay <= 00, dummy = 000;
-7 => "00" & X"0" & X"0" & "00" & "10" & X"2" & "0001000" & "0010000" & X"0" & "00" & "00" & O"1" & "00" & O"0",
-
--- L0196@0008.printerror:  emit(char_E);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 0100, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-8 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"4" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0197@0009.  emit(char_R);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 0101, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-9 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"5" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0198@000A.  emit(char_R);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 0101, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-10 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"5" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0199@000B.  emit(errcode);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 1111, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-11 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"F" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0200@000C.  emit(char_space);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 0001, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-12 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"1" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0201@000D.  emit(inp1);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 1010, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-13 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"A" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0202@000E.  emit(inp0);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 1001, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-14 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"9" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0203@000F.  print_crlf();
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1000111 else 1000111, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-15 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1000111" & "1000111" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0208@0010.nextchar:  STATUS = done, if false then next else deadloop;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 01, if (1111) then 0000000 else 0000100, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-16 => "00" & X"0" & X"0" & "00" & "01" & X"F" & "0000000" & "0000100" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0213@0011.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_swap();
---  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0110011 else 0110011, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-17 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "0110011" & "0110011" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0214@0012.  if false then next else exec;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0010110, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-18 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0010110" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0219@0013.  errcode <= ok, STATUS = busy_using_mt, MT_CTRL = clear, if false then next else exec;
---  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (1111) then 0000000 else 0010110, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 000, delay <= 00, dummy = 000;
-19 => "11" & X"0" & X"0" & "00" & "11" & X"F" & "0000000" & "0010110" & X"0" & "00" & "00" & O"0" & "00" & O"0",
-
--- L0224@0014.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
---  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0110101 else 0110101, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-20 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "0110101" & "0110101" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0225@0015.  errcode <= ok, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
---  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 000, delay <= 00, dummy = 000;
-21 => "01" & X"1" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"0" & "00" & O"0",
-
--- L0226@0016.exec:  bitcnt <= load, MT_COL = 0, div2();
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 01, STATUS = 10, if (0000) then 0110001 else 0110001, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-22 => "00" & X"0" & X"0" & "01" & "10" & X"0" & "0110001" & "0110001" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0227@0017.  if false then next else nextchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0010000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-23 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0010000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0231@0018.enter:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
---  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0111011 else 0111011, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-24 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "0111011" & "0111011" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0232@0019.  if false then next else exec;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0010110, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-25 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0010110" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0236@001A.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0000, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-26 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0239@001B.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1000, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-27 => "00" & X"0" & X"8" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0242@001C.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0100, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0100, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-28 => "00" & X"0" & X"4" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0245@001D.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1100, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1100, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-29 => "00" & X"0" & X"C" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0248@001E.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0010, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0010, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-30 => "00" & X"0" & X"2" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0251@001F.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1010, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1010, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-31 => "00" & X"0" & X"A" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0254@0020.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0110, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0110, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-32 => "00" & X"0" & X"6" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0257@0021.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1110, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1110, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-33 => "00" & X"0" & X"E" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0260@0022.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0001, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-34 => "00" & X"0" & X"1" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0263@0023.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1001, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1001, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-35 => "00" & X"0" & X"9" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0267@0024.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0101, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0101, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-36 => "00" & X"0" & X"5" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0271@0025.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1101, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1101, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-37 => "00" & X"0" & X"D" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0275@0026.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0011, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0011, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-38 => "00" & X"0" & X"3" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0279@0027.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1011, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1011, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-39 => "00" & X"0" & X"B" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0283@0028.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0111, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0111, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101010, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-40 => "00" & X"0" & X"7" & "00" & "10" & X"F" & "0000000" & "0101010" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0287@0029.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1111;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1111, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-41 => "00" & X"0" & X"F" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & "01" & "00" & O"6" & "00" & O"0",
-
--- L0288@002A.hexchar:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
---  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0110101 else 0110101, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-42 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "0110101" & "0110101" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0289@002B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
---  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-43 => "01" & X"1" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0290@002C.  bitcnt <= load, MT_COL = 3;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0011, bitcnt <= 01, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-44 => "00" & X"0" & X"3" & "01" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0291@002D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0;
---  MT_CTRL = 01, MT_ROW = 1101, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-45 => "01" & X"D" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0292@002E.  STATUS = busy_using_mt, reg0 <= mul2, regs <= div2, bitcnt <= dec, if bitcnt_is_zero then next else repeat;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 11, STATUS = 11, if (0110) then 0000000 else 0000001, TXDCHAR <= 0000, regs <= 10, reg0 <= 11, errcode <= 110, delay <= 00, dummy = 000;
-46 => "00" & X"0" & X"0" & "11" & "11" & X"6" & "0000000" & "0000001" & X"0" & "10" & "11" & O"6" & "00" & O"0",
-
--- L0293@002F.  bitcnt <= load, MT_COL = 3;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0011, bitcnt <= 01, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-47 => "00" & X"0" & X"3" & "01" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0294@0030.  STATUS = busy_using_mt, regs <= mul2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 11, STATUS = 11, if (0110) then 0010000 else 0000001, TXDCHAR <= 0000, regs <= 11, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-48 => "00" & X"0" & X"0" & "11" & "11" & X"6" & "0010000" & "0000001" & X"0" & "11" & "00" & O"6" & "00" & O"0",
-
--- L0303@0031.div2:  STATUS = busy_using_mt, reg0 <= div2, regs <= div2, bitcnt <= inc;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 10, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 10, reg0 <= 10, errcode <= 110, delay <= 00, dummy = 000;
-49 => "00" & X"0" & X"0" & "10" & "11" & X"0" & "0000000" & "0000000" & X"0" & "10" & "10" & O"6" & "00" & O"0",
-
--- L0304@0032.  if bitcnt_is_zero then return else div2;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0110) then 0000010 else 0110001, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-50 => "00" & X"0" & X"0" & "00" & "10" & X"6" & "0000010" & "0110001" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0307@0033.matrix_swap:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
---  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-51 => "01" & X"0" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0308@0034.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
---  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-52 => "01" & X"1" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
-
--- L0311@0035.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
---  MT_CTRL = 01, MT_ROW = 0010, MT_COL = 0010, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-53 => "01" & X"2" & X"2" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0188@0000._reset:  MT_CTRL = clear, errcode <= ok;
+--  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 000, delay <= 00, carry <= 00, dummy = 0;
+0 => "11" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"0" & "00" & "00" & '0',
+
+-- L0190@0001._reset1:  MT_CTRL = clear, errcode <= ok;
+--  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 000, delay <= 00, carry <= 00, dummy = 0;
+1 => "11" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"0" & "00" & "00" & '0',
+
+-- L0192@0002._reset2:  MT_CTRL = clear, errcode <= ok;
+--  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 000, delay <= 00, carry <= 00, dummy = 0;
+2 => "11" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"0" & "00" & "00" & '0',
+
+-- L0194@0003._reset3:  MT_CTRL = clear, errcode <= ok;
+--  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 000, delay <= 00, carry <= 00, dummy = 0;
+3 => "11" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"0" & "00" & "00" & '0',
+
+-- L0198@0004.deadloop:  STATUS = ready, if input_is_zero then repeat else next;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 00, if (0001) then 0000001 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+4 => "00" & X"0" & X"0" & "00" & "00" & X"1" & "0000001" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0199@0005.  trace();
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1010011 else 1010011, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+5 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1010011" & "1010011" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0200@0006.  if true then fork else fork;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000011 else 0000011, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+6 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "0000011" & "0000011" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0203@0007.badchar:  errcode <= err_badchar, if TRACE_ERROR then printerror else nextchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0010) then 0001000 else 0010000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 001, delay <= 00, carry <= 00, dummy = 0;
+7 => "00" & X"0" & X"0" & "00" & "10" & X"2" & "0001000" & "0010000" & X"0" & "00" & "00" & O"1" & "00" & "00" & '0',
+
+-- L0204@0008.printerror:  emit(char_E);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 0100, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+8 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"4" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0205@0009.  emit(char_R);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 0101, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+9 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"5" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0206@000A.  emit(char_R);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 0101, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+10 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"5" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0207@000B.  emit(errcode);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 1111, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+11 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"F" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0208@000C.  emit(char_space);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 0001, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+12 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"1" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0209@000D.  emit(inp1);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 1010, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+13 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"A" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0210@000E.  emit(inp0);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 1001, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+14 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"9" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0211@000F.  print_crlf();
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011000 else 1011000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+15 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011000" & "1011000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0216@0010.nextchar:  STATUS = done, if false then next else deadloop;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 01, if (1111) then 0000000 else 0000100, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+16 => "00" & X"0" & X"0" & "00" & "01" & X"F" & "0000000" & "0000100" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0221@0011.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_swap();
+--  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0111110 else 0111110, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+17 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "0111110" & "0111110" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0222@0012.  if false then next else exec;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0010110, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+18 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0010110" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0227@0013.  errcode <= ok, STATUS = busy_using_mt, MT_CTRL = clear, if false then next else exec;
+--  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (1111) then 0000000 else 0010110, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 000, delay <= 00, carry <= 00, dummy = 0;
+19 => "11" & X"0" & X"0" & "00" & "11" & X"F" & "0000000" & "0010110" & X"0" & "00" & "00" & O"0" & "00" & "00" & '0',
+
+-- L0232@0014.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+--  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1000000 else 1000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+20 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1000000" & "1000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0233@0015.  errcode <= ok, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+--  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 000, delay <= 00, carry <= 00, dummy = 0;
+21 => "01" & X"1" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"0" & "00" & "00" & '0',
+
+-- L0234@0016.exec:  bitcnt <= load, MT_COL = 0, div2();
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 01, STATUS = 10, if (0000) then 0111100 else 0111100, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+22 => "00" & X"0" & X"0" & "01" & "10" & X"0" & "0111100" & "0111100" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0235@0017.  if false then next else nextchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0010000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+23 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0010000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0239@0018.plus:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+--  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1000000 else 1000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+24 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1000000" & "1000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0240@0019.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+--  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+25 => "01" & X"1" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0241@001A.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0;
+--  MT_CTRL = 01, MT_ROW = 1011, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+26 => "01" & X"B" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0242@001B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC;
+--  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 1100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+27 => "01" & X"0" & X"C" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0243@001C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xD, carry <= zero, if false then next else exec;
+--  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 1101, bitcnt <= 00, STATUS = 11, if (1111) then 0000000 else 0010110, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 10, dummy = 0;
+28 => "01" & X"1" & X"D" & "00" & "11" & X"F" & "0000000" & "0010110" & X"0" & "00" & "00" & O"6" & "00" & "10" & '0',
+
+-- L0247@001D.minus:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+--  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1000000 else 1000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+29 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1000000" & "1000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0248@001E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+--  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+30 => "01" & X"1" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0249@001F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0;
+--  MT_CTRL = 01, MT_ROW = 1011, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+31 => "01" & X"B" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0250@0020.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC;
+--  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 1100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+32 => "01" & X"0" & X"C" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0251@0021.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 9;
+--  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 1001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+33 => "01" & X"1" & X"9" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0252@0022.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, carry <= one, if false then next else exec;
+--  MT_CTRL = 01, MT_ROW = 1001, MT_COL = 1101, bitcnt <= 00, STATUS = 11, if (1111) then 0000000 else 0010110, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 11, dummy = 0;
+34 => "01" & X"9" & X"D" & "00" & "11" & X"F" & "0000000" & "0010110" & X"0" & "00" & "00" & O"6" & "00" & "11" & '0',
+
+-- L0256@0023.enter:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
+--  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1000110 else 1000110, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+35 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1000110" & "1000110" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0257@0024.  if false then next else exec;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0010110, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+36 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0010110" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0261@0025.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0000, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+37 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0264@0026.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1000, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+38 => "00" & X"0" & X"8" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0267@0027.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0100, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0100, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+39 => "00" & X"0" & X"4" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0270@0028.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1100, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1100, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+40 => "00" & X"0" & X"C" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0273@0029.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0010, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0010, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+41 => "00" & X"0" & X"2" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0276@002A.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1010, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1010, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+42 => "00" & X"0" & X"A" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0279@002B.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0110, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0110, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+43 => "00" & X"0" & X"6" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0282@002C.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1110, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1110, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+44 => "00" & X"0" & X"E" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0285@002D.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0001, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+45 => "00" & X"0" & X"1" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0288@002E.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1001, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1001, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+46 => "00" & X"0" & X"9" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0292@002F.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0101, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0101, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+47 => "00" & X"0" & X"5" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0296@0030.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1101, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1101, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+48 => "00" & X"0" & X"D" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0300@0031.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0011, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0011, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+49 => "00" & X"0" & X"3" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0304@0032.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1011, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1011, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+50 => "00" & X"0" & X"B" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0308@0033.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b0111, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0111, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0110101, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+51 => "00" & X"0" & X"7" & "00" & "10" & X"F" & "0000000" & "0110101" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0312@0034.  regs <= load, MT_ROW = 0b0000, MT_COL = 0b1111;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1111, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 01, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+52 => "00" & X"0" & X"F" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & "01" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0313@0035.hexchar:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+--  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1000000 else 1000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+53 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1000000" & "1000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0314@0036.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+--  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+54 => "01" & X"1" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0315@0037.  bitcnt <= load, MT_COL = 3;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0011, bitcnt <= 01, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+55 => "00" & X"0" & X"3" & "01" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0316@0038.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0;
+--  MT_CTRL = 01, MT_ROW = 1101, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+56 => "01" & X"D" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0317@0039.  STATUS = busy_using_mt, reg0 <= mul2, regs <= div2, bitcnt <= dec, if bitcnt_is_zero then next else repeat;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 11, STATUS = 11, if (0110) then 0000000 else 0000001, TXDCHAR <= 0000, regs <= 10, reg0 <= 11, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+57 => "00" & X"0" & X"0" & "11" & "11" & X"6" & "0000000" & "0000001" & X"0" & "10" & "11" & O"6" & "00" & "00" & '0',
+
+-- L0318@003A.  bitcnt <= load, MT_COL = 3;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0011, bitcnt <= 01, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+58 => "00" & X"0" & X"3" & "01" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0319@003B.  STATUS = busy_using_mt, regs <= mul2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 11, STATUS = 11, if (0110) then 0010000 else 0000001, TXDCHAR <= 0000, regs <= 11, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+59 => "00" & X"0" & X"0" & "11" & "11" & X"6" & "0010000" & "0000001" & X"0" & "11" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0322@003C.div2:  STATUS = busy_using_mt, reg0 <= div2, regs <= div2, bitcnt <= inc;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 10, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 10, reg0 <= 10, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+60 => "00" & X"0" & X"0" & "10" & "11" & X"0" & "0000000" & "0000000" & X"0" & "10" & "10" & O"6" & "00" & "00" & '0',
+
+-- L0323@003D.  if bitcnt_is_zero then return else div2;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0110) then 0000010 else 0111100, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+61 => "00" & X"0" & X"0" & "00" & "10" & X"6" & "0000010" & "0111100" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0326@003E.matrix_swap:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+--  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+62 => "01" & X"0" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0327@003F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
+--  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+63 => "01" & X"1" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0330@0040.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
+--  MT_CTRL = 01, MT_ROW = 0010, MT_COL = 0010, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+64 => "01" & X"2" & X"2" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0331@0041.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
+--  MT_CTRL = 01, MT_ROW = 0011, MT_COL = 0011, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+65 => "01" & X"3" & X"3" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0332@0042.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
+--  MT_CTRL = 01, MT_ROW = 0100, MT_COL = 0100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+66 => "01" & X"4" & X"4" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0333@0043.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
+--  MT_CTRL = 01, MT_ROW = 0101, MT_COL = 0101, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+67 => "01" & X"5" & X"5" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0334@0044.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
+--  MT_CTRL = 01, MT_ROW = 0110, MT_COL = 0110, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+68 => "01" & X"6" & X"6" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0335@0045.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
+--  MT_CTRL = 01, MT_ROW = 0111, MT_COL = 0111, bitcnt <= 00, STATUS = 11, if (0000) then 0000010 else 0000010, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+69 => "01" & X"7" & X"7" & "00" & "11" & X"0" & "0000010" & "0000010" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
+
+-- L0338@0046.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+--  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+70 => "01" & X"0" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0312@0036.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
---  MT_CTRL = 01, MT_ROW = 0011, MT_COL = 0011, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-54 => "01" & X"3" & X"3" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0339@0047.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
+--  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0010, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+71 => "01" & X"1" & X"2" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0313@0037.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
---  MT_CTRL = 01, MT_ROW = 0100, MT_COL = 0100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-55 => "01" & X"4" & X"4" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0340@0048.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
+--  MT_CTRL = 01, MT_ROW = 0010, MT_COL = 0011, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+72 => "01" & X"2" & X"3" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0314@0038.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
---  MT_CTRL = 01, MT_ROW = 0101, MT_COL = 0101, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-56 => "01" & X"5" & X"5" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0341@0049.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
+--  MT_CTRL = 01, MT_ROW = 0011, MT_COL = 0100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+73 => "01" & X"3" & X"4" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0315@0039.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
---  MT_CTRL = 01, MT_ROW = 0110, MT_COL = 0110, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-57 => "01" & X"6" & X"6" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0342@004A.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
+--  MT_CTRL = 01, MT_ROW = 0100, MT_COL = 0101, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+74 => "01" & X"4" & X"5" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0316@003A.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
---  MT_CTRL = 01, MT_ROW = 0111, MT_COL = 0111, bitcnt <= 00, STATUS = 11, if (0000) then 0000010 else 0000010, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-58 => "01" & X"7" & X"7" & "00" & "11" & X"0" & "0000010" & "0000010" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0343@004B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
+--  MT_CTRL = 01, MT_ROW = 0101, MT_COL = 0110, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+75 => "01" & X"5" & X"6" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0319@003B.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
---  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-59 => "01" & X"0" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0344@004C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
+--  MT_CTRL = 01, MT_ROW = 0110, MT_COL = 0111, bitcnt <= 00, STATUS = 11, if (0000) then 0000010 else 0000010, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+76 => "01" & X"6" & X"7" & "00" & "11" & X"0" & "0000010" & "0000010" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0320@003C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
---  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0010, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-60 => "01" & X"1" & X"2" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0347@004D.matrix_pop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
+--  MT_CTRL = 01, MT_ROW = 0010, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+77 => "01" & X"2" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0321@003D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
---  MT_CTRL = 01, MT_ROW = 0010, MT_COL = 0011, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-61 => "01" & X"2" & X"3" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0348@004E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 2;
+--  MT_CTRL = 01, MT_ROW = 0011, MT_COL = 0010, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+78 => "01" & X"3" & X"2" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0322@003E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
---  MT_CTRL = 01, MT_ROW = 0011, MT_COL = 0100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-62 => "01" & X"3" & X"4" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0349@004F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 3;
+--  MT_CTRL = 01, MT_ROW = 0100, MT_COL = 0011, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+79 => "01" & X"4" & X"3" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0323@003F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
---  MT_CTRL = 01, MT_ROW = 0100, MT_COL = 0101, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-63 => "01" & X"4" & X"5" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0350@0050.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 4;
+--  MT_CTRL = 01, MT_ROW = 0101, MT_COL = 0100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+80 => "01" & X"5" & X"4" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0324@0040.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
---  MT_CTRL = 01, MT_ROW = 0101, MT_COL = 0110, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-64 => "01" & X"5" & X"6" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0351@0051.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 5;
+--  MT_CTRL = 01, MT_ROW = 0110, MT_COL = 0101, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+81 => "01" & X"6" & X"5" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0325@0041.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
---  MT_CTRL = 01, MT_ROW = 0110, MT_COL = 0111, bitcnt <= 00, STATUS = 11, if (0000) then 0000010 else 0000010, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-65 => "01" & X"6" & X"7" & "00" & "11" & X"0" & "0000010" & "0000010" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0352@0052.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 6, if true then return else return;
+--  MT_CTRL = 01, MT_ROW = 0111, MT_COL = 0110, bitcnt <= 00, STATUS = 11, if (0000) then 0000010 else 0000010, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+82 => "01" & X"7" & X"6" & "00" & "11" & X"0" & "0000010" & "0000010" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0327@0042.trace:  if TRACE_CHAR then next else return;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0011) then 0000000 else 0000010, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-66 => "00" & X"0" & X"0" & "00" & "10" & X"3" & "0000000" & "0000010" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0354@0053.trace:  if TRACE_CHAR then next else return;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0011) then 0000000 else 0000010, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+83 => "00" & X"0" & X"0" & "00" & "10" & X"3" & "0000000" & "0000010" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0328@0043.  emit(char_I);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 0111, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-67 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"7" & "00" & "00" & O"6" & "00" & O"0",
+-- L0355@0054.  emit(char_I);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 0111, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+84 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"7" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0329@0044.  emit(char_EQU);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 0110, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-68 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"6" & "00" & "00" & O"6" & "00" & O"0",
+-- L0356@0055.  emit(char_EQU);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 0110, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+85 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"6" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0330@0045.  emit(inp1);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 1010, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-69 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"A" & "00" & "00" & O"6" & "00" & O"0",
+-- L0357@0056.  emit(inp1);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 1010, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+86 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"A" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0331@0046.  emit(inp0);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 1001, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-70 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"9" & "00" & "00" & O"6" & "00" & O"0",
+-- L0358@0057.  emit(inp0);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 1001, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+87 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"9" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0333@0047.print_crlf:  emit(char_cr);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 0010, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-71 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"2" & "00" & "00" & O"6" & "00" & O"0",
+-- L0360@0058.print_crlf:  emit(char_cr);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 0010, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+88 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"2" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0334@0048.  emit(char_lf);
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1001010 else 1001010, TXDCHAR <= 0011, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-72 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1001010" & "1001010" & X"3" & "00" & "00" & O"6" & "00" & O"0",
+-- L0361@0059.  emit(char_lf);
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1011011 else 1011011, TXDCHAR <= 0011, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+89 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1011011" & "1011011" & X"3" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0335@0049.  if true then return else return;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000010 else 0000010, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-73 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "0000010" & "0000010" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0362@005A.  if true then return else return;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000010 else 0000010, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+90 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "0000010" & "0000010" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0337@004A.emit:  if TXDREADY then next else repeat;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0100) then 0000000 else 0000001, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-74 => "00" & X"0" & X"0" & "00" & "10" & X"4" & "0000000" & "0000001" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0364@005B.emit:  if TXDREADY then next else repeat;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0100) then 0000000 else 0000001, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+91 => "00" & X"0" & X"0" & "00" & "10" & X"4" & "0000000" & "0000001" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0338@004B.  if TXDREADY then next else repeat;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0100) then 0000000 else 0000001, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-75 => "00" & X"0" & X"0" & "00" & "10" & X"4" & "0000000" & "0000001" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0365@005C.  if TXDREADY then next else repeat;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0100) then 0000000 else 0000001, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+92 => "00" & X"0" & X"0" & "00" & "10" & X"4" & "0000000" & "0000001" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0339@004C.  if TXDREADY then next else repeat;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0100) then 0000000 else 0000001, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-76 => "00" & X"0" & X"0" & "00" & "10" & X"4" & "0000000" & "0000001" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0366@005D.  if TXDREADY then next else repeat;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0100) then 0000000 else 0000001, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+93 => "00" & X"0" & X"0" & "00" & "10" & X"4" & "0000000" & "0000001" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- L0340@004D.  if TXDSEND then return else return;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0101) then 0000010 else 0000010, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, dummy = 000;
-77 => "00" & X"0" & X"0" & "00" & "10" & X"5" & "0000010" & "0000010" & X"0" & "00" & "00" & O"6" & "00" & O"0",
+-- L0367@005E.  if TXDSEND then return else return;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0101) then 0000010 else 0000010, TXDCHAR <= 0000, regs <= 00, reg0 <= 00, errcode <= 110, delay <= 00, carry <= 00, dummy = 0;
+94 => "00" & X"0" & X"0" & "00" & "10" & X"5" & "0000010" & "0000010" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0',
 
--- 50 location(s) in following ranges will be filled with default value
--- 004E .. 007F
+-- 33 location(s) in following ranges will be filled with default value
+-- 005F .. 007F
 
-others => "00" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & O"0"
+others => "00" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & "00" & "00" & O"6" & "00" & "00" & '0'
 );
 
 end hexcalc_code;

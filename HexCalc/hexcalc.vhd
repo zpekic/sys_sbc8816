@@ -105,13 +105,26 @@ end component;
 signal ui_address: std_logic_vector(CODE_ADDRESS_WIDTH - 1 downto 0);
 signal ui_nextinstr: std_logic_vector(CODE_ADDRESS_WIDTH -1  downto 0);
 
-
 -- internal signals
 --signal ascii: std_logic_vector(7 downto 0);
 signal hexchar: std_logic_vector(3 downto 0);
 signal errcode: std_logic_vector(2 downto 0);
 signal bitcnt: std_logic_vector(3 downto 0);
-signal delay: std_logic;
+signal delay, carry: std_logic;
+
+-- ALU input / outputs
+alias row_delay: std_logic is mt_x(8);
+alias row_not: std_logic is mt_x(9);
+alias row_and: std_logic is mt_x(10);
+alias row_sum: std_logic is mt_x(11);
+alias row_const: std_logic is mt_x(12);
+alias row_direct: std_logic is mt_x(13);
+alias col_delay: std_logic is mt_y(8);
+alias col_not: std_logic is mt_y(9);
+alias col_adc1: std_logic is mt_y(12);
+alias col_adc2: std_logic is mt_y(13);
+alias col_and1: std_logic is mt_y(14);
+alias col_and2: std_logic is mt_y(15);
 
 -- conditions
 signal input_is_zero, bitcnt_is_zero: std_logic;
@@ -153,7 +166,7 @@ end generate;
 	sr_c: shiftregp port map (
 				clk => clk, 
 				opr => hxc_regs, 
-				so => mt_x(12), 
+				so => row_const, 
 				si => '0',
 				pi => decode4to16(to_integer(unsigned(hxc_MT_ROW))),	-- one hot bit
 				hexsel => dbg_col(1 downto 0), 
@@ -163,7 +176,7 @@ end generate;
 	sr_d: shiftregp port map (
 				clk => clk, 
 				opr => hxc_regs, 
-				so => mt_x(13), 
+				so => row_direct, 
 				si => '0',
 				pi(15 downto 4) => (others => hxc_MT_COL(3)),	-- sign extend
 				pi(3 downto 0) => hxc_MT_COL,							-- constant data
@@ -172,10 +185,10 @@ end generate;
 			);
 
 -- ALU!
-mt_x(8) <= delay; 
-mt_x(9) <= '0'; -- TODO
-mt_x(10) <= mt_y(14) and mt_y(15);
-mt_x(11) <= '0'; -- TODO
+row_delay <= delay; 
+row_not <= not col_not; 
+row_and <= col_and1 and col_and2;
+row_sum <= carry xor (col_adc1 xor col_adc2); -- 1 bit full adder sum
 -- 12 is constant register
 -- 13 is data register
 mt_x(14) <= '0'; -- TODO
@@ -328,11 +341,31 @@ with hxc_TXDCHAR select hexchar <=
 --			when delay_same =>
 --				delay <= delay;
 			when delay_column =>
-				delay <= mt_y(8);
+				delay <= col_delay;
 			when delay_zero =>
 				delay <= '0';
 			when delay_one =>
 				delay <= '1';
+			when others =>
+				null;
+		end case;
+ end if;
+ end process;
+---- End boilerplate code
+
+---- Start boilerplate code (use with utmost caution!)
+ update_carry: process(clk, hxc_carry)
+ begin
+	if (rising_edge(clk)) then
+		case hxc_carry is
+--			when carry_same =>
+--				carry <= carry;
+			when carry_adc =>
+				carry <= (col_adc1 and col_adc2) or (carry and (col_adc1 xor col_adc2));	-- carry out for 1 bit full adder
+			when carry_zero =>
+				carry <= '0';
+			when carry_one =>
+				carry <= '1';
 			when others =>
 				null;
 		end case;

@@ -61,20 +61,32 @@ constant kbdmap: table_16x8 := (
 
 signal cnt: std_logic_vector(3 downto 0);
 signal matrix: std_logic_vector(7 downto 0);
+signal keymatch: std_logic;
 
 begin
 
-hex <= cnt;
+--hex <= cnt;
 matrix <= kbdmap(to_integer(unsigned(cnt)));
 col <= matrix(7 downto 4);
-keypressed <= clk when (matrix(3 downto 0) = row) else '0'; 
+keymatch <= '1' when (matrix(3 downto 0) = row) else '0'; 
+
+on_keymatch: process(keymatch, cnt)
+begin
+	if (rising_edge(keymatch)) then
+		hex <= cnt;
+	end if;
+end process;
 
 on_clk:process(clk, cnt)
 begin
-	if (falling_edge(clk)) then
+	if (rising_edge(clk)) then
 		cnt <= std_logic_vector(unsigned(cnt) + 1);
 	end if;
+	if (falling_edge(clk)) then
+		keypressed <= keymatch;
+	end if;
 end process;
+
 
 end Behavioral;
 

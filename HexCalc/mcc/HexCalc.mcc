@@ -110,9 +110,15 @@ delay:			.regfield 2 values
 				column,
 				zero,
 				one default same;
+
+carry:			.regfield 2 values
+				same,
+				adc,
+				zero,
+				one default same;
 				
 // placeholder
-dummy:			.valfield 3 values * default 0;
+dummy:			.valfield 1 values * default 0;
 						
 //	useful aliases, these are evaluated as simple text replacement of label with everything between .alias and ; 
 goto:		.alias if false then next else;
@@ -137,9 +143,9 @@ row_r5:		.alias MT_ROW = 5;
 row_r6:		.alias MT_ROW = 6;
 row_r7:		.alias MT_ROW = 7;
 row_delay:	.alias MT_ROW = 8;
-row_9:		.alias MT_ROW = 9;
+row_not:	.alias MT_ROW = 9;
 row_and:	.alias MT_ROW = 0xA;
-row_11:		.alias MT_ROW = 0xB;
+row_sum:	.alias MT_ROW = 0xB;
 row_const:	.alias MT_ROW = 0xC;
 row_direct:	.alias MT_ROW = 0xD;
 row_14:		.alias MT_ROW = 0xE;
@@ -154,11 +160,11 @@ col_r5:		.alias MT_COL = 5;
 col_r6:		.alias MT_COL = 6;
 col_r7:		.alias MT_COL = 7;
 col_delay:	.alias MT_COL = 8;
-col_9:		.alias MT_COL = 9;
+col_not:	.alias MT_COL = 9;
 col_10:		.alias MT_COL = 0xA;
 col_11:		.alias MT_COL = 0xB;
-col_12:		.alias MT_COL = 0xC;
-col_13:		.alias MT_COL = 0xD;
+col_adc1:	.alias MT_COL = 0xC;
+col_adc2:	.alias MT_COL = 0xD;
 col_and1:	.alias MT_COL = 0xE;
 col_and2:	.alias MT_COL = 0xF;
 
@@ -169,6 +175,8 @@ trace:		.sub;
 matrix_nop:	.sub;
 matrix_push:.sub;
 matrix_swap:.sub;
+matrix_pop:	.sub;
+matrix_push:.sub;
 div2:		.sub;
 
 // other
@@ -225,6 +233,23 @@ nextchar:	STATUS = done, goto deadloop;
 			errcode <= ok, connect row_nos to col_nos;	// no switch on TOS means pull down, so it 0
 exec:		load_bitcnt 0, div2();				// 16*
 			goto nextchar;		
+			
+			// TOS <= TOS + NOS, POP
+			.map '+';
+plus:		nuke, matrix_nop();
+			connect row_nos to col_nos;
+			connect row_sum to col_tos;
+			connect row_tos to col_adc1;
+			connect row_nos to col_adc2, carry <= zero, goto exec;
+			
+			// TOS <= TOS - NOS, POP
+			.map '-';
+minus:		nuke, matrix_nop();
+			connect row_nos to col_nos;
+			connect row_sum to col_tos;
+			connect row_tos to col_adc1;
+			connect row_nos to col_not;
+			connect row_not to col_adc2, carry <= one, goto exec;
 			
 			// enter: push all down, TOS <= 0
 			.map 0x0D;
@@ -293,12 +318,6 @@ hexchar:	nuke, matrix_nop();
 			load_bitcnt 3;
 			STATUS = busy_using_mt, regs <= mul2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
 			
-//shift_ud:	bitcnt <= dec;
-//			STATUS = busy_using_mt, reg0 <= mul2, regs <= div2, if bitcnt_is_zero then next else shift_ud;
-//			load_bitcnt 4;
-//shift_d:	bitcnt <= dec;
-//			STATUS = busy_using_mt, regs <= mul2, if bitcnt_is_zero then nextchar else shift_d;
-			
 // rotate all registers right (LSB first) through switch matrix;
 div2:		STATUS = busy_using_mt, reg0 <= div2, regs <= div2, bitcnt <= inc;
 			if bitcnt_is_zero then return else div2;
@@ -323,6 +342,14 @@ matrix_push:connect row_tos to col_nos;	// R0 <= R1;
 			connect row_r4 to col_r5;	
 			connect row_r5 to col_r6;	
 			connect row_r6 to col_r7, back;	
+
+// pop all towards R0, TOS is result of operation, R7 is 0
+matrix_pop:	connect row_r2 to col_nos;
+			connect row_r3 to col_r2;
+			connect row_r4 to col_r3;
+			connect row_r5 to col_r4;
+			connect row_r6 to col_r5;
+			connect row_r7 to col_r6, back;
 			
 trace:		if TRACE_CHAR then next else return;
 			emit(char_I);		// I=<received char>

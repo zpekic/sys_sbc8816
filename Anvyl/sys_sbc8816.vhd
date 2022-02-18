@@ -344,12 +344,13 @@ signal win_index: std_logic_vector(2 downto 0);
 
 --- frequency signals
 signal freq_50M: std_logic_vector(11 downto 0);
+alias dot_clk: std_logic is freq_50M(1);
 alias debounce_clk: std_logic is freq_50M(9);
 signal freq4096: std_logic;		
 signal freq_2048: std_logic_vector(11 downto 0);
 alias freq1: std_logic is freq_2048(11);
 alias freq2: std_logic is freq_2048(10);
-alias freq64: std_logic is freq_2048(5);
+alias freq128: std_logic is freq_2048(4);
 signal mt_cnt, ss_cnt: std_logic_vector(1 downto 0);
 signal phi0, phi1, phi2, phi3: std_logic;
 signal prescale_baud, prescale_power: integer range 0 to 65535;
@@ -608,9 +609,9 @@ with sw_clksel select mt_cnt <=
 	freq_2048(5 downto 4) when "011",
 	--freq_50M(11 downto 10) when "100",
 	ss_cnt	when "100",
-	freq_50M(9 downto 8) when "101",
-	freq_50M(7 downto 6) when "110",
-	freq_50M(5 downto 4) when others;
+	freq_50M(6 downto 5) when "101",
+	freq_50M(5 downto 4) when "110",		-- 1.5625MHz
+	freq_50M(4 downto 3) when others;	-- 3.125MHz
 	
 -- 4 phase clock to activate strobe at right time
 phi0 <= '1' when (mt_cnt = "00") else '0';
@@ -627,14 +628,14 @@ begin
 end process;
 
 --stacktop(23 downto 16) <= "000000" & hc_status; -- TODO
-stacktop(23 downto 16) <= hc_mt_ctrl(7 downto 0); -- TODO
+--stacktop(23 downto 16) <= hc_mt_ctrl(7 downto 0); -- TODO
 
 hc: hexcalc Port map (
 			clk => phi0,
 			reset => reset,
 			status => hc_status,
 			--
-			dbg => stacktop(15 downto 0),	-- TODO 
+			dbg => open, --stacktop(15 downto 0),	-- TODO 
 			dbg_row => win_y(3 downto 0),
 			dbg_col => win_x(3 downto 0),
 			dbg_reg => hc_reg,
@@ -653,14 +654,38 @@ hc: hexcalc Port map (
 			TXDCHAR => hc_txdchar
 		);
 
+-- catch stacktop appearing to display it on the 7seg LED
+on_dot_clk: process(dot_clk, win_x, win_y, hc_reg)	-- TODO - improve this mess!
+begin
+	if (rising_edge(dot_clk)) then
+		if (win_y = "00000") then
+			case win_x is
+				when "00110" =>
+					stacktop(23 downto 20) <= hc_reg;
+				when "00111" =>
+					stacktop(19 downto 16) <= hc_reg;
+				when "01000" =>
+					stacktop(15 downto 12) <= hc_reg;
+				when "01001" =>
+					stacktop(11 downto 8) <= hc_reg;
+				when "01010" =>
+					stacktop(7 downto 4) <= hc_reg;
+				when "01011" =>
+					stacktop(3 downto 0) <= hc_reg;
+				when others =>
+					null;
+			end case;
+		end if;
+	end if;
+end process;
+-----------------------------------------
+-- UART output
+-----------------------------------------	
 with sw_mode select hc_txdready <= 
 		tx_sent when mode_st_tr_hc,		
 		tty_sent when mode_st_hc_tr,
 		'1' when others;
 
------------------------------------------
--- UART output
------------------------------------------	
 uart_tx: uart_par2ser Port map (
 		reset => reset,
 		txd_clk => baudrate_x1,
@@ -692,8 +717,8 @@ tty: tty2vga Port map(
 		ascii => tty_char,
 		ascii_send => tty_send,
 		ascii_sent => tty_sent,
-		cur_clk => freq2,			-- 2Hz
-		vga_clk => freq_50M(1),	-- 25MHz
+		cur_clk => freq2,		-- 2Hz
+		vga_clk => dot_clk,	-- 25MHz
 		vga_hsync => HSYNC_O,
 		vga_vsync => VSYNC_O,
 		vga_r => RED_O,
@@ -739,6 +764,7 @@ win: hardwin Port map(
 
 -- 8 single LEDs
 LED <= mt_ctrl(7 downto 0);
+--LED <= kypd_keypressed & "000" & kypd_hex;
 
 -- traffic light LEDs
 LDT1G <= hc_status(1);
@@ -787,7 +813,7 @@ uart_rx: uart_ser2par Port map (
 		);
 
 kypd: keypad4x4 Port map ( 
-		clk => freq64,
+		clk => freq128,
 		row => keypad_row, --KYPD_ROW,
 		col => KYPD_COL,
 		hex => kypd_hex,
@@ -805,6 +831,7 @@ begin
 		if (rising_edge(key)) then
 			if (kypd_keypressed = '1') then
 				input <= kypd2ascii(to_integer(unsigned(kypd_shift & kypd_hex)));
+				--input <= kypd_shift & "000" & kypd_hex;
 			else
 				input <= rx_char;
 			end if;
