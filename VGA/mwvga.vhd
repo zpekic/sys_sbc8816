@@ -64,8 +64,8 @@ constant color8_purple: std_logic_vector(11 downto 0) := X"F0F";
 constant color8_cyan	 : std_logic_vector(11 downto 0) := X"FF0"; 
 constant color8_white : std_logic_vector(11 downto 0) := X"FFF"; 
 
-type rom8 is array(0 to 7) of std_logic_vector(11 downto 0);
-constant palette1: rom8 :=(
+type table8x12 is array(0 to 7) of std_logic_vector(11 downto 0);
+constant palette1: table8x12 :=(
 	color8_cyan,
 	color8_red,
 	color8_green,
@@ -76,7 +76,7 @@ constant palette1: rom8 :=(
 	color8_white
 );
 
-constant palette0: rom8 :=(
+constant palette0: table8x12 :=(
 	color8_blue,
 	color8_black,
 	color8_black,

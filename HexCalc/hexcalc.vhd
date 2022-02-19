@@ -100,7 +100,6 @@ component hexcalc_control_unit is
           ui_address : out  STD_LOGIC_VECTOR (CODE_DEPTH - 1 downto 0));
 end component;
 
-
 -- control unit
 signal ui_address: std_logic_vector(CODE_ADDRESS_WIDTH - 1 downto 0);
 signal ui_nextinstr: std_logic_vector(CODE_ADDRESS_WIDTH -1  downto 0);
@@ -111,6 +110,10 @@ signal hexchar: std_logic_vector(3 downto 0);
 signal errcode: std_logic_vector(2 downto 0);
 signal bitcnt: std_logic_vector(3 downto 0);
 signal delay, carry: std_logic;
+signal opr: std_logic_vector(5 downto 0);	-- register operation control
+alias opr_tos: std_logic_vector(1 downto 0) is opr(5 downto 4); 
+alias opr_nos: std_logic_vector(1 downto 0) is opr(3 downto 2);
+alias opr_reg: std_logic_vector(1 downto 0) is opr(1 downto 0);
 
 -- ALU input / outputs
 alias row_delay: std_logic is mt_x(8);
@@ -142,19 +145,28 @@ dbg_reg <= reg(to_integer(unsigned(dbg_row)));
 mt_ctrl <= hxc_MT_CTRL & hxc_MT_COL & hxc_MT_ROW;
 
 -- shift only registers
-	sr0: shiftreg port map (
+	tos: shiftreg port map (
 				clk => clk, 
-				opr => hxc_reg0,	-- TOS register can shift independently 
+				opr => opr_tos,	-- TOS register can shift independently 
 				so => mt_x(0), 
 				si => mt_y(0), 
 				hexsel => dbg_col(1 downto 0), 
 				hexout => reg(0)
 			);
 
-sr_generate: for i in 1 to 7 generate
+	nos: shiftreg port map (
+				clk => clk, 
+				opr => opr_nos,	-- NOS register can shift independently 
+				so => mt_x(1), 
+				si => mt_y(1), 
+				hexsel => dbg_col(1 downto 0), 
+				hexout => reg(1)
+			);
+
+sr_generate: for i in 2 to 7 generate
 	sr: shiftreg port map (
 				clk => clk, 
-				opr => hxc_regs, -- R1..15 shift in unison
+				opr => opr_reg,	-- all other registers operate in unison
 				so => mt_x(i), 
 				si => mt_y(i), 
 				hexsel => dbg_col(1 downto 0), 
@@ -165,7 +177,7 @@ end generate;
 -- shift registers with load
 	sr_c: shiftregp port map (
 				clk => clk, 
-				opr => hxc_regs, 
+				opr => opr_reg,	-- all other registers operate in unison 
 				so => row_const, 
 				si => '0',
 				pi => decode4to16(to_integer(unsigned(hxc_MT_ROW))),	-- one hot bit
@@ -175,7 +187,7 @@ end generate;
 
 	sr_d: shiftregp port map (
 				clk => clk, 
-				opr => hxc_regs, 
+				opr => opr_reg, 
 				so => row_direct, 
 				si => '0',
 				pi(15 downto 4) => (others => hxc_MT_COL(3)),	-- sign extend
@@ -306,6 +318,16 @@ with hxc_TXDCHAR select hexchar <=
 	'0' & errcode when TXDCHAR_errcode,
 	X"F" when others;
 
+---- Start boilerplate code (use with utmost caution!)
+ with hxc_opr select opr <=
+      --np_np_np when opr_np_np_np, -- default value
+      "000011" when opr_np_np_ld,
+      "100101" when opr_m2_d2_d2,
+      "001010" when opr_np_m2_m2,
+      "010101" when opr_d2_d2_d2,
+      "010100" when opr_d2_d2_np,
+      "000000" when others;
+---- End boilerplate code
 
 ---- Start boilerplate code (use with utmost caution!)
  update_errcode: process(clk, hxc_errcode)
@@ -360,7 +382,7 @@ with hxc_TXDCHAR select hexchar <=
 		case hxc_carry is
 --			when carry_same =>
 --				carry <= carry;
-			when carry_adc =>
+			when carry_update =>
 				carry <= (col_adc1 and col_adc2) or (carry and (col_adc1 xor col_adc2));	-- carry out for 1 bit full adder
 			when carry_zero =>
 				carry <= '0';

@@ -28,7 +28,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 -- any Xilinx primitives in this code.
 --library UNISIM;
 --use UNISIM.VComponents.all;
-use work.hexcalc_code.all;
+--use work.hexcalc_code.all;
 
 entity shiftreg is
     Port ( clk : in  STD_LOGIC;
@@ -47,7 +47,7 @@ begin
 
 -- serial outputs
 with opr select so <=
-	r(15) when regs_mul2,
+	r(15) when "10",
 	r(0) when others;			-- usually LSB is projected out which makes sense to display
 	
 -- shift up and down only
@@ -55,9 +55,9 @@ on_clk: process(clk, opr, r, si)
 	begin
 	if (rising_edge(clk)) then
 		case opr is
-			when regs_div2 =>
+			when "01" =>	-- /2
 				r <= si & r(15 downto 1);
-			when regs_mul2 =>
+			when "10" =>	-- *2
 				r <= r(14 downto 0) & si;
 			when others =>
 				null;

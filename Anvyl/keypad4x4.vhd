@@ -65,7 +65,6 @@ signal keymatch: std_logic;
 
 begin
 
---hex <= cnt;
 matrix <= kbdmap(to_integer(unsigned(cnt)));
 col <= matrix(7 downto 4);
 keymatch <= '1' when (matrix(3 downto 0) = row) else '0'; 

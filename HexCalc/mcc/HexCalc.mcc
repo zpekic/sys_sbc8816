@@ -82,18 +82,16 @@ TXDCHAR		.regfield 4 values
 				errcode
 				default same;
 				
-regs			.regfield 2 values
-				same,
-				load,		// only works for regs 0xC[onstant] and 0xD[ata]
-				div2,
-				mul2 default same;
-
-reg0			.regfield 2 values
-				same,
-				-,			// no load for registers 0..7
-				div2,
-				mul2 default same;
-
+opr 			.valfield 3 values
+				np_np_np,
+				np_np_ld,	// only effects 0xC[onstant] and 0xD[ata]
+				m2_d2_d2,
+				np_m2_m2,
+				d2_d2_d2,
+				d2_d2_np,	// used for multiplication
+				-,
+				- default np_np_np;
+				
 //	error codes are 1 to 6, 0 means no error
 errcode:		.regfield 3 values
 				ok, 
@@ -113,18 +111,18 @@ delay:			.regfield 2 values
 
 carry:			.regfield 2 values
 				same,
-				adc,
+				update,
 				zero,
 				one default same;
 				
 // placeholder
-dummy:			.valfield 1 values * default 0;
+dummy:			.valfield 2 values * default 0;
 						
 //	useful aliases, these are evaluated as simple text replacement of label with everything between .alias and ; 
 goto:		.alias if false then next else;
 noop:		.alias if true then next else next;
 back:	    .alias if true then return else return;
-digit:		.alias regs <= load, MT_ROW = 0b0000, MT_COL =;	// c_value of 0b0000 will result in mask 0x0001
+digit:		.alias opr = np_np_ld, MT_ROW = 0b0000, MT_COL =;	// c_value of 0b0000 will result in mask 0x0001
 load_bitcnt	.alias bitcnt <= load, MT_COL =;
 
 // switches in the matrix
@@ -236,20 +234,28 @@ exec:		load_bitcnt 0, div2();				// 16*
 			
 			// TOS <= TOS + NOS, POP
 			.map '+';
-plus:		nuke, matrix_nop();
-			connect row_nos to col_nos;
+plus:		nuke, matrix_pop();
+			//connect row_nos to col_nos;
 			connect row_sum to col_tos;
 			connect row_tos to col_adc1;
 			connect row_nos to col_adc2, carry <= zero, goto exec;
 			
 			// TOS <= TOS - NOS, POP
 			.map '-';
-minus:		nuke, matrix_nop();
-			connect row_nos to col_nos;
+minus:		nuke, matrix_pop();
+			//connect row_nos to col_nos;
 			connect row_sum to col_tos;
 			connect row_tos to col_adc1;
 			connect row_nos to col_not;
 			connect row_not to col_adc2, carry <= one, goto exec;
+			
+			// TOS, NOS <= TOS * NOS, R(7) destroyed
+			.map '*';
+mul:		nuke, matrix_nop();
+			disconnect row_r7 from col_r7;
+			connect row_nos to col_nos;			// NOS <= NOS
+			connect row_tos to col_r7, div2();	// R7 <= TOS, TOS <= 0
+			goto nextchar;
 			
 			// enter: push all down, TOS <= 0
 			.map 0x0D;
@@ -314,12 +320,12 @@ hexchar:	nuke, matrix_nop();
 			connect row_nos to col_nos;
 			load_bitcnt 3;
 			connect row_direct to col_tos;
-			STATUS = busy_using_mt, reg0 <= mul2, regs <= div2, bitcnt <= dec, if bitcnt_is_zero then next else repeat;
+			STATUS = busy_using_mt, opr = m2_d2_d2, bitcnt <= dec, if bitcnt_is_zero then next else repeat;
 			load_bitcnt 3;
-			STATUS = busy_using_mt, regs <= mul2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
+			STATUS = busy_using_mt, opr = np_m2_m2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
 			
 // rotate all registers right (LSB first) through switch matrix;
-div2:		STATUS = busy_using_mt, reg0 <= div2, regs <= div2, bitcnt <= inc;
+div2:		STATUS = busy_using_mt, opr = d2_d2_d2, bitcnt <= inc, carry <= update;
 			if bitcnt_is_zero then return else div2;
 			
 // swap TOS and NOS
