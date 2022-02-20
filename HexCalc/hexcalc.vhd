@@ -37,6 +37,7 @@ entity hexcalc is
 			  clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
 			  status : out STD_LOGIC_VECTOR(1 downto 0);
+			  mode32 : in STD_LOGIC;
 			  -- DEBUG
    		  dbg: out STD_LOGIC_VECTOR(15 downto 0);
    		  dbg_row: in STD_LOGIC_VECTOR(3 downto 0);
@@ -63,20 +64,20 @@ architecture Behavioral of hexcalc is
 
 component shiftreg is
     Port ( clk : in  STD_LOGIC;
-           opr : in  STD_LOGIC_VECTOR (1 downto 0);
+           opr : in  STD_LOGIC_VECTOR (2 downto 0);
            so : out  STD_LOGIC;
            si : in  STD_LOGIC;
-           hexsel : in  STD_LOGIC_VECTOR (1 downto 0);
+           hexsel : in  STD_LOGIC_VECTOR (2 downto 0);
            hexout : out  STD_LOGIC_VECTOR (3 downto 0));
 end component;
 
 component shiftregp is
     Port ( clk : in  STD_LOGIC;
-           opr : in  STD_LOGIC_VECTOR (1 downto 0);
+           opr : in  STD_LOGIC_VECTOR (2 downto 0);
            so : out  STD_LOGIC;
            si : in  STD_LOGIC;
-			  pi : in  STD_LOGIC_VECTOR(15 downto 0);
-           hexsel : in  STD_LOGIC_VECTOR (1 downto 0);
+			  pi : in  STD_LOGIC_VECTOR(31 downto 0);
+           hexsel : in  STD_LOGIC_VECTOR (2 downto 0);
            hexout : out  STD_LOGIC_VECTOR (3 downto 0));
 end component;
 
@@ -147,29 +148,29 @@ mt_ctrl <= hxc_MT_CTRL & hxc_MT_COL & hxc_MT_ROW;
 -- shift only registers
 	tos: shiftreg port map (
 				clk => clk, 
-				opr => opr_tos,	-- TOS register can shift independently 
+				opr => (mode32 & opr_tos),	-- TOS register can shift independently 
 				so => mt_x(0), 
 				si => mt_y(0), 
-				hexsel => dbg_col(1 downto 0), 
+				hexsel => dbg_col(2 downto 0), 
 				hexout => reg(0)
 			);
 
 	nos: shiftreg port map (
 				clk => clk, 
-				opr => opr_nos,	-- NOS register can shift independently 
+				opr => (mode32 & opr_nos),	-- NOS register can shift independently 
 				so => mt_x(1), 
 				si => mt_y(1), 
-				hexsel => dbg_col(1 downto 0), 
+				hexsel => dbg_col(2 downto 0), 
 				hexout => reg(1)
 			);
 
 sr_generate: for i in 2 to 7 generate
 	sr: shiftreg port map (
 				clk => clk, 
-				opr => opr_reg,	-- all other registers operate in unison
+				opr => (mode32 & opr_reg),	-- all other registers operate in unison
 				so => mt_x(i), 
 				si => mt_y(i), 
-				hexsel => dbg_col(1 downto 0), 
+				hexsel => dbg_col(2 downto 0), 
 				hexout => reg(i)
 			);
 end generate;
@@ -177,22 +178,23 @@ end generate;
 -- shift registers with load
 	sr_c: shiftregp port map (
 				clk => clk, 
-				opr => opr_reg,	-- all other registers operate in unison 
+				opr => (mode32 & opr_reg),	-- all other registers operate in unison 
 				so => row_const, 
 				si => '0',
-				pi => decode4to16(to_integer(unsigned(hxc_MT_ROW))),	-- one hot bit
-				hexsel => dbg_col(1 downto 0), 
+				pi(31 downto 16) => X"0000",
+				pi(15 downto 0) => decode4to16(to_integer(unsigned(hxc_MT_ROW))),	-- one hot bit
+				hexsel => dbg_col(2 downto 0), 
 				hexout => reg(12)
 			);
 
 	sr_d: shiftregp port map (
 				clk => clk, 
-				opr => opr_reg, 
+				opr => (mode32 & opr_reg), 
 				so => row_direct, 
 				si => '0',
-				pi(15 downto 4) => (others => hxc_MT_COL(3)),	-- sign extend
+				pi(31 downto 4) => (others => hxc_MT_COL(3)),	-- sign extend
 				pi(3 downto 0) => hxc_MT_COL,							-- constant data
-				hexsel => dbg_col(1 downto 0), 
+				hexsel => dbg_col(2 downto 0), 
 				hexout => reg(13)
 			);
 

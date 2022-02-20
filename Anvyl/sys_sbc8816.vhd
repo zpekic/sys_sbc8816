@@ -175,6 +175,7 @@ component hexcalc is
 			  clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
 			  status : out STD_LOGIC_VECTOR(1 downto 0);
+			  mode32: in STD_LOGIC;
 			  -- DEBUG
    		  dbg: out STD_LOGIC_VECTOR(15 downto 0);
    		  dbg_row: out STD_LOGIC_VECTOR(3 downto 0);
@@ -253,7 +254,6 @@ component tty2vga is
 			  vga_x: out STD_LOGIC_VECTOR(7 downto 0);
 			  vga_y: out STD_LOGIC_VECTOR(7 downto 0);
 			  win_char: in STD_LOGIC_VECTOR(7 downto 0);
-			  win_index: in STD_LOGIC_VECTOR(2 downto 0);			  
 			  -- debug only --
 			  debug : out STD_LOGIC_VECTOR(31 downto 0)
 			  );
@@ -267,7 +267,6 @@ component hardwin is
            active : out  STD_LOGIC;
 			  matrix : out  STD_LOGIC;
            char : out  STD_LOGIC_VECTOR (7 downto 0);
-           index : out  STD_LOGIC_VECTOR (2 downto 0);
            win_x : out  STD_LOGIC_VECTOR (4 downto 0);
            win_y : out  STD_LOGIC_VECTOR (4 downto 0);
            mt_x : in  STD_LOGIC;
@@ -339,7 +338,7 @@ signal vga_x, vga_y: std_logic_vector(7 downto 0);
 -- 32*32 matrix on VGA
 signal win_x, win_y: std_logic_vector(4 downto 0);
 signal win_active, win_matrix: std_logic;
-signal win_char: std_logic_vector(7 downto 0);
+signal win_char, win_char_x: std_logic_vector(7 downto 0);
 signal win_index: std_logic_vector(2 downto 0);
 
 --- frequency signals
@@ -634,6 +633,7 @@ hc: hexcalc Port map (
 			clk => phi0,
 			reset => reset,
 			status => hc_status,
+			mode32 => sw_32,
 			--
 			dbg => open, --stacktop(15 downto 0),	-- TODO 
 			dbg_row => win_y(3 downto 0),
@@ -727,11 +727,13 @@ tty: tty2vga Port map(
 		-- for system hardware window
 		vga_x => vga_x,
 		vga_y => vga_y,
-		win_char => win_char,
-		win_index => win_index,
+		win_char => win_char_x,
 		-- debug
 		debug => open
 		);
+		
+-- if in 16-bit mode, simply chop off first four columns from hardware window (register bits 31..16)
+win_char_x <= X"00" when ((sw_32 = '0') and (win_x(4 downto 2) = "000")) else win_char;
 
 with sw_mode select tty_char <= 
 		tr_txdchar when mode_st_tr_hc,		
@@ -754,7 +756,6 @@ win: hardwin Port map(
 		active => win_active,
 		matrix => win_matrix,
 		char	 => win_char,
-		index  => win_index,	-- color index
 		win_x  => win_x,
 		win_y  => win_y,
 		mt_x   => hc_mt_x(to_integer(unsigned(win_y(3 downto 0)))),

@@ -32,22 +32,23 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity shiftreg is
     Port ( clk : in  STD_LOGIC;
-           opr : in  STD_LOGIC_VECTOR (1 downto 0);
+           opr : in  STD_LOGIC_VECTOR (2 downto 0);
            so : out  STD_LOGIC;
            si : in  STD_LOGIC;
-           hexsel : in  STD_LOGIC_VECTOR (1 downto 0);
+           hexsel : in  STD_LOGIC_VECTOR (2 downto 0);
            hexout : out  STD_LOGIC_VECTOR (3 downto 0));
 end shiftreg;
 
 architecture Behavioral of shiftreg is
 
-signal r: std_logic_vector(15 downto 0) := X"DEAD";
+signal r: std_logic_vector(31 downto 0) := X"DEADBEEF";
 
 begin
 
 -- serial outputs
 with opr select so <=
-	r(15) when "10",
+	r(31) when "110",
+	r(15) when "010",
 	r(0) when others;			-- usually LSB is projected out which makes sense to display
 	
 -- shift up and down only
@@ -55,10 +56,17 @@ on_clk: process(clk, opr, r, si)
 	begin
 	if (rising_edge(clk)) then
 		case opr is
-			when "01" =>	-- /2
-				r <= si & r(15 downto 1);
-			when "10" =>	-- *2
-				r <= r(14 downto 0) & si;
+			-- shift down /2
+			when "101" =>	
+				r <= si & r(31 downto 1);	
+			when "001" =>	
+				r(15 downto 0) <= si & r(15 downto 1);	
+			-- shift up *2
+			when "110" =>
+				r <= r(30 downto 0) & si;
+			when "010" =>
+				r(15 downto 0) <= r(14 downto 0) & si;	
+			-- nop
 			when others =>
 				null;
 		end case;
@@ -67,10 +75,14 @@ end process;
 
 -- hooked up this way as VGA window is going 0 .. 31 left to right
 with hexsel select hexout <= 
-	r(15 downto 12)	when "00",
-	r(11 downto 8)		when "01",
-	r(7 downto 4)		when "10",
-	r(3 downto 0)		when "11";
+	r(31 downto 28)	when "000",
+	r(27 downto 24)	when "001",
+	r(23 downto 20)	when "010",
+	r(19 downto 16)	when "011",
+	r(15 downto 12)	when "100",
+	r(11 downto 8)		when "101",
+	r(7 downto 4)		when "110",
+	r(3 downto 0)		when "111";
 
 end Behavioral;
 

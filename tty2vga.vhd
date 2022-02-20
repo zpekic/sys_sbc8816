@@ -46,7 +46,6 @@ entity tty2vga is
 			  vga_x: buffer STD_LOGIC_VECTOR(7 downto 0);
 			  vga_y: buffer STD_LOGIC_VECTOR(7 downto 0);
 			  win_char: in STD_LOGIC_VECTOR(7 downto 0);
-			  win_index: in STD_LOGIC_VECTOR(2 downto 0);
 			  -- debug --
 			  debug : out  STD_LOGIC_VECTOR (31 downto 0)
 			  );
@@ -171,7 +170,7 @@ ascii_sent <= '1' when (char = X"00") else '0';
 
 -- Allow MT8816 switch matrix to be displayed in 32*32 char block
 	vga_char 	<= mem_char when (win_char = X"00") else win_char; 
-	vga_index 	<= "000"		when (win_char = X"00") else win_index; -- points to palette
+	vga_index 	<= "000"		when (win_char = X"00") else win_char(7 downto 5); -- points to palette
 	
 	vga_controller: mwvga 
 	port map ( 
