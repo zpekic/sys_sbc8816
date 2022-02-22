@@ -177,7 +177,7 @@ component hexcalc is
 			  status : out STD_LOGIC_VECTOR(1 downto 0);
 			  mode32: in STD_LOGIC;
 			  -- DEBUG
-   		  dbg: out STD_LOGIC_VECTOR(15 downto 0);
+   		  dbg: out STD_LOGIC_VECTOR(23 downto 0);
    		  dbg_row: out STD_LOGIC_VECTOR(3 downto 0);
    		  dbg_col: out STD_LOGIC_VECTOR(3 downto 0);
    		  dbg_reg: out STD_LOGIC_VECTOR(3 downto 0);
@@ -188,7 +188,10 @@ component hexcalc is
 			  mt_y: in STD_LOGIC_VECTOR(15 downto 0);
 			  -- INSTRUCTION
 			  input: in STD_LOGIC_VECTOR(7 downto 0);
-			  clear: out STD_LOGIC;
+			  -- FLAGS
+			  c_flag: buffer STD_LOGIC;
+			  d_flag: buffer STD_LOGIC;
+			  z_flags: buffer STD_LOGIC_VECTOR(15 downto 0);
 			  -- TRACING
 			  TRACE_ERROR: in STD_LOGIC;
 			  TRACE_CHAR: in STD_LOGIC;
@@ -247,9 +250,7 @@ component tty2vga is
            vga_clk : in  STD_LOGIC;
            vga_hsync : out  STD_LOGIC;
            vga_vsync : out  STD_LOGIC;
-           vga_r : out  STD_LOGIC_VECTOR (3 downto 0);
-           vga_g : out  STD_LOGIC_VECTOR (3 downto 0);
-           vga_b : out  STD_LOGIC_VECTOR (3 downto 0);
+           vga_color : out  STD_LOGIC_VECTOR (11 downto 0);
 			  -- for system hardware window
 			  vga_x: out STD_LOGIC_VECTOR(7 downto 0);
 			  vga_y: out STD_LOGIC_VECTOR(7 downto 0);
@@ -271,6 +272,9 @@ component hardwin is
            win_y : out  STD_LOGIC_VECTOR (4 downto 0);
            mt_x : in  STD_LOGIC;
            mt_y : in  STD_LOGIC;
+           mt_c : in  STD_LOGIC;
+           mt_d : in  STD_LOGIC;
+           mt_z : in  STD_LOGIC;
            mt_hex : in  STD_LOGIC_VECTOR (3 downto 0));
 end component;
 	
@@ -420,11 +424,14 @@ constant status_ready: std_logic_vector(1 downto 0) := "00";
 constant status_done: std_logic_vector(1 downto 0) := "01";
 constant status_busy: std_logic_vector(1 downto 0) := "10";
 constant status_busy_using_mt: std_logic_vector(1 downto 0) := "11";
-signal stacktop: std_logic_vector(31 downto 0); -- capture value of R0
+signal hc_tos: std_logic_vector(31 downto 0); -- capture value of TOS (R0)
 signal hc_txdsend, hc_txdready, hc_error: std_logic;
 signal hc_txdchar: std_logic_vector(7 downto 0);
 signal hc_mt_x: std_logic_vector(15 downto 0);
 signal hc_reg: std_logic_vector(3 downto 0);
+signal hc_delay, hc_carry: std_logic;
+signal hc_zero: std_logic_vector(15 downto 0);
+signal hc_dbg, hc_led: std_logic_vector(23 downto 0);
 
 -- MT8816 connections
 signal mt_mode_seldisplay: std_logic;
@@ -626,16 +633,13 @@ begin
 	end if;
 end process;
 
---stacktop(23 downto 16) <= "000000" & hc_status; -- TODO
---stacktop(23 downto 16) <= hc_mt_ctrl(7 downto 0); -- TODO
-
 hc: hexcalc Port map (
 			clk => phi0,
 			reset => reset,
 			status => hc_status,
 			mode32 => sw_32,
 			--
-			dbg => open, --stacktop(15 downto 0),	-- TODO 
+			dbg => hc_dbg,
 			dbg_row => win_y(3 downto 0),
 			dbg_col => win_x(3 downto 0),
 			dbg_reg => hc_reg,
@@ -645,6 +649,10 @@ hc: hexcalc Port map (
 			mt_y => mt_y,
 			--
 			input => input,
+			--
+			c_flag => hc_carry,
+			d_flag => hc_delay,
+			z_flags => hc_zero,
 			--
 			TRACE_ERROR => sw_traceerror,
 			TRACE_CHAR  => sw_tracechar,
@@ -660,18 +668,18 @@ begin
 	if (rising_edge(dot_clk)) then
 		if (win_y = "00000") then
 			case win_x is
+				when "00010" =>
+					hc_tos(23 downto 20) <= hc_reg;
+				when "00011" =>
+					hc_tos(19 downto 16) <= hc_reg;
+				when "00100" =>
+					hc_tos(15 downto 12) <= hc_reg;
+				when "00101" =>
+					hc_tos(11 downto 8) <= hc_reg;
 				when "00110" =>
-					stacktop(23 downto 20) <= hc_reg;
+					hc_tos(7 downto 4) <= hc_reg;
 				when "00111" =>
-					stacktop(19 downto 16) <= hc_reg;
-				when "01000" =>
-					stacktop(15 downto 12) <= hc_reg;
-				when "01001" =>
-					stacktop(11 downto 8) <= hc_reg;
-				when "01010" =>
-					stacktop(7 downto 4) <= hc_reg;
-				when "01011" =>
-					stacktop(3 downto 0) <= hc_reg;
+					hc_tos(3 downto 0) <= hc_reg;
 				when others =>
 					null;
 			end case;
@@ -721,9 +729,9 @@ tty: tty2vga Port map(
 		vga_clk => dot_clk,	-- 25MHz
 		vga_hsync => HSYNC_O,
 		vga_vsync => VSYNC_O,
-		vga_r => RED_O,
-		vga_g => GREEN_O,
-		vga_b => BLUE_O,
+		vga_color(11 downto 8) => RED_O,
+		vga_color(7 downto 4) => GREEN_O,
+		vga_color(3 downto 0) => BLUE_O,
 		-- for system hardware window
 		vga_x => vga_x,
 		vga_y => vga_y,
@@ -760,11 +768,15 @@ win: hardwin Port map(
 		win_y  => win_y,
 		mt_x   => hc_mt_x(to_integer(unsigned(win_y(3 downto 0)))),
 		mt_y   => mt_y(to_integer(unsigned(win_x(3 downto 0)))),
+		mt_c	 => hc_carry,
+		mt_d	 => hc_delay, 
+		mt_z	 => hc_zero(to_integer(unsigned(win_y(3 downto 0)))),
 		mt_hex => hc_reg
 		);
 
 -- 8 single LEDs
-LED <= mt_ctrl(7 downto 0);
+--LED <= mt_ctrl(7 downto 0);
+LED <= hc_zero(7 downto 0);
 --LED <= kypd_keypressed & "000" & kypd_hex;
 
 -- traffic light LEDs
@@ -790,10 +802,12 @@ led6: sixdigitsevensegled Port map (
 		segment(7) => DP
 		);
 
+hc_led <= hc_dbg;-- when (sw_clksel = "100") else hc_tos(23 downto 0);  -- in single step mode, display microcode debug on LED
+
 with sw_mode select led_data <= 
 		X"00" & uartmode_debug(to_integer(unsigned(dip_uart_mode))) when mode_ua_lb_lb,
 		counter_value(23 downto 0) when mode_bd_lb_lb,
-		stacktop(23 downto 0) when others;
+		hc_led when others;
 
 with sw_mode select led_dot <= 
 		"001111" when mode_ua_lb_lb,

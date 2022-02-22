@@ -2,7 +2,7 @@
 //	hexcalc Microcode (c) 2021-... zpekic@hotmail.com
 //  Compile with https://github.com/zpekic/MicroCodeCompiler
 //----------------------------------------------------------
-			.code 7, 48, hexcalc_code.mif, hexcalc_code.cgf, hexcalc_code.coe, hxc:hexcalc_code.vhd, hexcalc_code.hex, hexcalc_code.bin, 8;
+			.code 7, 50, hexcalc_code.mif, hexcalc_code.cgf, hexcalc_code.coe, hxc:hexcalc_code.vhd, hexcalc_code.hex, hexcalc_code.bin, 8;
 			.mapper 8, 7, hexcalc_map.mif, hexcalc_map.cgf, hexcalc_map.coe, hxc:hexcalc_map.vhd, hexcalc_map.hex, hexcalc_map.bin, 1;
 			.controller hexcalc_control_unit.vhd, 4;
 			.symbol 7, 256, hexcalc_sym.mif, hexcalc_sym.cgf, hexcalc_sym.coe, hxc:hexcalc_sym.vhd, hexcalc_sym.hex, hexcalc_sym.bin, 32;
@@ -23,7 +23,7 @@ MT_COL			.valfield 4 values * default 0;
 bitcnt			.regfield 2 values
 				same,
 				load,	// from MT_COL		
-				inc,	
+				max,	// 31 or 15	
 				dec
 				default same;
 				
@@ -48,10 +48,10 @@ seq_cond:		.if 4 values
 				TXDREADY,
 				TXDSEND,
 				bitcnt_is_zero,
-				cond_07,
-				cond_08,
-				cond_09,
-				cond_10,
+				loopcnt_is_zero,
+				d_flag_is_set,
+				c_flag_is_set,
+				z_flagand_is_set,
 				cond_11,
 				cond_12,
 				cond_13,
@@ -103,26 +103,40 @@ errcode:		.regfield 3 values
 				same
 				default same;
 
-delay:			.regfield 2 values
+d_flag:			.regfield 2 values	// delay flag
 				same,
 				column,
 				zero,
 				one default same;
 
-carry:			.regfield 2 values
+c_flag:			.regfield 2 values	// carry flag
 				same,
 				update,
-				zero,
-				one default same;
+				clear,
+				set default same;
+
+z_flags:		.regfield 2 values	// zero flags, one per row. Initialize with set all to 1!
+				same,
+				update,
+				-,
+				set default same;
+				
+loopcnt			.regfield 2 values
+				same,
+				-,			
+				max,	// 31 or 15	
+				dec
+				default same;
 				
 // placeholder
-dummy:			.valfield 2 values * default 0;
+//dummy:			.valfield 2 values * default 0;
 						
 //	useful aliases, these are evaluated as simple text replacement of label with everything between .alias and ; 
 goto:		.alias if false then next else;
 noop:		.alias if true then next else next;
 back:	    .alias if true then return else return;
-digit:		.alias opr = np_np_ld, MT_ROW = 0b0000, MT_COL =;	// c_value of 0b0000 will result in mask 0x0001
+data:		.alias opr = np_np_ld, MT_ROW = 0b0000, MT_COL =;
+const:		.alias opr = np_np_ld, MT_COL = 0b0000, MT_ROW =;
 load_bitcnt	.alias bitcnt <= load, MT_COL =;
 
 // switches in the matrix
@@ -171,6 +185,7 @@ emit:		.sub TXDCHAR;
 print_crlf:	.sub;	
 trace:		.sub;	
 matrix_nop:	.sub;
+matrix_nop1:.sub;
 matrix_push:.sub;
 matrix_swap:.sub;
 matrix_pop:	.sub;
@@ -227,35 +242,63 @@ nextchar:	STATUS = done, goto deadloop;
 			// clear all registers
 			.map 'z';	
 			.map 'Z';
-			nuke, matrix_nop();
-			errcode <= ok, connect row_nos to col_nos;	// no switch on TOS means pull down, so it 0
-exec:		load_bitcnt 0, div2();				// 16*
+			errcode <= ok, nuke, matrix_nop1();	// no switch on TOS means pull down, so it 0
+exec:		z_flags <= set, bitcnt <= max, div2();				// 16 or 32 *
 			goto nextchar;		
+
+// rotate all registers right (LSB first) through switch matrix;
+div2:		STATUS = busy_using_mt, opr = d2_d2_d2, c_flag <= update, z_flags <= update, if bitcnt_is_zero then return;
+			bitcnt <= dec, goto div2;
 			
 			// TOS <= TOS + NOS, POP
 			.map '+';
 plus:		nuke, matrix_pop();
-			//connect row_nos to col_nos;
 			connect row_sum to col_tos;
 			connect row_tos to col_adc1;
-			connect row_nos to col_adc2, carry <= zero, goto exec;
+			connect row_nos to col_adc2, c_flag <= clear, goto exec;
 			
 			// TOS <= TOS - NOS, POP
 			.map '-';
 minus:		nuke, matrix_pop();
-			//connect row_nos to col_nos;
 			connect row_sum to col_tos;
 			connect row_tos to col_adc1;
 			connect row_nos to col_not;
-			connect row_not to col_adc2, carry <= one, goto exec;
+			connect row_not to col_adc2, c_flag <= set, goto exec;
 			
 			// TOS, NOS <= TOS * NOS, R(7) destroyed
 			.map '*';
-mul:		nuke, matrix_nop();
-			disconnect row_r7 from col_r7;
-			connect row_nos to col_nos;			// NOS <= NOS
-			connect row_tos to col_r7, div2();	// R7 <= TOS, TOS <= 0
-			goto nextchar;
+mul:		nuke, matrix_nop1();
+
+			// set up registers
+			loopcnt <= max, disconnect row_r7 from col_r7;
+			bitcnt <= max, connect row_tos to col_r7, div2();	// R7 <= TOS, TOS <= 0
+			connect row_r7 to col_r7;
+			disconnect row_tos from col_r7;		// continue as if matrix_nop1() was executed
+
+m_loop:		if loopcnt_is_zero then nextchar;
+			
+			// check NOS(0)
+			const 0;							// 2^0 == 1
+			connect row_nos to col_and1;
+			z_flags <= set, bitcnt <= max, connect row_const to col_and2, div2();
+			
+			// TOS <= TOS + (NOS(0) ? R7 : 0) + 0
+			data 0, if z_flagand_is_set then next else m_add_r7;
+			connect row_direct to col_adc1, goto m_add;
+m_add_r7:	connect row_r7 to col_adc1;
+m_add:		connect row_tos to col_adc2;
+			c_flag <= clear, bitcnt <= max, connect row_sum to col_tos, div2();
+			disconnect row_sum from col_tos;
+
+			// c_flag >> TOS >> NOS
+			d_flag <= zero, connect row_delay to col_tos, if c_flag_is_set then next else m_shift;
+			d_flag <= one; 
+m_shift:	connect row_tos to col_nos;
+			connect row_delay to col_tos, opr = d2_d2_np;
+
+			// reset connections and iterate
+			nuke, matrix_nop1();
+			loopcnt <= dec, goto m_loop;	// do it 16 or 32 times
 			
 			// enter: push all down, TOS <= 0
 			.map 0x0D;
@@ -264,75 +307,71 @@ enter:		nuke, matrix_push();
 			
 			// load digits to stack top (R0), note digits are in reverse bit order
 			.map '0';
-			digit 0b0000, goto hexchar;
+			data 0b0000, goto hexchar;
 
 			.map '1';
-			digit 0b1000, goto hexchar;
+			data 0b1000, goto hexchar;
 
 			.map '2';
-			digit 0b0100, goto hexchar;
+			data 0b0100, goto hexchar;
 
 			.map '3';
-			digit 0b1100, goto hexchar;
+			data 0b1100, goto hexchar;
 
 			.map '4';
-			digit 0b0010, goto hexchar;
+			data 0b0010, goto hexchar;
 
 			.map '5';
-			digit 0b1010, goto hexchar;
+			data 0b1010, goto hexchar;
 
 			.map '6';
-			digit 0b0110, goto hexchar;
+			data 0b0110, goto hexchar;
 
 			.map '7';
-			digit 0b1110, goto hexchar;
+			data 0b1110, goto hexchar;
 
 			.map '8';
-			digit 0b0001, goto hexchar;
+			data 0b0001, goto hexchar;
 
 			.map '9';
-			digit 0b1001, goto hexchar;
+			data 0b1001, goto hexchar;
 
 			.map 'a';
 			.map 'A';
-			digit 0b0101, goto hexchar;
+			data 0b0101, goto hexchar;
 
 			.map 'b';
 			.map 'B';
-			digit 0b1101, goto hexchar;
+			data 0b1101, goto hexchar;
 
 			.map 'c';
 			.map 'C';
-			digit 0b0011, goto hexchar;
+			data 0b0011, goto hexchar;
 
 			.map 'd';
 			.map 'D';
-			digit 0b1011, goto hexchar;
+			data 0b1011, goto hexchar;
 
 			.map 'e';
 			.map 'E';
-			digit 0b0111, goto hexchar;
+			data 0b0111, goto hexchar;
 
 			.map 'f';
 			.map 'F';
-			digit 0b1111;
-hexchar:	nuke, matrix_nop();
-			connect row_nos to col_nos;
+			data 0b1111;
+hexchar:	nuke, matrix_nop1();
 			load_bitcnt 3;
 			connect row_direct to col_tos;
 			STATUS = busy_using_mt, opr = m2_d2_d2, bitcnt <= dec, if bitcnt_is_zero then next else repeat;
 			load_bitcnt 3;
 			STATUS = busy_using_mt, opr = np_m2_m2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
 			
-// rotate all registers right (LSB first) through switch matrix;
-div2:		STATUS = busy_using_mt, opr = d2_d2_d2, bitcnt <= inc, carry <= update;
-			if bitcnt_is_zero then return else div2;
-			
 // swap TOS and NOS
 matrix_swap:connect row_tos to col_nos;
-			connect row_nos to col_tos;
-			// fallthrough!
+			connect row_nos to col_tos, goto matrix_nop;
+
 // set the diagonal switches for R2..R7, which means after shift up or down these regs will be the same
+matrix_nop1:connect row_nos to col_nos;
 matrix_nop: connect row_r2 to col_r2;	
 			connect row_r3 to col_r3;	
 			connect row_r4 to col_r4;	

@@ -39,18 +39,21 @@ entity hexcalc is
 			  status : out STD_LOGIC_VECTOR(1 downto 0);
 			  mode32 : in STD_LOGIC;
 			  -- DEBUG
-   		  dbg: out STD_LOGIC_VECTOR(15 downto 0);
+   		  dbg: out STD_LOGIC_VECTOR(23 downto 0);
    		  dbg_row: in STD_LOGIC_VECTOR(3 downto 0);
    		  dbg_col: in STD_LOGIC_VECTOR(3 downto 0);
    		  dbg_reg: out STD_LOGIC_VECTOR(3 downto 0);
 			  -- MATRIX CONTROL
 			  mt_ctrl: out STD_LOGIC_VECTOR(9 downto 0);
 			  -- MATRIX DATA
-			  mt_x: out STD_LOGIC_VECTOR(15 downto 0);
+			  mt_x: buffer STD_LOGIC_VECTOR(15 downto 0);
 			  mt_y: in STD_LOGIC_VECTOR(15 downto 0);
 			  -- INSTRUCTION
 			  input: in STD_LOGIC_VECTOR(7 downto 0);
-			  clear: out STD_LOGIC;
+			  -- FLAGS
+			  c_flag: buffer STD_LOGIC;
+			  d_flag: buffer STD_LOGIC;
+			  z_flags: buffer STD_LOGIC_VECTOR(15 downto 0);
 			  -- TRACING
 			  TRACE_ERROR: in STD_LOGIC;
 			  TRACE_CHAR: in STD_LOGIC;
@@ -109,8 +112,9 @@ signal ui_nextinstr: std_logic_vector(CODE_ADDRESS_WIDTH -1  downto 0);
 --signal ascii: std_logic_vector(7 downto 0);
 signal hexchar: std_logic_vector(3 downto 0);
 signal errcode: std_logic_vector(2 downto 0);
-signal bitcnt: std_logic_vector(3 downto 0);
-signal delay, carry: std_logic;
+signal bitcnt: std_logic_vector(4 downto 0);
+signal loopcnt: std_logic_vector(4 downto 0);
+--signal delay, carry: std_logic;
 signal opr: std_logic_vector(5 downto 0);	-- register operation control
 alias opr_tos: std_logic_vector(1 downto 0) is opr(5 downto 4); 
 alias opr_nos: std_logic_vector(1 downto 0) is opr(3 downto 2);
@@ -131,7 +135,7 @@ alias col_and1: std_logic is mt_y(14);
 alias col_and2: std_logic is mt_y(15);
 
 -- conditions
-signal input_is_zero, bitcnt_is_zero: std_logic;
+signal input_is_zero, bitcnt_is_zero, loopcnt_is_zero: std_logic;
 
 -- just for visualisation
 type table_16x4 is array (0 to 15) of std_logic_vector(3 downto 0);
@@ -141,7 +145,9 @@ begin
 
 -- outputs
 status <= hxc_status;
-dbg <= input & '0' & ui_address;
+--dbg <= loopcnt(3 downto 0) & bitcnt(3 downto 0) & input & '0' & ui_address;
+--dbg <= "000" & bitcnt & '0' & ui_address & '0' & ui_nextinstr;
+dbg <= loopcnt(3 downto 0) & bitcnt(3 downto 0) & '0' & ui_address & '0' & ui_nextinstr;
 dbg_reg <= reg(to_integer(unsigned(dbg_row)));
 mt_ctrl <= hxc_MT_CTRL & hxc_MT_COL & hxc_MT_ROW;
 
@@ -199,10 +205,10 @@ end generate;
 			);
 
 -- ALU!
-row_delay <= delay; 
+row_delay <= d_flag; 
 row_not <= not col_not; 
 row_and <= col_and1 and col_and2;
-row_sum <= carry xor (col_adc1 xor col_adc2); -- 1 bit full adder sum
+row_sum <= c_flag xor (col_adc1 xor col_adc2); -- 1 bit full adder sum
 -- 12 is constant register
 -- 13 is data register
 mt_x(14) <= '0'; -- TODO
@@ -236,10 +242,10 @@ cu_hxc: hexcalc_control_unit
 				cond(seq_cond_TXDREADY) => TXDREADY,
 				cond(seq_cond_TXDSEND) => '1', -- HACKHACK (this will generate pulse for sending the char)
 				cond(seq_cond_bitcnt_is_zero) => bitcnt_is_zero,
-				cond(seq_cond_cond_07) => '1', -- TODO
-				cond(seq_cond_cond_08) => '1', -- TODO
-				cond(seq_cond_cond_09) => '1', -- TODO
-				cond(seq_cond_cond_10) => '1', -- TODO
+				cond(seq_cond_loopcnt_is_zero) => loopcnt_is_zero,
+				cond(seq_cond_d_flag_is_set) => d_flag,
+				cond(seq_cond_c_flag_is_set) => c_flag,
+				cond(seq_cond_z_flagand_is_set) => z_flags(10),
 				cond(seq_cond_cond_11) => '1', -- TODO
 				cond(seq_cond_cond_12) => '1', -- TODO
 				cond(seq_cond_cond_13) => '1', -- TODO
@@ -252,7 +258,8 @@ cu_hxc: hexcalc_control_unit
 
 -- conditions
 input_is_zero <= '1' when (input = char_zero) else '0';
-bitcnt_is_zero <= '1' when (bitcnt = X"0") else '0';
+bitcnt_is_zero <= (not bitcnt(4)) when (bitcnt(3 downto 0) = X"0") else '0';
+loopcnt_is_zero <= (not loopcnt(4)) when (loopcnt(3 downto 0) = X"0") else '0';
 
 -- hack that saves 1 microcode bit width
 TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
@@ -265,9 +272,9 @@ TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
 --			when bitcnt_same =>
 --				bitcnt <= bitcnt;
 			when bitcnt_load => 
-				bitcnt <= hxc_MT_COL;
-			when bitcnt_inc =>
-				bitcnt <= std_logic_vector(unsigned(bitcnt) + 1);
+				bitcnt <= hxc_MT_COL(3) & hxc_MT_COL;	-- 4 bits "sign extended" to 5
+			when bitcnt_max =>
+				bitcnt <= mode32 & X"F";	-- 31 or 15
 			when bitcnt_dec =>
 				bitcnt <= std_logic_vector(unsigned(bitcnt) - 1);
 			when others =>
@@ -358,18 +365,18 @@ with hxc_TXDCHAR select hexchar <=
 ---- End boilerplate code
 
 ---- Start boilerplate code (use with utmost caution!)
- update_delay: process(clk, hxc_delay)
+ update_d_flag: process(clk, hxc_d_flag)
  begin
 	if (rising_edge(clk)) then
-		case hxc_delay is
+		case hxc_d_flag is
 --			when delay_same =>
 --				delay <= delay;
-			when delay_column =>
-				delay <= col_delay;
-			when delay_zero =>
-				delay <= '0';
-			when delay_one =>
-				delay <= '1';
+			when d_flag_column =>
+				d_flag <= col_delay;
+			when d_flag_zero =>
+				d_flag <= '0';
+			when d_flag_one =>
+				d_flag <= '1';
 			when others =>
 				null;
 		end case;
@@ -378,18 +385,54 @@ with hxc_TXDCHAR select hexchar <=
 ---- End boilerplate code
 
 ---- Start boilerplate code (use with utmost caution!)
- update_carry: process(clk, hxc_carry)
+ update_c_flag: process(clk, hxc_c_flag)
  begin
 	if (rising_edge(clk)) then
-		case hxc_carry is
+		case hxc_c_flag is
 --			when carry_same =>
 --				carry <= carry;
-			when carry_update =>
-				carry <= (col_adc1 and col_adc2) or (carry and (col_adc1 xor col_adc2));	-- carry out for 1 bit full adder
-			when carry_zero =>
-				carry <= '0';
-			when carry_one =>
-				carry <= '1';
+			when c_flag_update =>
+				c_flag <= (col_adc1 and col_adc2) or (c_flag and (col_adc1 xor col_adc2));	-- carry out for 1 bit full adder
+			when c_flag_clear =>
+				c_flag <= '0';
+			when c_flag_set =>
+				c_flag <= '1';
+			when others =>
+				null;
+		end case;
+ end if;
+ end process;
+---- End boilerplate code
+			
+---- Start boilerplate code (use with utmost caution!)
+ update_z_flags: process(clk, hxc_z_flags)
+ begin
+	if (rising_edge(clk)) then
+		case hxc_z_flags is
+--			when z_flags_same =>
+--				z_flags <= z_flags;
+			when z_flags_update =>
+				z_flags <= z_flags and (mt_x xor X"FFFF");
+			when z_flags_set =>
+				z_flags <= X"FFFF";
+			when others =>
+				null;
+		end case;
+ end if;
+end process;
+---- End boilerplate code
+
+---- Start boilerplate code (use with utmost caution!)
+ update_loopcnt: process(clk, hxc_loopcnt)
+ begin
+	if (rising_edge(clk)) then
+		case hxc_loopcnt is
+--			when loopcnt_same =>
+--				loopcnt <= loopcnt;
+			when loopcnt_max =>
+				loopcnt <= mode32 & X"F";	-- 31 or 15
+			when loopcnt_dec =>
+				loopcnt <= std_logic_vector(unsigned(loopcnt) - 1);
 			when others =>
 				null;
 		end case;
