@@ -335,6 +335,7 @@ with hxc_TXDCHAR select hexchar <=
       "001010" when opr_np_m2_m2,
       "010101" when opr_d2_d2_d2,
       "010100" when opr_d2_d2_np,
+		"000101" when opr_np_d2_d2,
       "000000" when others;
 ---- End boilerplate code
 
@@ -373,10 +374,10 @@ with hxc_TXDCHAR select hexchar <=
 --				delay <= delay;
 			when d_flag_column =>
 				d_flag <= col_delay;
-			when d_flag_zero =>
-				d_flag <= '0';
-			when d_flag_one =>
-				d_flag <= '1';
+			when d_flag_carry =>
+				d_flag <= c_flag;
+			when d_flag_flip =>
+				d_flag <= not d_flag;
 			when others =>
 				null;
 		end case;
@@ -391,12 +392,12 @@ with hxc_TXDCHAR select hexchar <=
 		case hxc_c_flag is
 --			when carry_same =>
 --				carry <= carry;
-			when c_flag_update =>
+			when c_flag_adder =>
 				c_flag <= (col_adc1 and col_adc2) or (c_flag and (col_adc1 xor col_adc2));	-- carry out for 1 bit full adder
-			when c_flag_clear =>
-				c_flag <= '0';
-			when c_flag_set =>
-				c_flag <= '1';
+			when c_flag_delay =>
+				c_flag <= d_flag;
+			when c_flag_flip =>
+				c_flag <= not c_flag;
 			when others =>
 				null;
 		end case;

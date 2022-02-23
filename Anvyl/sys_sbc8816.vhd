@@ -247,6 +247,7 @@ component tty2vga is
 			  ascii_send: in STD_LOGIC;
 			  ascii_sent: out STD_LOGIC;
 			  cur_clk : in  STD_LOGIC;
+			  color_index: in STD_LOGIC_VECTOR(2 downto 0);
            vga_clk : in  STD_LOGIC;
            vga_hsync : out  STD_LOGIC;
            vga_vsync : out  STD_LOGIC;
@@ -268,6 +269,7 @@ component hardwin is
            active : out  STD_LOGIC;
 			  matrix : out  STD_LOGIC;
            char : out  STD_LOGIC_VECTOR (7 downto 0);
+			  index: out STD_LOGIC_VECTOR(2 downto 0);
            win_x : out  STD_LOGIC_VECTOR (4 downto 0);
            win_y : out  STD_LOGIC_VECTOR (4 downto 0);
            mt_x : in  STD_LOGIC;
@@ -343,7 +345,7 @@ signal vga_x, vga_y: std_logic_vector(7 downto 0);
 signal win_x, win_y: std_logic_vector(4 downto 0);
 signal win_active, win_matrix: std_logic;
 signal win_char, win_char_x: std_logic_vector(7 downto 0);
-signal win_index: std_logic_vector(2 downto 0);
+signal color_index, win_index: std_logic_vector(2 downto 0);
 
 --- frequency signals
 signal freq_50M: std_logic_vector(11 downto 0);
@@ -726,6 +728,7 @@ tty: tty2vga Port map(
 		ascii_send => tty_send,
 		ascii_sent => tty_sent,
 		cur_clk => freq2,		-- 2Hz
+		color_index => color_index,
 		vga_clk => dot_clk,	-- 25MHz
 		vga_hsync => HSYNC_O,
 		vga_vsync => VSYNC_O,
@@ -742,6 +745,7 @@ tty: tty2vga Port map(
 		
 -- if in 16-bit mode, simply chop off first four columns from hardware window (register bits 31..16)
 win_char_x <= X"00" when ((sw_32 = '0') and (win_x(4 downto 2) = "000")) else win_char;
+color_index <= O"0" when (win_char_x = X"00") else win_index;
 
 with sw_mode select tty_char <= 
 		tr_txdchar when mode_st_tr_hc,		
@@ -764,6 +768,7 @@ win: hardwin Port map(
 		active => win_active,
 		matrix => win_matrix,
 		char	 => win_char,
+		index	 => win_index,
 		win_x  => win_x,
 		win_y  => win_y,
 		mt_x   => hc_mt_x(to_integer(unsigned(win_y(3 downto 0)))),
@@ -775,8 +780,8 @@ win: hardwin Port map(
 		);
 
 -- 8 single LEDs
---LED <= mt_ctrl(7 downto 0);
-LED <= hc_zero(7 downto 0);
+LED <= mt_ctrl(7 downto 0);
+--LED <= hc_zero(7 downto 0);
 --LED <= kypd_keypressed & "000" & kypd_hex;
 
 -- traffic light LEDs

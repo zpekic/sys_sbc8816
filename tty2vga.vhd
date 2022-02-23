@@ -36,6 +36,7 @@ entity tty2vga is
 			  ascii_send: in STD_LOGIC;
 			  ascii_sent: out STD_LOGIC;
 			  cur_clk : in  STD_LOGIC;
+			  color_index: in STD_LOGIC_VECTOR(2 downto 0);
            vga_clk : in  STD_LOGIC;
            vga_hsync : out  STD_LOGIC;
            vga_vsync : out  STD_LOGIC;
@@ -84,8 +85,9 @@ component mwvga is
            y : out  STD_LOGIC_VECTOR (7 downto 0);
 			  cursor_enable : in  STD_LOGIC;
 			  cursor_type : in  STD_LOGIC;
+			  color_index: in STD_LOGIC_VECTOR(2 downto 0);
 			  -- VGA connections
-           pixel : out  STD_LOGIC;
+			  color: out STD_LOGIC_VECTOR(11 downto 0);
            hsync : out  STD_LOGIC;
            vsync : out  STD_LOGIC);
 end component;
@@ -106,40 +108,6 @@ component xyram is
            dout : out  STD_LOGIC_VECTOR (7 downto 0));
 end component;
 
--- basic colors (BBBBGGGGRRRR)
-constant color8_black : std_logic_vector(11 downto 0) := X"000"; 
-constant color8_red	 : std_logic_vector(11 downto 0) := X"00F"; 
-constant color8_green : std_logic_vector(11 downto 0) := X"0F0"; 
-constant color8_yellow: std_logic_vector(11 downto 0) := X"0FF"; 
-constant color8_blue	 : std_logic_vector(11 downto 0) := X"F00"; 
-constant color8_purple: std_logic_vector(11 downto 0) := X"F0F"; 
-constant color8_cyan	 : std_logic_vector(11 downto 0) := X"FF0"; 
-constant color8_white : std_logic_vector(11 downto 0) := X"FFF"; 
-
-type table8x12 is array(0 to 7) of std_logic_vector(11 downto 0);
--- pixel off
-constant palette0: table8x12 :=(
-	color8_blue,
-	color8_black,
-	color8_black,
-	color8_black,
-	color8_black,
-	color8_black,
-	color8_black,
-	color8_black
-	);
--- pixel on
-constant palette1: table8x12 :=(
-	color8_cyan,
-	color8_green,
-	color8_green,
-	color8_green,
-	color8_red,
-	color8_yellow,
-	color8_white,
-	color8_purple
-	);
-
 signal tty_rd, tty_wr, char_sent, char_sent_delayed: std_logic;
 signal tty_memaddr: std_logic_vector(15 downto 0);
 signal tty_char, char: std_logic_vector(7 downto 0);
@@ -149,11 +117,8 @@ signal vga_memaddr: std_logic_vector(15 downto 0);
 signal vga_index: std_logic_vector(2 downto 0);
 signal vga_char, mem_char: std_logic_vector(7 downto 0);
 signal cursor_enable: std_logic;
-signal pixel: std_logic;
 
 begin
-
-vga_color <= palette1(to_integer(unsigned(vga_index))) when (pixel = '1') else palette0(to_integer(unsigned(vga_index)));
 
 -- external will need it to paint the hardware window
 vga_x <= vga_memaddr(7 downto 0);
@@ -217,8 +182,9 @@ ascii_sent <= '1' when (char = X"00") else '0';
 		y => vga_memaddr(15 downto 8),
 		cursor_enable => cursor_enable, 
 		cursor_type => '1',	-- just for test
+		color_index => color_index,
 		-- VGA connections
-		pixel => pixel,
+		color => vga_color,
 		hsync => vga_hsync,
 		vsync => vga_vsync
 	);

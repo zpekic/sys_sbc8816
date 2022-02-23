@@ -40,8 +40,9 @@ entity mwvga is
            y : out  STD_LOGIC_VECTOR (7 downto 0);
 			  cursor_enable : in  STD_LOGIC;
 			  cursor_type : in  STD_LOGIC;
+			  color_index: in STD_LOGIC_VECTOR(2 downto 0);
 			  -- VGA connections
-			  pixel: out STD_LOGIC;
+			  color: out STD_LOGIC_VECTOR(11 downto 0);
            hsync : out  STD_LOGIC;
            vsync : out  STD_LOGIC);
 end mwvga;
@@ -53,14 +54,43 @@ component chargen_rom is
            d : out  STD_LOGIC_VECTOR (7 downto 0));
 end component;
 
+-- basic colors (BBBBGGGGRRRR)
+constant color8_black : std_logic_vector(11 downto 0) := X"000"; 
+constant color8_red	 : std_logic_vector(11 downto 0) := X"00F"; 
+constant color8_green : std_logic_vector(11 downto 0) := X"0F0"; 
+constant color8_yellow: std_logic_vector(11 downto 0) := X"0FF"; 
+constant color8_blue	 : std_logic_vector(11 downto 0) := X"F00"; 
+constant color8_purple: std_logic_vector(11 downto 0) := X"F0F"; 
+constant color8_cyan	 : std_logic_vector(11 downto 0) := X"FF0"; 
+constant color8_white : std_logic_vector(11 downto 0) := X"FFF"; 
 
+type table16x12 is array(0 to 15) of std_logic_vector(11 downto 0);
+constant palette: table16x12 :=(
+-- pixel off
+	color8_blue,
+	color8_black,
+	color8_black,
+	color8_black,
+	color8_black,
+	color8_black,
+	color8_black,
+	color8_black,
+-- pixel on
+	color8_cyan,
+	color8_green,
+	color8_green,
+	color8_green,
+	color8_red,
+	color8_yellow,
+	color8_white,
+	color8_purple
+	);
 
-signal color: std_logic_vector(11 downto 0);
 signal pattern: std_logic_vector(7 downto 0);
 signal hpulse, h, hfp: std_logic_vector(11 downto 0);
 signal vpulse, v, vfp: std_logic_vector(11 downto 0);
 signal h_clk, v_clk: std_logic;
---signal active, pixel: std_logic;
+signal pixel: std_logic;
 signal reverse: std_logic;
 
 begin
@@ -75,7 +105,6 @@ y <= v(10 downto 3);
 
 --active <= hactive and vactive;
 --rgb <= X"000" when (active = '0') else color;
---color <= palette1(to_integer(unsigned(color_index))) when (pixel = '1') else palette0(to_integer(unsigned(color_index)));
 
 h_clk <= clk;
 h_drive: process(reset, h_clk)
@@ -93,6 +122,10 @@ begin
 				h <= std_logic_vector(unsigned(h) + 1);
 				hfp <= std_logic_vector(unsigned(hfp) + 1);
 			end if;
+		end if;
+		-- prevent any change outside of pixel periods
+		if (falling_edge(h_clk)) then
+			color <= palette(to_integer(unsigned(pixel & color_index)));
 		end if;
 	end if;
 end process;
@@ -127,14 +160,14 @@ chargen: chargen_rom port map (
 	);
 	
 with h(2 downto 0) select
-	pixel <= pattern(0) when "000",
-				pattern(7) when "001",
-				pattern(6) when "010",
-				pattern(5) when "011",
-				pattern(4) when "100",
-				pattern(3) when "101",
-				pattern(2) when "110",
-				pattern(1) when "111";
+	pixel <= pattern(7) when "000",
+				pattern(6) when "001",
+				pattern(5) when "010",
+				pattern(4) when "011",
+				pattern(3) when "100",
+				pattern(2) when "101",
+				pattern(1) when "110",
+				pattern(0) when "111";
 
 end Behavioral;
 
