@@ -43,6 +43,7 @@ entity hexcalc is
    		  dbg_row: in STD_LOGIC_VECTOR(3 downto 0);
    		  dbg_col: in STD_LOGIC_VECTOR(3 downto 0);
    		  dbg_reg: out STD_LOGIC_VECTOR(3 downto 0);
+			  button: in STD_LOGIC;
 			  -- MATRIX CONTROL
 			  mt_ctrl: out STD_LOGIC_VECTOR(9 downto 0);
 			  -- MATRIX DATA
@@ -246,7 +247,7 @@ cu_hxc: hexcalc_control_unit
 				cond(seq_cond_d_flag_is_set) => d_flag,
 				cond(seq_cond_c_flag_is_set) => c_flag,
 				cond(seq_cond_z_flagand_is_set) => z_flags(10),
-				cond(seq_cond_cond_11) => '1', -- TODO
+				cond(seq_cond_button) => button, 
 				cond(seq_cond_cond_12) => '1', -- TODO
 				cond(seq_cond_cond_13) => '1', -- TODO
 				cond(seq_cond_cond_14) => '1', -- TODO
@@ -374,10 +375,10 @@ with hxc_TXDCHAR select hexchar <=
 --				delay <= delay;
 			when d_flag_column =>
 				d_flag <= col_delay;
-			when d_flag_carry =>
-				d_flag <= c_flag;
-			when d_flag_flip =>
-				d_flag <= not d_flag;
+			when d_flag_zero =>
+				d_flag <= '0';
+			when d_flag_one =>
+				d_flag <= '1';
 			when others =>
 				null;
 		end case;
@@ -394,10 +395,10 @@ with hxc_TXDCHAR select hexchar <=
 --				carry <= carry;
 			when c_flag_adder =>
 				c_flag <= (col_adc1 and col_adc2) or (c_flag and (col_adc1 xor col_adc2));	-- carry out for 1 bit full adder
-			when c_flag_delay =>
-				c_flag <= d_flag;
-			when c_flag_flip =>
-				c_flag <= not c_flag;
+			when c_flag_zero =>
+				c_flag <= '0';
+			when c_flag_one =>
+				c_flag <= '1';
 			when others =>
 				null;
 		end case;

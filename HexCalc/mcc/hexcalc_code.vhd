@@ -103,7 +103,7 @@ constant STATUS_busy_using_mt: 	std_logic_vector(1 downto 0) := "11";
 ---- End boilerplate code
 
 --
--- L0043.seq_cond: .if 4 values true, input_is_zero, TRACE_ERROR, TRACE_CHAR, TXDREADY, TXDSEND, bitcnt_is_zero, loopcnt_is_zero, d_flag_is_set, c_flag_is_set, z_flagand_is_set, cond_11, cond_12, cond_13, cond_14, false default true;
+-- L0043.seq_cond: .if 4 values true, input_is_zero, TRACE_ERROR, TRACE_CHAR, TXDREADY, TXDSEND, bitcnt_is_zero, loopcnt_is_zero, d_flag_is_set, c_flag_is_set, z_flagand_is_set, button, cond_12, cond_13, cond_14, false default true;
 --
 alias hxc_seq_cond: 	std_logic_vector(3 downto 0) is hxc_uinstruction(35 downto 32);
 constant seq_cond_true: 	integer := 0;
@@ -117,7 +117,7 @@ constant seq_cond_loopcnt_is_zero: 	integer := 7;
 constant seq_cond_d_flag_is_set: 	integer := 8;
 constant seq_cond_c_flag_is_set: 	integer := 9;
 constant seq_cond_z_flagand_is_set: 	integer := 10;
-constant seq_cond_cond_11: 	integer := 11;
+constant seq_cond_button: 	integer := 11;
 constant seq_cond_cond_12: 	integer := 12;
 constant seq_cond_cond_13: 	integer := 13;
 constant seq_cond_cond_14: 	integer := 14;
@@ -135,7 +135,7 @@ constant seq_cond_false: 	integer := 15;
 --  cond(seq_cond_d_flag_is_set) => d_flag_is_set,
 --  cond(seq_cond_c_flag_is_set) => c_flag_is_set,
 --  cond(seq_cond_z_flagand_is_set) => z_flagand_is_set,
---  cond(seq_cond_cond_11) => cond_11,
+--  cond(seq_cond_button) => button,
 --  cond(seq_cond_cond_12) => cond_12,
 --  cond(seq_cond_cond_13) => cond_13,
 --  cond(seq_cond_cond_14) => cond_14,
@@ -283,13 +283,13 @@ constant errcode_same: 	std_logic_vector(2 downto 0) := "110";
 ---- End boilerplate code
 
 --
--- L0106.d_flag: .regfield 2 values same, column, carry, flip default same;
+-- L0106.d_flag: .regfield 2 values same, column, zero, one default same;
 --
 alias hxc_d_flag: 	std_logic_vector(1 downto 0) is hxc_uinstruction(7 downto 6);
 constant d_flag_same: 	std_logic_vector(1 downto 0) := "00";
 constant d_flag_column: 	std_logic_vector(1 downto 0) := "01";
-constant d_flag_carry: 	std_logic_vector(1 downto 0) := "10";
-constant d_flag_flip: 	std_logic_vector(1 downto 0) := "11";
+constant d_flag_zero: 	std_logic_vector(1 downto 0) := "10";
+constant d_flag_one: 	std_logic_vector(1 downto 0) := "11";
 ---- Start boilerplate code (use with utmost caution!)
 -- update_d_flag: process(clk, hxc_d_flag)
 -- begin
@@ -299,10 +299,10 @@ constant d_flag_flip: 	std_logic_vector(1 downto 0) := "11";
 ----				d_flag <= d_flag;
 --			when d_flag_column =>
 --				d_flag <= column;
---			when d_flag_carry =>
---				d_flag <= carry;
---			when d_flag_flip =>
---				d_flag <= flip;
+--			when d_flag_zero =>
+--				d_flag <= (others => '0');
+--			when d_flag_one =>
+--				d_flag <= one;
 --			when others =>
 --				null;
 --		end case;
@@ -311,13 +311,13 @@ constant d_flag_flip: 	std_logic_vector(1 downto 0) := "11";
 ---- End boilerplate code
 
 --
--- L0112.c_flag: .regfield 2 values same, adder, delay, flip default same;
+-- L0112.c_flag: .regfield 2 values same, adder, zero, one default same;
 --
 alias hxc_c_flag: 	std_logic_vector(1 downto 0) is hxc_uinstruction(5 downto 4);
 constant c_flag_same: 	std_logic_vector(1 downto 0) := "00";
 constant c_flag_adder: 	std_logic_vector(1 downto 0) := "01";
-constant c_flag_delay: 	std_logic_vector(1 downto 0) := "10";
-constant c_flag_flip: 	std_logic_vector(1 downto 0) := "11";
+constant c_flag_zero: 	std_logic_vector(1 downto 0) := "10";
+constant c_flag_one: 	std_logic_vector(1 downto 0) := "11";
 ---- Start boilerplate code (use with utmost caution!)
 -- update_c_flag: process(clk, hxc_c_flag)
 -- begin
@@ -327,10 +327,10 @@ constant c_flag_flip: 	std_logic_vector(1 downto 0) := "11";
 ----				c_flag <= c_flag;
 --			when c_flag_adder =>
 --				c_flag <= adder;
---			when c_flag_delay =>
---				c_flag <= delay;
---			when c_flag_flip =>
---				c_flag <= flip;
+--			when c_flag_zero =>
+--				c_flag <= (others => '0');
+--			when c_flag_one =>
+--				c_flag <= one;
 --			when others =>
 --				null;
 --		end case;
@@ -394,455 +394,455 @@ constant loopcnt_dec: 	std_logic_vector(1 downto 0) := "11";
 
 constant hxc_microcode: hxc_code_memory := (
 
--- L0201@0000._reset:  MT_CTRL = clear, errcode <= ok;
+-- L0203@0000._reset:  MT_CTRL = clear, errcode <= ok;
 --  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 000, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 0 => "11" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"0" & "00" & "00" & "00" & "00",
 
--- L0203@0001._reset1:  MT_CTRL = clear, errcode <= ok;
+-- L0205@0001._reset1:  MT_CTRL = clear, errcode <= ok;
 --  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 000, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 1 => "11" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"0" & "00" & "00" & "00" & "00",
 
--- L0205@0002._reset2:  MT_CTRL = clear, errcode <= ok;
+-- L0207@0002._reset2:  MT_CTRL = clear, errcode <= ok;
 --  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 000, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 2 => "11" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"0" & "00" & "00" & "00" & "00",
 
--- L0207@0003._reset3:  MT_CTRL = clear, errcode <= ok;
+-- L0209@0003._reset3:  MT_CTRL = clear, errcode <= ok;
 --  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 000, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 3 => "11" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"0" & "00" & "00" & "00" & "00",
 
--- L0211@0004.deadloop:  STATUS = ready, if input_is_zero then repeat else next;
+-- L0213@0004.deadloop:  STATUS = ready, if input_is_zero then repeat else next;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 00, if (0001) then 0000001 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 4 => "00" & X"0" & X"0" & "00" & "00" & X"1" & "0000001" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0212@0005.  trace();
+-- L0214@0005.  trace();
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1100101 else 1100101, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 5 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1100101" & "1100101" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0213@0006.  if true then fork else fork;
+-- L0215@0006.  if true then fork else fork;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000011 else 0000011, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 6 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "0000011" & "0000011" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0216@0007.badchar:  errcode <= err_badchar, if TRACE_ERROR then printerror else nextchar;
+-- L0218@0007.badchar:  errcode <= err_badchar, if TRACE_ERROR then printerror else nextchar;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0010) then 0001000 else 0010000, TXDCHAR <= 0000, opr = 000, errcode <= 001, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 7 => "00" & X"0" & X"0" & "00" & "10" & X"2" & "0001000" & "0010000" & X"0" & O"0" & O"1" & "00" & "00" & "00" & "00",
 
--- L0217@0008.printerror:  emit(char_E);
+-- L0219@0008.printerror:  emit(char_E);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 0100, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 8 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"4" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0218@0009.  emit(char_R);
+-- L0220@0009.  emit(char_R);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 0101, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 9 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"5" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0219@000A.  emit(char_R);
+-- L0221@000A.  emit(char_R);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 0101, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 10 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"5" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0220@000B.  emit(errcode);
+-- L0222@000B.  emit(errcode);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 1111, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 11 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"F" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0221@000C.  emit(char_space);
+-- L0223@000C.  emit(char_space);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 0001, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 12 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"1" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0222@000D.  emit(inp1);
+-- L0224@000D.  emit(inp1);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 1010, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 13 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"A" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0223@000E.  emit(inp0);
+-- L0225@000E.  emit(inp0);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 1001, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 14 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"9" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0224@000F.  print_crlf();
+-- L0226@000F.  print_crlf();
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101010 else 1101010, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 15 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101010" & "1101010" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0229@0010.nextchar:  STATUS = done, if false then next else deadloop;
+-- L0231@0010.nextchar:  STATUS = done, if false then next else deadloop;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 01, if (1111) then 0000000 else 0000100, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 16 => "00" & X"0" & X"0" & "00" & "01" & X"F" & "0000000" & "0000100" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0234@0011.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_swap();
+-- L0236@0011.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_swap();
 --  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1001111 else 1001111, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 17 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1001111" & "1001111" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0235@0012.  if false then next else exec;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0010110, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-18 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0010110" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+-- L0237@0012.  if false then next else exec;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0010101, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+18 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0010101" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0240@0013.  errcode <= ok, STATUS = busy_using_mt, MT_CTRL = clear, if false then next else exec;
---  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (1111) then 0000000 else 0010110, TXDCHAR <= 0000, opr = 000, errcode <= 000, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-19 => "11" & X"0" & X"0" & "00" & "11" & X"F" & "0000000" & "0010110" & X"0" & O"0" & O"0" & "00" & "00" & "00" & "00",
+-- L0242@0013.  errcode <= ok, STATUS = busy_using_mt, MT_CTRL = clear, if false then next else exec;
+--  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (1111) then 0000000 else 0010101, TXDCHAR <= 0000, opr = 000, errcode <= 000, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+19 => "11" & X"0" & X"0" & "00" & "11" & X"F" & "0000000" & "0010101" & X"0" & O"0" & O"0" & "00" & "00" & "00" & "00",
 
--- L0245@0014.  errcode <= ok, STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
+-- L0247@0014.  errcode <= ok, STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 --  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1010001 else 1010001, TXDCHAR <= 0000, opr = 000, errcode <= 000, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 20 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1010001" & "1010001" & X"0" & O"0" & O"0" & "00" & "00" & "00" & "00",
 
--- L0246@0015.exec1:  c_flag <= flip;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 11, z_flags <= 00, loopcnt <= 00;
-21 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "11" & "00" & "00",
+-- L0248@0015.exec:  z_flags <= set, bitcnt <= max, div2();
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 10, STATUS = 10, if (0000) then 1001101 else 1001101, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 11, loopcnt <= 00;
+21 => "00" & X"0" & X"0" & "10" & "10" & X"0" & "1001101" & "1001101" & X"0" & O"0" & O"6" & "00" & "00" & "11" & "00",
 
--- L0247@0016.exec:  z_flags <= set, bitcnt <= max, div2();
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 10, STATUS = 10, if (0000) then 0011000 else 0011000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 11, loopcnt <= 00;
-22 => "00" & X"0" & X"0" & "10" & "10" & X"0" & "0011000" & "0011000" & X"0" & O"0" & O"6" & "00" & "00" & "11" & "00",
-
--- L0248@0017.  if false then next else nextchar;
+-- L0249@0016.  if false then next else nextchar;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0010000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-23 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0010000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+22 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0010000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0251@0018.div2:  STATUS = busy_using_mt, opr = d2_d2_d2, c_flag <= adder, z_flags <= update, if bitcnt_is_zero then return;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0110) then 0000010 else 0000000, TXDCHAR <= 0000, opr = 100, errcode <= 110, d_flag <= 00, c_flag <= 01, z_flags <= 01, loopcnt <= 00;
-24 => "00" & X"0" & X"0" & "00" & "11" & X"6" & "0000010" & "0000000" & X"0" & O"4" & O"6" & "00" & "01" & "01" & "00",
-
--- L0252@0019.  bitcnt <= dec, if false then next else div2;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 11, STATUS = 10, if (1111) then 0000000 else 0011000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-25 => "00" & X"0" & X"0" & "11" & "10" & X"F" & "0000000" & "0011000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
-
--- L0256@001A.plus:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
+-- L0253@0017.plus:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
 --  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1011111 else 1011111, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-26 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1011111" & "1011111" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+23 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1011111" & "1011111" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0257@001B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0;
+-- L0254@0018.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0;
 --  MT_CTRL = 01, MT_ROW = 1011, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-27 => "01" & X"B" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+24 => "01" & X"B" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0258@001C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC;
+-- L0255@0019.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC;
 --  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 1100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-28 => "01" & X"0" & X"C" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+25 => "01" & X"0" & X"C" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0259@001D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xD, if c_flag_is_set then exec1 else exec;
---  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 1101, bitcnt <= 00, STATUS = 11, if (1001) then 0010101 else 0010110, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-29 => "01" & X"1" & X"D" & "00" & "11" & X"9" & "0010101" & "0010110" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+-- L0256@001A.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xD, c_flag <= zero, if false then next else exec;
+--  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 1101, bitcnt <= 00, STATUS = 11, if (1111) then 0000000 else 0010101, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 10, z_flags <= 00, loopcnt <= 00;
+26 => "01" & X"1" & X"D" & "00" & "11" & X"F" & "0000000" & "0010101" & X"0" & O"0" & O"6" & "00" & "10" & "00" & "00",
 
--- L0263@001E.minus:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
+-- L0260@001B.minus:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
 --  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1011111 else 1011111, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-30 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1011111" & "1011111" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+27 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1011111" & "1011111" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0264@001F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0;
+-- L0261@001C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0;
 --  MT_CTRL = 01, MT_ROW = 1011, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-31 => "01" & X"B" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+28 => "01" & X"B" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0265@0020.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC;
+-- L0262@001D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC;
 --  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 1100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-32 => "01" & X"0" & X"C" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+29 => "01" & X"0" & X"C" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0266@0021.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 9;
+-- L0263@001E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 9;
 --  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 1001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-33 => "01" & X"1" & X"9" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+30 => "01" & X"1" & X"9" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0267@0022.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, if c_flag_is_set then exec else exec1;
---  MT_CTRL = 01, MT_ROW = 1001, MT_COL = 1101, bitcnt <= 00, STATUS = 11, if (1001) then 0010110 else 0010101, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-34 => "01" & X"9" & X"D" & "00" & "11" & X"9" & "0010110" & "0010101" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+-- L0264@001F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, c_flag <= one, if false then next else exec;
+--  MT_CTRL = 01, MT_ROW = 1001, MT_COL = 1101, bitcnt <= 00, STATUS = 11, if (1111) then 0000000 else 0010101, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 11, z_flags <= 00, loopcnt <= 00;
+31 => "01" & X"9" & X"D" & "00" & "11" & X"F" & "0000000" & "0010101" & X"0" & O"0" & O"6" & "00" & "11" & "00" & "00",
 
--- L0271@0023.mul:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
+-- L0268@0020.mul:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 --  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1010001 else 1010001, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-35 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1010001" & "1010001" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+32 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1010001" & "1010001" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0274@0024.  loopcnt <= max, STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
+-- L0271@0021.  loopcnt <= max, STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
 --  MT_CTRL = 10, MT_ROW = 0111, MT_COL = 0111, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 10;
-36 => "10" & X"7" & X"7" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "10",
+33 => "10" & X"7" & X"7" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "10",
 
--- L0275@0025.  bitcnt <= max, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 7, div2();
---  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 0111, bitcnt <= 10, STATUS = 11, if (0000) then 0011000 else 0011000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-37 => "01" & X"0" & X"7" & "10" & "11" & X"0" & "0011000" & "0011000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+-- L0272@0022.  bitcnt <= max, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 7, div2();
+--  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 0111, bitcnt <= 10, STATUS = 11, if (0000) then 1001101 else 1001101, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+34 => "01" & X"0" & X"7" & "10" & "11" & X"0" & "1001101" & "1001101" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0276@0026.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7;
+-- L0273@0023.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7;
 --  MT_CTRL = 01, MT_ROW = 0111, MT_COL = 0111, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-38 => "01" & X"7" & X"7" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+35 => "01" & X"7" & X"7" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0277@0027.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 7;
+-- L0274@0024.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 7;
 --  MT_CTRL = 10, MT_ROW = 0000, MT_COL = 0111, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-39 => "10" & X"0" & X"7" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+36 => "10" & X"0" & X"7" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0280@0028.m_loop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 8;
+-- L0277@0025.m_loop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 8;
 --  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 1000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-40 => "01" & X"1" & X"8" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+37 => "01" & X"1" & X"8" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0281@0029.  STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column;
+-- L0278@0026.  STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 110, errcode <= 110, d_flag <= 01, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-41 => "00" & X"0" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"6" & O"6" & "01" & "00" & "00" & "00",
+38 => "00" & X"0" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"6" & O"6" & "01" & "00" & "00" & "00",
 
--- L0282@002A.  STATUS = busy_using_mt, opr = np_m2_m2, c_flag <= delay;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 011, errcode <= 110, d_flag <= 00, c_flag <= 10, z_flags <= 00, loopcnt <= 00;
-42 => "00" & X"0" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"3" & O"6" & "00" & "10" & "00" & "00",
+-- L0279@0027.  STATUS = busy_using_mt, opr = np_m2_m2;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 011, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+39 => "00" & X"0" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"3" & O"6" & "00" & "00" & "00" & "00",
 
--- L0283@002B.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 8, if d_flag_is_set then m_add_r7 else m_add_0;
---  MT_CTRL = 10, MT_ROW = 0001, MT_COL = 1000, bitcnt <= 00, STATUS = 11, if (1000) then 0101110 else 0101100, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-43 => "10" & X"1" & X"8" & "00" & "11" & X"8" & "0101110" & "0101100" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+-- L0280@0028.  c_flag <= zero, STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 8, if d_flag_is_set then m_add_r7 else m_shift0;
+--  MT_CTRL = 10, MT_ROW = 0001, MT_COL = 1000, bitcnt <= 00, STATUS = 11, if (1000) then 0101001 else 0101101, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 10, z_flags <= 00, loopcnt <= 00;
+40 => "10" & X"1" & X"8" & "00" & "11" & X"8" & "0101001" & "0101101" & X"0" & O"0" & O"6" & "00" & "10" & "00" & "00",
 
--- L0286@002C.m_add_0:  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-44 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0283@0029.m_add_r7:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0xC;
+--  MT_CTRL = 01, MT_ROW = 0111, MT_COL = 1100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+41 => "01" & X"7" & X"C" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0287@002D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xC, if false then next else m_add;
---  MT_CTRL = 01, MT_ROW = 1101, MT_COL = 1100, bitcnt <= 00, STATUS = 11, if (1111) then 0000000 else 0101111, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-45 => "01" & X"D" & X"C" & "00" & "11" & X"F" & "0000000" & "0101111" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
-
--- L0288@002E.m_add_r7:  c_flag <= flip, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0xC;
---  MT_CTRL = 01, MT_ROW = 0111, MT_COL = 1100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 11, z_flags <= 00, loopcnt <= 00;
-46 => "01" & X"7" & X"C" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "11" & "00" & "00",
-
--- L0289@002F.m_add:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xD;
+-- L0284@002A.m_add:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xD;
 --  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 1101, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-47 => "01" & X"0" & X"D" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+42 => "01" & X"0" & X"D" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0290@0030.  bitcnt <= max, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, div2();
---  MT_CTRL = 01, MT_ROW = 1011, MT_COL = 0000, bitcnt <= 10, STATUS = 11, if (0000) then 0011000 else 0011000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-48 => "01" & X"B" & X"0" & "10" & "11" & X"0" & "0011000" & "0011000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+-- L0285@002B.  bitcnt <= max, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, div2();
+--  MT_CTRL = 01, MT_ROW = 1011, MT_COL = 0000, bitcnt <= 10, STATUS = 11, if (0000) then 1001101 else 1001101, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+43 => "01" & X"B" & X"0" & "10" & "11" & X"0" & "1001101" & "1001101" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0291@0031.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0;
---  MT_CTRL = 10, MT_ROW = 1011, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-49 => "10" & X"B" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+-- L0286@002C.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, if c_flag_is_set then m_shift1;
+--  MT_CTRL = 10, MT_ROW = 1011, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (1001) then 0101110 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+44 => "10" & X"B" & X"0" & "00" & "11" & X"9" & "0101110" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0294@0032.  d_flag <= carry, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
---  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 10, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-50 => "01" & X"0" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "10" & "00" & "00" & "00",
+-- L0289@002D.m_shift0:  d_flag <= zero, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1, if false then next else m_shift;
+--  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (1111) then 0000000 else 0101111, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 10, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+45 => "01" & X"0" & X"1" & "00" & "11" & X"F" & "0000000" & "0101111" & X"0" & O"0" & O"6" & "10" & "00" & "00" & "00",
 
--- L0295@0033.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 0, opr = d2_d2_np;
---  MT_CTRL = 01, MT_ROW = 1000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 101, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-51 => "01" & X"8" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"5" & O"6" & "00" & "00" & "00" & "00",
+-- L0290@002E.m_shift1:  d_flag <= one, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+--  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 11, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+46 => "01" & X"0" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "11" & "00" & "00" & "00",
 
--- L0298@0034.  if loopcnt_is_zero then nextchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0111) then 0010000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-52 => "00" & X"0" & X"0" & "00" & "10" & X"7" & "0010000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+-- L0291@002F.m_shift:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 0;
+--  MT_CTRL = 01, MT_ROW = 1000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+47 => "01" & X"8" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0299@0035.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
---  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1010001 else 1010001, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-53 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1010001" & "1010001" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+-- L0292@0030.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1, opr = d2_d2_np;
+--  MT_CTRL = 10, MT_ROW = 0001, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 101, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+48 => "10" & X"1" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"5" & O"6" & "00" & "00" & "00" & "00",
 
--- L0300@0036.  loopcnt <= dec, if false then next else m_loop;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0101000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 11;
-54 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0101000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "11",
+-- L0295@0031.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 1;
+--  MT_CTRL = 10, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+49 => "10" & X"0" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0304@0037.enter:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
+-- L0296@0032.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 8 , MT_COL = 0;
+--  MT_CTRL = 10, MT_ROW = 1000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+50 => "10" & X"8" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+
+-- L0297@0033.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1, if loopcnt_is_zero then nextchar;
+--  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0111) then 0010000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+51 => "01" & X"1" & X"1" & "00" & "11" & X"7" & "0010000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+
+-- L0298@0034.  loopcnt <= dec, if false then next else m_loop;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0100101, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 11;
+52 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0100101" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "11",
+
+-- L0302@0035.enter:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
 --  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1011000 else 1011000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-55 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1011000" & "1011000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+53 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1011000" & "1011000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0305@0038.  if false then next else exec;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0010110, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-56 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0010110" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+-- L0303@0036.  if false then next else exec;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 0010101, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+54 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "0010101" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0309@0039.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0000, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-57 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0307@0037.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0000, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+55 => "00" & X"0" & X"0" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0312@003A.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1000, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-58 => "00" & X"0" & X"8" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0310@0038.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1000, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1000, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+56 => "00" & X"0" & X"8" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0315@003B.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0100, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0100, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-59 => "00" & X"0" & X"4" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0313@0039.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0100, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0100, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+57 => "00" & X"0" & X"4" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0318@003C.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1100, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1100, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-60 => "00" & X"0" & X"C" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0316@003A.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1100, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1100, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+58 => "00" & X"0" & X"C" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0321@003D.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0010, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0010, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-61 => "00" & X"0" & X"2" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0319@003B.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0010, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0010, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+59 => "00" & X"0" & X"2" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0324@003E.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1010, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1010, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-62 => "00" & X"0" & X"A" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0322@003C.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1010, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1010, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+60 => "00" & X"0" & X"A" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0327@003F.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0110, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0110, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-63 => "00" & X"0" & X"6" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0325@003D.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0110, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0110, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+61 => "00" & X"0" & X"6" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0330@0040.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1110, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1110, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-64 => "00" & X"0" & X"E" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0328@003E.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1110, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1110, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+62 => "00" & X"0" & X"E" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0333@0041.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0001, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-65 => "00" & X"0" & X"1" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0331@003F.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0001, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+63 => "00" & X"0" & X"1" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0336@0042.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1001, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1001, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-66 => "00" & X"0" & X"9" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0334@0040.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1001, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1001, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+64 => "00" & X"0" & X"9" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0340@0043.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0101, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0101, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-67 => "00" & X"0" & X"5" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0338@0041.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0101, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0101, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+65 => "00" & X"0" & X"5" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0344@0044.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1101, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1101, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-68 => "00" & X"0" & X"D" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0342@0042.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1101, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1101, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+66 => "00" & X"0" & X"D" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0348@0045.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0011, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0011, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-69 => "00" & X"0" & X"3" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0346@0043.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0011, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0011, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+67 => "00" & X"0" & X"3" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0352@0046.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1011, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1011, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-70 => "00" & X"0" & X"B" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0350@0044.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1011, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1011, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+68 => "00" & X"0" & X"B" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0356@0047.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0111, if false then next else hexchar;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0111, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1001001, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-71 => "00" & X"0" & X"7" & "00" & "10" & X"F" & "0000000" & "1001001" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+-- L0354@0045.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b0111, if false then next else hexchar;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0111, bitcnt <= 00, STATUS = 10, if (1111) then 0000000 else 1000111, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+69 => "00" & X"0" & X"7" & "00" & "10" & X"F" & "0000000" & "1000111" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0360@0048.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1111;
+-- L0358@0046.  opr = np_np_ld, MT_ROW = 0b0000, MT_COL = 0b1111;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 1111, bitcnt <= 00, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 001, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-72 => "00" & X"0" & X"F" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
+70 => "00" & X"0" & X"F" & "00" & "10" & X"0" & "0000000" & "0000000" & X"0" & O"1" & O"6" & "00" & "00" & "00" & "00",
 
--- L0361@0049.hexchar:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
+-- L0359@0047.hexchar:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 --  MT_CTRL = 11, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 1010001 else 1010001, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-73 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1010001" & "1010001" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+71 => "11" & X"0" & X"0" & "00" & "11" & X"0" & "1010001" & "1010001" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0362@004A.  bitcnt <= load, MT_COL = 3;
+-- L0360@0048.  bitcnt <= load, MT_COL = 3;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0011, bitcnt <= 01, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-74 => "00" & X"0" & X"3" & "01" & "10" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+72 => "00" & X"0" & X"3" & "01" & "10" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0363@004B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0;
+-- L0361@0049.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0;
 --  MT_CTRL = 01, MT_ROW = 1101, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-75 => "01" & X"D" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+73 => "01" & X"D" & X"0" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0364@004C.  STATUS = busy_using_mt, opr = m2_d2_d2, bitcnt <= dec, if bitcnt_is_zero then next else repeat;
+-- L0362@004A.  STATUS = busy_using_mt, opr = m2_d2_d2, bitcnt <= dec, if bitcnt_is_zero then next else repeat;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 11, STATUS = 11, if (0110) then 0000000 else 0000001, TXDCHAR <= 0000, opr = 010, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-76 => "00" & X"0" & X"0" & "11" & "11" & X"6" & "0000000" & "0000001" & X"0" & O"2" & O"6" & "00" & "00" & "00" & "00",
+74 => "00" & X"0" & X"0" & "11" & "11" & X"6" & "0000000" & "0000001" & X"0" & O"2" & O"6" & "00" & "00" & "00" & "00",
 
--- L0365@004D.  bitcnt <= load, MT_COL = 3;
+-- L0363@004B.  bitcnt <= load, MT_COL = 3;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0011, bitcnt <= 01, STATUS = 10, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-77 => "00" & X"0" & X"3" & "01" & "10" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+75 => "00" & X"0" & X"3" & "01" & "10" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0366@004E.  STATUS = busy_using_mt, opr = np_m2_m2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
+-- L0364@004C.  STATUS = busy_using_mt, opr = np_m2_m2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 11, STATUS = 11, if (0110) then 0010000 else 0000001, TXDCHAR <= 0000, opr = 011, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
-78 => "00" & X"0" & X"0" & "11" & "11" & X"6" & "0010000" & "0000001" & X"0" & O"3" & O"6" & "00" & "00" & "00" & "00",
+76 => "00" & X"0" & X"0" & "11" & "11" & X"6" & "0010000" & "0000001" & X"0" & O"3" & O"6" & "00" & "00" & "00" & "00",
 
--- L0369@004F.matrix_swap:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+-- L0368@004D.div2:  STATUS = busy_using_mt, opr = d2_d2_d2, c_flag <= adder, z_flags <= update, if bitcnt_is_zero then return;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (0110) then 0000010 else 0000000, TXDCHAR <= 0000, opr = 100, errcode <= 110, d_flag <= 00, c_flag <= 01, z_flags <= 01, loopcnt <= 00;
+77 => "00" & X"0" & X"0" & "00" & "11" & X"6" & "0000010" & "0000000" & X"0" & O"4" & O"6" & "00" & "01" & "01" & "00",
+
+-- L0369@004E.  bitcnt <= dec, if false then next else div2;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 11, STATUS = 10, if (1111) then 0000000 else 1001101, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
+78 => "00" & X"0" & X"0" & "11" & "10" & X"F" & "0000000" & "1001101" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
+
+-- L0372@004F.matrix_swap:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
 --  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 79 => "01" & X"0" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0370@0050.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0, if false then next else matrix_nop;
+-- L0373@0050.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0, if false then next else matrix_nop;
 --  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0000, bitcnt <= 00, STATUS = 11, if (1111) then 0000000 else 1010010, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 80 => "01" & X"1" & X"0" & "00" & "11" & X"F" & "0000000" & "1010010" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0373@0051.matrix_nop1:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+-- L0376@0051.matrix_nop1:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
 --  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 81 => "01" & X"1" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0374@0052.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
+-- L0377@0052.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
 --  MT_CTRL = 01, MT_ROW = 0010, MT_COL = 0010, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 82 => "01" & X"2" & X"2" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0375@0053.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
+-- L0378@0053.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
 --  MT_CTRL = 01, MT_ROW = 0011, MT_COL = 0011, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 83 => "01" & X"3" & X"3" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0376@0054.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
+-- L0379@0054.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
 --  MT_CTRL = 01, MT_ROW = 0100, MT_COL = 0100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 84 => "01" & X"4" & X"4" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0377@0055.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
+-- L0380@0055.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
 --  MT_CTRL = 01, MT_ROW = 0101, MT_COL = 0101, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 85 => "01" & X"5" & X"5" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0378@0056.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
+-- L0381@0056.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
 --  MT_CTRL = 01, MT_ROW = 0110, MT_COL = 0110, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 86 => "01" & X"6" & X"6" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0379@0057.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
+-- L0382@0057.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
 --  MT_CTRL = 01, MT_ROW = 0111, MT_COL = 0111, bitcnt <= 00, STATUS = 11, if (0000) then 0000010 else 0000010, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 87 => "01" & X"7" & X"7" & "00" & "11" & X"0" & "0000010" & "0000010" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0382@0058.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+-- L0385@0058.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
 --  MT_CTRL = 01, MT_ROW = 0000, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 88 => "01" & X"0" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0383@0059.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
+-- L0386@0059.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
 --  MT_CTRL = 01, MT_ROW = 0001, MT_COL = 0010, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 89 => "01" & X"1" & X"2" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0384@005A.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
+-- L0387@005A.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
 --  MT_CTRL = 01, MT_ROW = 0010, MT_COL = 0011, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 90 => "01" & X"2" & X"3" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0385@005B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
+-- L0388@005B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
 --  MT_CTRL = 01, MT_ROW = 0011, MT_COL = 0100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 91 => "01" & X"3" & X"4" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0386@005C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
+-- L0389@005C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
 --  MT_CTRL = 01, MT_ROW = 0100, MT_COL = 0101, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 92 => "01" & X"4" & X"5" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0387@005D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
+-- L0390@005D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
 --  MT_CTRL = 01, MT_ROW = 0101, MT_COL = 0110, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 93 => "01" & X"5" & X"6" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0388@005E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
+-- L0391@005E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
 --  MT_CTRL = 01, MT_ROW = 0110, MT_COL = 0111, bitcnt <= 00, STATUS = 11, if (0000) then 0000010 else 0000010, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 94 => "01" & X"6" & X"7" & "00" & "11" & X"0" & "0000010" & "0000010" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0391@005F.matrix_pop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
+-- L0394@005F.matrix_pop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
 --  MT_CTRL = 01, MT_ROW = 0010, MT_COL = 0001, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 95 => "01" & X"2" & X"1" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0392@0060.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 2;
+-- L0395@0060.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 2;
 --  MT_CTRL = 01, MT_ROW = 0011, MT_COL = 0010, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 96 => "01" & X"3" & X"2" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0393@0061.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 3;
+-- L0396@0061.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 3;
 --  MT_CTRL = 01, MT_ROW = 0100, MT_COL = 0011, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 97 => "01" & X"4" & X"3" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0394@0062.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 4;
+-- L0397@0062.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 4;
 --  MT_CTRL = 01, MT_ROW = 0101, MT_COL = 0100, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 98 => "01" & X"5" & X"4" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0395@0063.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 5;
+-- L0398@0063.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 5;
 --  MT_CTRL = 01, MT_ROW = 0110, MT_COL = 0101, bitcnt <= 00, STATUS = 11, if (0000) then 0000000 else 0000000, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 99 => "01" & X"6" & X"5" & "00" & "11" & X"0" & "0000000" & "0000000" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0396@0064.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 6, if true then return else return;
+-- L0399@0064.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 6, if true then return else return;
 --  MT_CTRL = 01, MT_ROW = 0111, MT_COL = 0110, bitcnt <= 00, STATUS = 11, if (0000) then 0000010 else 0000010, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 100 => "01" & X"7" & X"6" & "00" & "11" & X"0" & "0000010" & "0000010" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0398@0065.trace:  if TRACE_CHAR then next else return;
+-- L0401@0065.trace:  if TRACE_CHAR then next else return;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0011) then 0000000 else 0000010, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 101 => "00" & X"0" & X"0" & "00" & "10" & X"3" & "0000000" & "0000010" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0399@0066.  emit(char_I);
+-- L0402@0066.  emit(char_I);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 0111, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 102 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"7" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0400@0067.  emit(char_EQU);
+-- L0403@0067.  emit(char_EQU);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 0110, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 103 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"6" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0401@0068.  emit(inp1);
+-- L0404@0068.  emit(inp1);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 1010, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 104 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"A" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0402@0069.  emit(inp0);
+-- L0405@0069.  emit(inp0);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 1001, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 105 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"9" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0404@006A.print_crlf:  emit(char_cr);
+-- L0407@006A.print_crlf:  emit(char_cr);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 0010, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 106 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"2" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0405@006B.  emit(char_lf);
+-- L0408@006B.  emit(char_lf);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 1101101 else 1101101, TXDCHAR <= 0011, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 107 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "1101101" & "1101101" & X"3" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0406@006C.  if true then return else return;
+-- L0409@006C.  if true then return else return;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 0000010 else 0000010, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 108 => "00" & X"0" & X"0" & "00" & "10" & X"0" & "0000010" & "0000010" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0408@006D.emit:  if TXDREADY then next else repeat;
+-- L0411@006D.emit:  if TXDREADY then next else repeat;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0100) then 0000000 else 0000001, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 109 => "00" & X"0" & X"0" & "00" & "10" & X"4" & "0000000" & "0000001" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0409@006E.  if TXDREADY then next else repeat;
+-- L0412@006E.  if TXDREADY then next else repeat;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0100) then 0000000 else 0000001, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 110 => "00" & X"0" & X"0" & "00" & "10" & X"4" & "0000000" & "0000001" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0410@006F.  if TXDREADY then next else repeat;
+-- L0413@006F.  if TXDREADY then next else repeat;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0100) then 0000000 else 0000001, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 111 => "00" & X"0" & X"0" & "00" & "10" & X"4" & "0000000" & "0000001" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 
--- L0411@0070.  if TXDSEND then return else return;
+-- L0414@0070.  if TXDSEND then return else return;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0101) then 0000010 else 0000010, TXDCHAR <= 0000, opr = 000, errcode <= 110, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00;
 112 => "00" & X"0" & X"0" & "00" & "10" & X"5" & "0000010" & "0000010" & X"0" & O"0" & O"6" & "00" & "00" & "00" & "00",
 

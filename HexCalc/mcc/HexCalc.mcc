@@ -52,7 +52,7 @@ seq_cond:		.if 4 values
 				d_flag_is_set,
 				c_flag_is_set,
 				z_flagand_is_set,
-				cond_11,
+				button,
 				cond_12,
 				cond_13,
 				cond_14,
@@ -106,14 +106,14 @@ errcode:		.regfield 3 values
 d_flag:			.regfield 2 values	// delay flag
 				same,
 				column,
-				carry,
-				flip default same;
+				zero,
+				one default same;
 
 c_flag:			.regfield 2 values	// carry flag
 				same,
 				adder,
-				delay,
-				flip default same;
+				zero,
+				one default same;
 
 z_flags:		.regfield 2 values	// zero flags, one per row. Initialize with set all to 1!
 				same,
@@ -137,7 +137,9 @@ noop:		.alias if true then next else next;
 back:	    .alias if true then return else return;
 data:		.alias opr = np_np_ld, MT_ROW = 0b0000, MT_COL =;
 const:		.alias opr = np_np_ld, MT_COL = 0b0000, MT_ROW =;
-load_bitcnt	.alias bitcnt <= load, MT_COL =;
+load_bitcnt:.alias bitcnt <= load, MT_COL =;
+wait:		.alias 	if button then next else repeat;
+
 
 // switches in the matrix
 nuke		.alias STATUS = busy_using_mt, MT_CTRL = clear;
@@ -243,20 +245,15 @@ nextchar:	STATUS = done, goto deadloop;
 			.map 'z';	
 			.map 'Z';
 			errcode <= ok, nuke, matrix_nop1();	// no switch on TOS means pull down, so it 0
-exec1:		c_flag <= flip;			
 exec:		z_flags <= set, bitcnt <= max, div2();				// 16 or 32 *
 			goto nextchar;		
 
-// rotate all registers right (LSB first) through switch matrix;
-div2:		STATUS = busy_using_mt, opr = d2_d2_d2, c_flag <= adder, z_flags <= update, if bitcnt_is_zero then return;
-			bitcnt <= dec, goto div2;
-			
 			// TOS <= TOS + NOS, POP
 			.map '+';
 plus:		nuke, matrix_pop();
 			connect row_sum to col_tos;
 			connect row_tos to col_adc1;
-			connect row_nos to col_adc2, if c_flag_is_set then exec1 else exec;
+			connect row_nos to col_adc2, c_flag <= zero, goto exec;
 			
 			// TOS <= TOS - NOS, POP
 			.map '-';
@@ -264,7 +261,7 @@ minus:		nuke, matrix_pop();
 			connect row_sum to col_tos;
 			connect row_tos to col_adc1;
 			connect row_nos to col_not;
-			connect row_not to col_adc2, if c_flag_is_set then exec else exec1;
+			connect row_not to col_adc2, c_flag <= one, goto exec;
 			
 			// TOS, NOS <= TOS * NOS, R(7) destroyed
 			.map '*';
@@ -274,29 +271,30 @@ mul:		nuke, matrix_nop1();
 			loopcnt <= max, disconnect row_r7 from col_r7;
 			bitcnt <= max, connect row_tos to col_r7, div2();	// R7 <= TOS, TOS <= 0
 			connect row_r7 to col_r7;
-			disconnect row_tos from col_r7;		// continue as if matrix_nop1() was executed
+			disconnect row_tos from col_r7;		
 
 			// NOS(0) to d_flag
 m_loop:		connect row_nos to col_delay;
 			STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column;
-			STATUS = busy_using_mt, opr = np_m2_m2, c_flag <= delay;
-			disconnect row_nos from col_delay, if d_flag_is_set then m_add_r7 else m_add_0;
+			STATUS = busy_using_mt, opr = np_m2_m2;
+			c_flag <= zero, disconnect row_nos from col_delay, if d_flag_is_set then m_add_r7 else m_shift0;
 			
-			// TOS <= TOS + (NOS(0) ? R7 : 0) + 0
-m_add_0:	data 0;
-			connect row_direct to col_adc1, goto m_add;
-m_add_r7:	c_flag <= flip, connect row_r7 to col_adc1;
+			// C,TOS <= TOS + R7 + 0
+m_add_r7:	connect row_r7 to col_adc1;
 m_add:		connect row_tos to col_adc2;
 			bitcnt <= max, connect row_sum to col_tos, div2();
-			disconnect row_sum from col_tos;
+			disconnect row_sum from col_tos, if c_flag_is_set then m_shift1;
 
 			// c_flag >> TOS >> NOS
-			d_flag <= carry, connect row_tos to col_nos;
-			connect row_delay to col_tos, opr = d2_d2_np;
+m_shift0:	d_flag <= zero, connect row_tos to col_nos, goto m_shift;
+m_shift1:	d_flag <= one, connect row_tos to col_nos;
+m_shift:	connect row_delay to col_tos;
+			disconnect row_nos from col_nos, opr = d2_d2_np;
 
 			// reset connections and iterate
-			if loopcnt_is_zero then nextchar;
-			nuke, matrix_nop1();
+			disconnect row_tos from col_nos;
+			disconnect row_delay from col_tos;
+			connect row_nos to col_nos, if loopcnt_is_zero then nextchar;
 			loopcnt <= dec, goto m_loop;	// do it 16 or 32 times
 			
 			// enter: push all down, TOS <= 0
@@ -364,6 +362,11 @@ hexchar:	nuke, matrix_nop1();
 			STATUS = busy_using_mt, opr = m2_d2_d2, bitcnt <= dec, if bitcnt_is_zero then next else repeat;
 			load_bitcnt 3;
 			STATUS = busy_using_mt, opr = np_m2_m2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
+			
+// subroutines (keep in mind max stack call level is 4!)
+// rotate all registers right (LSB first) through switch matrix;
+div2:		STATUS = busy_using_mt, opr = d2_d2_d2, c_flag <= adder, z_flags <= update, if bitcnt_is_zero then return;
+			bitcnt <= dec, goto div2;
 			
 // swap TOS and NOS
 matrix_swap:connect row_tos to col_nos;

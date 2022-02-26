@@ -181,6 +181,7 @@ component hexcalc is
    		  dbg_row: out STD_LOGIC_VECTOR(3 downto 0);
    		  dbg_col: out STD_LOGIC_VECTOR(3 downto 0);
    		  dbg_reg: out STD_LOGIC_VECTOR(3 downto 0);
+			  button: in STD_LOGIC;
 			  -- MATRIX CONTROL
 			  mt_ctrl: out STD_LOGIC_VECTOR(9 downto 0);
 			  -- MATRIX DATA
@@ -645,6 +646,7 @@ hc: hexcalc Port map (
 			dbg_row => win_y(3 downto 0),
 			dbg_col => win_x(3 downto 0),
 			dbg_reg => hc_reg,
+			button => btn(0),
 			--
 			mt_ctrl => hc_mt_ctrl,
 			mt_x => hc_mt_x,
