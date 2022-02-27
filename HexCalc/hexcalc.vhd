@@ -337,7 +337,8 @@ with hxc_TXDCHAR select hexchar <=
       "010101" when opr_d2_d2_d2,
       "010100" when opr_d2_d2_np,
 		"000101" when opr_np_d2_d2,
-      "000000" when others;
+      "101000" when opr_m2_m2_np,
+		"000000" when others;
 ---- End boilerplate code
 
 ---- Start boilerplate code (use with utmost caution!)

@@ -90,7 +90,7 @@ opr 			.valfield 3 values
 				d2_d2_d2,
 				d2_d2_np,	// used for multiplication
 				np_d2_d2,
-				- default np_np_np;
+				m2_m2_np default np_np_np;
 				
 //	error codes are 1 to 6, 0 means no error
 errcode:		.regfield 3 values
@@ -193,6 +193,8 @@ matrix_swap:.sub;
 matrix_pop:	.sub;
 matrix_push:.sub;
 div2:		.sub;
+prep_regs:	.sub;
+
 
 // other
 reset:		.alias MT_CTRL = clear, errcode <= ok;
@@ -249,30 +251,54 @@ exec:		z_flags <= set, bitcnt <= max, div2();				// 16 or 32 *
 			goto nextchar;		
 
 			// TOS <= TOS + NOS, POP
-			.map '+';
-plus:		nuke, matrix_pop();
-			connect row_sum to col_tos;
-			connect row_tos to col_adc1;
-			connect row_nos to col_adc2, c_flag <= zero, goto exec;
+//			.map '+';
+//plus:		c_flag <= zero, nuke, matrix_pop();
+//			connect row_nos to col_adc2;
+//pm:			connect row_sum to col_tos;
+//			connect row_tos to col_adc1, goto exec;
 			
 			// TOS <= TOS - NOS, POP
-			.map '-';
-minus:		nuke, matrix_pop();
-			connect row_sum to col_tos;
+//			.map '-';
+//minus:		c_flag <= one, nuke, matrix_pop();
+//			connect row_nos to col_not;
+//			connect row_not to col_adc2, goto pm;
+			
+			// unsigned division
+			.map '/';
+div:		loopcnt <= max, prep_regs();
+			// A < Q < 0
+div_loop:	d_flag <= zero, disconnect row_nos from col_nos;
+			connect row_delay to col_nos;
+			connect row_nos to col_tos;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			
+			// A <= A - M 
+			c_flag <= one, nuke, matrix_nop1();
+			connect row_r7 to col_not;
+			connect row_not to col_adc2;
 			connect row_tos to col_adc1;
-			connect row_nos to col_not;
-			connect row_not to col_adc2, c_flag <= one, goto exec;
+			connect row_sum to col_tos, z_flags <= set, bitcnt <= max, div2();
+
+			data 0b0001, if c_flag_is_set then restore_a;
+
+			// Q(0) <= 1
+			connect row_tos to col_tos;
+			connect row_nos to col_nos;
+			connect row_direct to col_nos, div2(); 
+			goto div_next;
+			
+			// A <= A + M, Q(0) <= 0
+restore_a:	nuke, matrix_nop1();
+			connect row_tos to col_adc1;
+			connect row_r7 to col_adc2;
+			c_flag <= zero, connect row_sum to col_tos, z_flags <= set, bitcnt <= max, div2();
+
+div_next:	loopcnt <= dec, nuke, matrix_nop1();
+			if loopcnt_is_zero then nextchar else div_loop;
 			
 			// TOS, NOS <= TOS * NOS, R(7) destroyed
 			.map '*';
-mul:		nuke, matrix_nop1();
-
-			// set up registers
-			loopcnt <= max, disconnect row_r7 from col_r7;
-			bitcnt <= max, connect row_tos to col_r7, div2();	// R7 <= TOS, TOS <= 0
-			connect row_r7 to col_r7;
-			disconnect row_tos from col_r7;		
-
+mul:		loopcnt <= max, prep_regs();
 			// NOS(0) to d_flag
 m_loop:		connect row_nos to col_delay;
 			STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column;
@@ -364,6 +390,13 @@ hexchar:	nuke, matrix_nop1();
 			STATUS = busy_using_mt, opr = np_m2_m2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
 			
 // subroutines (keep in mind max stack call level is 4!)
+prep_regs:	nuke, matrix_nop1();
+			// set up registers
+			disconnect row_r7 from col_r7;
+			bitcnt <= max, connect row_tos to col_r7, div2();	// R7 <= TOS, TOS <= 0
+			connect row_r7 to col_r7;
+			disconnect row_tos from col_r7, back;		
+
 // rotate all registers right (LSB first) through switch matrix;
 div2:		STATUS = busy_using_mt, opr = d2_d2_d2, c_flag <= adder, z_flags <= update, if bitcnt_is_zero then return;
 			bitcnt <= dec, goto div2;
@@ -399,14 +432,13 @@ matrix_pop:	connect row_r2 to col_nos;
 			connect row_r7 to col_r6, back;
 			
 trace:		if TRACE_CHAR then next else return;
-			emit(char_I);		// I=<received char>
-			emit(char_EQU);
+//			emit(char_I);		// I=<received char>
+//			emit(char_EQU);
 			emit(inp1);			
 			emit(inp0);
 
 print_crlf: emit(char_cr);
-			emit(char_lf);
-			back;
+			TXDCHAR <= char_lf;
 
 emit:		if TXDREADY then next else repeat;	// sync with baudrate clock that drives UART
 			if TXDREADY then next else repeat;
