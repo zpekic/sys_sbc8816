@@ -782,8 +782,8 @@ win: hardwin Port map(
 		);
 
 -- 8 single LEDs
-LED <= mt_ctrl(7 downto 0);
---LED <= hc_zero(7 downto 0);
+--LED <= mt_ctrl(7 downto 0);
+LED <= hc_zero(7 downto 0);
 --LED <= kypd_keypressed & "000" & kypd_hex;
 
 -- traffic light LEDs

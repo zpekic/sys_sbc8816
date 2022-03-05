@@ -248,8 +248,8 @@ cu_hxc: hexcalc_control_unit
 				cond(seq_cond_c_flag_is_set) => c_flag,
 				cond(seq_cond_z_flagand_is_set) => z_flags(10),
 				cond(seq_cond_button) => button, 
-				cond(seq_cond_cond_12) => '1', -- TODO
-				cond(seq_cond_cond_13) => '1', -- TODO
+				cond(seq_cond_z_flagtos_is_set) => z_flags(0),
+				cond(seq_cond_z_flagnos_is_set) => z_flags(1),
 				cond(seq_cond_cond_14) => '1', -- TODO
 				cond(seq_cond_false) => '0',
           -- outputs
@@ -350,8 +350,8 @@ with hxc_TXDCHAR select hexchar <=
 				errcode <= errcode_ok;
 			when errcode_err_badchar =>
 				errcode <= errcode_err_badchar;
-			when errcode_err_2 =>
-				errcode <= errcode_err_2;
+			when errcode_err_divzero =>
+				errcode <= errcode_err_divzero;
 			when errcode_err_3 =>
 				errcode <= errcode_err_3;
 			when errcode_err_4 =>

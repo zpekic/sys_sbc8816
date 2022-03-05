@@ -53,8 +53,8 @@ seq_cond:		.if 4 values
 				c_flag_is_set,
 				z_flagand_is_set,
 				button,
-				cond_12,
-				cond_13,
+				z_flagtos_is_set,
+				z_flagnos_is_set,
 				cond_14,
 				false			// hard-code to 0
 				default true;
@@ -96,7 +96,7 @@ opr 			.valfield 3 values
 errcode:		.regfield 3 values
 				ok, 
 				err_badchar,			// ERR1
-				err_2,					// ERR2
+				err_divzero,			// ERR2
 				err_3,					// ERR3
 				err_4,					// ERR4
 				err_5,					// ERR5
@@ -150,12 +150,15 @@ from:		.alias ,;
 
 row_tos:	.alias MT_ROW = 0;
 row_nos:	.alias MT_ROW = 1;
+row_a:		.alias MT_ROW = 0;
+row_q:		.alias MT_ROW = 1;
 row_r2:		.alias MT_ROW = 2;
 row_r3:		.alias MT_ROW = 3;
 row_r4:		.alias MT_ROW = 4;
 row_r5:		.alias MT_ROW = 5;
 row_r6:		.alias MT_ROW = 6;
 row_r7:		.alias MT_ROW = 7;
+row_m:		.alias MT_ROW = 7;
 row_delay:	.alias MT_ROW = 8;
 row_not:	.alias MT_ROW = 9;
 row_and:	.alias MT_ROW = 0xA;
@@ -167,12 +170,15 @@ row_15:		.alias MT_ROW = 0xF;
 
 col_tos:	.alias MT_COL = 0;
 col_nos:	.alias MT_COL = 1;
+col_a:		.alias MT_COL = 0;
+col_q:		.alias MT_COL = 1;
 col_r2:		.alias MT_COL = 2;
 col_r3:		.alias MT_COL = 3;
 col_r4:		.alias MT_COL = 4;
 col_r5:		.alias MT_COL = 5;
 col_r6:		.alias MT_COL = 6;
 col_r7:		.alias MT_COL = 7;
+col_m:		.alias MT_COL = 7;
 col_delay:	.alias MT_COL = 8;
 col_not:	.alias MT_COL = 9;
 col_10:		.alias MT_COL = 0xA;
@@ -192,9 +198,9 @@ matrix_push:.sub;
 matrix_swap:.sub;
 matrix_pop:	.sub;
 matrix_push:.sub;
-div2:		.sub;
-prep_regs:	.sub;
-
+div2:		.sub bitcnt;
+prep_regs:	.sub loopcnt;
+a_pm_m:		.sub c_flag;
 
 // other
 reset:		.alias MT_CTRL = clear, errcode <= ok;
@@ -217,7 +223,8 @@ deadloop:	STATUS = ready, if input_is_zero then repeat else next;
 			if true then fork else fork;	// jump to entry point per character code (see .map statements below)
 
 			.map 0b????????;
-badchar:	errcode <= err_badchar, if TRACE_ERROR then printerror else nextchar;		// ERR1
+badchar:	errcode <= err_badchar, if TRACE_ERROR then printerror else nextchar;	// ERR1
+divzero:	errcode <= err_divzero, if TRACE_ERROR then printerror else nextchar;	// ERR2	
 printerror:	emit(char_E);		// ERR
 			emit(char_R);
 			emit(char_R);
@@ -238,7 +245,7 @@ nextchar:	STATUS = done, goto deadloop;
 			nuke, matrix_swap();
 			goto exec;
 			
-			// clear all registers and error code
+			// nuke all registers and error code
 			.map 'n';
 			.map 'N';
 			errcode <= ok, nuke, goto exec;
@@ -247,81 +254,102 @@ nextchar:	STATUS = done, goto deadloop;
 			.map 'z';	
 			.map 'Z';
 			errcode <= ok, nuke, matrix_nop1();	// no switch on TOS means pull down, so it 0
-exec:		z_flags <= set, bitcnt <= max, div2();				// 16 or 32 *
+exec:		z_flags <= set, div2(max);				// 16 or 32 *
 			goto nextchar;		
 
 			// TOS <= TOS + NOS, POP
-//			.map '+';
-//plus:		c_flag <= zero, nuke, matrix_pop();
-//			connect row_nos to col_adc2;
-//pm:			connect row_sum to col_tos;
-//			connect row_tos to col_adc1, goto exec;
+			.map '+';
+plus:		c_flag <= zero, nuke, matrix_pop();
+			connect row_nos to col_adc2;
+pm:			connect row_sum to col_tos;
+			connect row_tos to col_adc1, goto exec;
 			
 			// TOS <= TOS - NOS, POP
-//			.map '-';
-//minus:		c_flag <= one, nuke, matrix_pop();
-//			connect row_nos to col_not;
-//			connect row_not to col_adc2, goto pm;
+			.map '-';
+minus:		c_flag <= one, nuke, matrix_pop();
+			connect row_nos to col_not;
+			connect row_not to col_adc2, goto pm;
 			
 			// unsigned division
 			.map '/';
-div:		loopcnt <= max, prep_regs();
+div:		prep_regs(max);
+			if z_flagtos_is_set then divzero;
 			// A < Q < 0
-div_loop:	d_flag <= zero, disconnect row_nos from col_nos;
-			connect row_delay to col_nos;
-			connect row_nos to col_tos;
+div_loop:	disconnect row_q from col_q;
+			d_flag <= zero, connect row_delay to col_q;
+			connect row_q to col_a;
 			STATUS = busy_using_mt, opr = m2_m2_np;
+			disconnect row_delay from col_q;
+			disconnect row_q from col_a;
+			connect row_q to col_q; 
+			//wait;
 			
-			// A <= A - M 
-			c_flag <= one, nuke, matrix_nop1();
-			connect row_r7 to col_not;
-			connect row_not to col_adc2;
-			connect row_tos to col_adc1;
-			connect row_sum to col_tos, z_flags <= set, bitcnt <= max, div2();
+			// A <= A - M
+			connect row_m to col_not;
+			connect row_not to col_adc2, a_pm_m(one);
+			disconnect row_not from col_adc2;
 
-			data 0b0001, if c_flag_is_set then restore_a;
+			data 0b0001, if c_flag_is_set then next else restore_a;
 
 			// Q(0) <= 1
-			connect row_tos to col_tos;
-			connect row_nos to col_nos;
-			connect row_direct to col_nos, div2(); 
+//			connect row_q to col_q;
+//			connect row_direct to col_q;
+//			connect row_a to col_a;
+//			wait;
+//			data 0b0001, z_flags <= set, div2(max);
+//			disconnect row_a from col_a;
+//			disconnect row_direct from col_q;
+//			wait;
+//			goto div_next;
+			
+			connect row_a to col_a;
+			connect row_direct to col_q;
+			
+			connect row_a to col_a;
+			disconnect row_q from col_q;
+			connect row_q to col_delay;
+			connect row_delay to col_q;
+			STATUS = busy_using_mt, opr = d2_d2_np;
+			d_flag <= one;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			nuke, matrix_nop();
+			wait;
 			goto div_next;
 			
 			// A <= A + M, Q(0) <= 0
-restore_a:	nuke, matrix_nop1();
-			connect row_tos to col_adc1;
-			connect row_r7 to col_adc2;
-			c_flag <= zero, connect row_sum to col_tos, z_flags <= set, bitcnt <= max, div2();
+restore_a:	connect row_m to col_adc2, a_pm_m(zero);
+			disconnect row_m from col_adc2;
 
-div_next:	loopcnt <= dec, nuke, matrix_nop1();
-			if loopcnt_is_zero then nextchar else div_loop;
+div_next:	if loopcnt_is_zero then nextchar;
+			loopcnt <= dec, goto div_loop;
 			
 			// TOS, NOS <= TOS * NOS, R(7) destroyed
-			.map '*';
-mul:		loopcnt <= max, prep_regs();
-			// NOS(0) to d_flag
-m_loop:		connect row_nos to col_delay;
-			STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column;
-			STATUS = busy_using_mt, opr = np_m2_m2;
-			c_flag <= zero, disconnect row_nos from col_delay, if d_flag_is_set then m_add_r7 else m_shift0;
+//			.map '*';
+//mul:		loopcnt <= max, prep_regs();
+//			if z_flagnos_is_set then nextchar; // we already have TOS, NOS = 0
+//			// NOS(0) to d_flag
+//m_loop:		connect row_nos to col_delay;
+//			STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column;
+//			STATUS = busy_using_mt, opr = np_m2_m2;
+//			c_flag <= zero, disconnect row_nos from col_delay, if d_flag_is_set then m_add_r7 else m_shift0;
 			
 			// C,TOS <= TOS + R7 + 0
-m_add_r7:	connect row_r7 to col_adc1;
-m_add:		connect row_tos to col_adc2;
-			bitcnt <= max, connect row_sum to col_tos, div2();
-			disconnect row_sum from col_tos, if c_flag_is_set then m_shift1;
+//m_add_r7:	connect row_r7 to col_adc1;
+//m_add:		connect row_tos to col_adc2;
+//			bitcnt <= max, connect row_sum to col_tos, div2();
+//			disconnect row_sum from col_tos, if c_flag_is_set then m_shift1;
 
 			// c_flag >> TOS >> NOS
-m_shift0:	d_flag <= zero, connect row_tos to col_nos, goto m_shift;
-m_shift1:	d_flag <= one, connect row_tos to col_nos;
-m_shift:	connect row_delay to col_tos;
-			disconnect row_nos from col_nos, opr = d2_d2_np;
+//m_shift0:	d_flag <= zero, connect row_tos to col_nos, goto m_shift;
+//m_shift1:	d_flag <= one, connect row_tos to col_nos;
+//m_shift:	connect row_delay to col_tos;
+//			disconnect row_nos from col_nos, opr = d2_d2_np;
 
 			// reset connections and iterate
-			disconnect row_tos from col_nos;
-			disconnect row_delay from col_tos;
-			connect row_nos to col_nos, if loopcnt_is_zero then nextchar;
-			loopcnt <= dec, goto m_loop;	// do it 16 or 32 times
+//			disconnect row_tos from col_nos;
+//			disconnect row_delay from col_tos;
+//			connect row_nos to col_nos, if loopcnt_is_zero then nextchar;
+//			loopcnt <= dec, goto m_loop;	// do it 16 or 32 times
 			
 			// enter: push all down, TOS <= 0
 			.map 0x0D;
@@ -390,10 +418,16 @@ hexchar:	nuke, matrix_nop1();
 			STATUS = busy_using_mt, opr = np_m2_m2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
 			
 // subroutines (keep in mind max stack call level is 4!)
+a_pm_m:		connect row_a to col_adc1;
+			connect row_sum to col_a, z_flags <= set, div2(max);
+			disconnect row_sum from col_a, back;
+			//wait;
+			//back;
+
 prep_regs:	nuke, matrix_nop1();
 			// set up registers
 			disconnect row_r7 from col_r7;
-			bitcnt <= max, connect row_tos to col_r7, div2();	// R7 <= TOS, TOS <= 0
+			connect row_tos to col_r7, z_flags <= set, div2(max);	// R7 <= TOS, TOS <= 0
 			connect row_r7 to col_r7;
 			disconnect row_tos from col_r7, back;		
 
@@ -445,3 +479,19 @@ emit:		if TXDREADY then next else repeat;	// sync with baudrate clock that drive
 			if TXDREADY then next else repeat;
 			if TXDSEND then return else return;	// generate a send pulse for UART sender	
 			
+/// -- junk --
+			// Q(0) <= 1
+//			connect row_a to col_a;
+//			connect row_direct to col_q;
+			
+//			connect row_a to col_a;
+//			disconnect row_q from col_q;
+//			connect row_q to col_delay;
+//			connect row_delay to col_q;
+//			STATUS = busy_using_mt, opr = d2_d2_np;
+//			d_flag <= one;
+//			STATUS = busy_using_mt, opr = m2_m2_np;
+//			disconnect row_a from col_a;
+//			disconnect row_delay from col_q;
+//			wait;
+//			goto div_next;
