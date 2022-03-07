@@ -289,6 +289,22 @@ component keypad4x4 is
            keypressed : out  STD_LOGIC);
 end component;
 	
+component tracer is
+    Port ( reset : in  STD_LOGIC;
+			  clk: in STD_LOGIC;
+           uart_data : out  STD_LOGIC_VECTOR (7 downto 0);
+           uart_send : out  STD_LOGIC;
+           uart_ready : in  STD_LOGIC;
+           dev_data : in  STD_LOGIC_VECTOR(7 downto 0);
+           dev_send : in  STD_LOGIC;
+           dev_ready : out  STD_LOGIC;
+			  trace: in STD_LOGIC;
+           enable : in  STD_LOGIC;
+           debug : in  STD_LOGIC_VECTOR (15 downto 0);
+			  ext_char: in STD_LOGIC_VECTOR(7 downto 0);
+           dev_clk : out  STD_LOGIC);
+end component;
+	
 type table_8x16 is array (0 to 7) of std_logic_vector(15 downto 0);
 constant uartmode_debug: table_8x16 := (
 	X"8001",	-- 8N1
@@ -337,6 +353,7 @@ signal reset, reset_btn: std_logic;
 signal showdigit, showdot: std_logic_vector(5 downto 0);
 signal led_data: std_logic_vector(23 downto 0);
 signal led_dot: std_logic_vector(5 downto 0);
+signal tr_trace, tr_enable, tr_txdready: std_logic;
 --signal digit: std_logic_vector(3 downto 0);
 
 -- VGA
@@ -386,39 +403,39 @@ signal input: std_logic_vector(7 downto 0);
 type table_32x8 is array(0 to 31) of std_logic_vector(7 downto 0);
 constant kypd2ascii: table_32x8 := (
 	-- no "shift", entering hex digits
-	std_logic_vector(to_unsigned(natural(character'pos('0')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('1')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('2')), 8)), 	
-	std_logic_vector(to_unsigned(natural(character'pos('3')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('4')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('5')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('6')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('7')), 8)),
-	std_logic_vector(to_unsigned(natural(character'pos('8')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('9')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('A')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('B')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('C')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('D')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('E')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('F')), 8)),
+	ascii('0'),
+	ascii('1'),
+	ascii('2'),
+	ascii('3'),
+	ascii('4'),
+	ascii('5'),
+	ascii('6'),
+	ascii('7'),
+	ascii('8'),
+	ascii('9'),
+	ascii('A'),
+	ascii('B'),
+	ascii('C'),
+	ascii('D'),
+	ascii('E'),
+	ascii('F'),
 	-- with "shift", entering a command
-	std_logic_vector(to_unsigned(natural(character'pos('Z')), 8)),	-- 0 == clear
-	X"00",	-- 1 == not used
-	X"00",	-- 2 == not used
-	X"00",	-- 3 == not used
-	X"00",	-- 4 == not used
-	X"00",	-- 5 == not used
-	X"00",	-- 6 == not used
-	X"00",	-- 7 == not used
-	X"00",	-- 8 == not used
-	std_logic_vector(to_unsigned(natural(character'pos('N')), 8)),	-- 9 == nuke all
-	std_logic_vector(to_unsigned(natural(character'pos('+')), 8)),	-- A == add
-	std_logic_vector(to_unsigned(natural(character'pos('-')), 8)),	-- B == subtract
-	std_logic_vector(to_unsigned(natural(character'pos('*')), 8)),	-- C == multiply
-	std_logic_vector(to_unsigned(natural(character'pos('/')), 8)),	-- D == divide	
-	X"0D",	-- E == enter
-	std_logic_vector(to_unsigned(natural(character'pos('S')), 8))  -- F == swap
+	ascii('Z'),	-- 0 == clear
+	X"00",		-- 1 == not used
+	X"00",		-- 2 == not used
+	X"00",		-- 3 == not used
+	X"00",		-- 4 == not used
+	X"00",		-- 5 == not used
+	X"00",		-- 6 == not used
+	X"00",		-- 7 == not used
+	X"00",		-- 8 == not used
+	ascii('N'),	-- 9 == nuke all
+	ascii('+'),	-- A == add
+	ascii('-'),	-- B == subtract
+	ascii('*'),	-- C == multiply
+	ascii('/'),	-- D == divide	
+	X"0D",		-- E == enter
+	ascii('S')  -- F == swap
 );
 
 -- HC (hexcalc core) connections
@@ -612,15 +629,14 @@ with BTN(2 downto 0) select co_mt_ctrl(9 downto 8) <=
 
 -- select the clock
 with sw_clksel select mt_cnt <= 
-	freq_2048(11 downto 10) when "000",
-	freq_2048(9 downto 8) when "001",
-	freq_2048(7 downto 6) when "010",
-	freq_2048(5 downto 4) when "011",
-	--freq_50M(11 downto 10) when "100",
-	ss_cnt	when "100",
-	freq_50M(6 downto 5) when "101",
-	freq_50M(5 downto 4) when "110",		-- 1.5625MHz
-	freq_50M(4 downto 3) when others;	-- 3.125MHz
+	ss_cnt	when "000",	-- single step
+	freq_2048(11 downto 10) when "001",	-- 1Hz
+	freq_2048(9 downto 8) when "010",	-- 4Hz
+	freq_2048(6 downto 5) when "011",	-- 32Hz
+	freq_50M(8 downto 7) when "100",		-- 0.195312
+	freq_50M(7 downto 6) when "101",		-- 0.390625
+	freq_50M(6 downto 5) when "110",		-- 0.781250
+	freq_50M(5 downto 4) when others;	-- 1.5625MHz
 	
 -- 4 phase clock to activate strobe at right time
 phi0 <= '1' when (mt_cnt = "00") else '0';
@@ -666,6 +682,24 @@ hc: hexcalc Port map (
 			TXDCHAR => hc_txdchar
 		);
 
+tr: tracer Port map ( 
+			reset => reset,
+			clk => baudrate_x1,
+			uart_data => tr_txdchar,
+			uart_send => tr_txdsend,
+			uart_ready => tr_txdready,
+			dev_data => hc_txdchar,
+			dev_send => hc_txdsend,
+			dev_ready => open, --hc_txdready,
+			trace => '1',
+			enable => tr_enable,
+			debug(15 downto 8) => hc_dbg(23 downto 16),	-- instruction register (== input char)
+			debug(7 downto 0) => hc_dbg(7 downto 0),		-- microinstruction address
+			ext_char => hc_txdchar,
+			dev_clk => open
+		);
+		
+tr_enable <= '0' when (hc_status = STATUS_READY) else (phi3 and (not sw_clksel(2))); 
 -- catch stacktop appearing to display it on the 7seg LED
 on_dot_clk: process(dot_clk, win_x, win_y, hc_reg)	-- TODO - improve this mess!
 begin
@@ -690,12 +724,18 @@ begin
 		end if;
 	end if;
 end process;
+
 -----------------------------------------
 -- UART output
 -----------------------------------------	
 with sw_mode select hc_txdready <= 
 		tx_sent when mode_st_tr_hc,		
 		tty_sent when mode_st_hc_tr,
+		'1' when others;
+
+with sw_mode select tr_txdready <= 
+		tty_sent when mode_st_tr_hc,		
+		tx_sent when mode_st_hc_tr,
 		'1' when others;
 
 uart_tx: uart_par2ser Port map (

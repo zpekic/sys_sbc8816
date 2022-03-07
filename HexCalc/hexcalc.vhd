@@ -112,7 +112,7 @@ signal ui_nextinstr: std_logic_vector(CODE_ADDRESS_WIDTH -1  downto 0);
 -- internal signals
 --signal ascii: std_logic_vector(7 downto 0);
 signal hexchar: std_logic_vector(3 downto 0);
-signal errcode: std_logic_vector(2 downto 0);
+signal errcode: std_logic_vector(1 downto 0);
 signal bitcnt: std_logic_vector(4 downto 0);
 signal loopcnt: std_logic_vector(4 downto 0);
 --signal delay, carry: std_logic;
@@ -148,7 +148,8 @@ begin
 status <= hxc_status;
 --dbg <= loopcnt(3 downto 0) & bitcnt(3 downto 0) & input & '0' & ui_address;
 --dbg <= "000" & bitcnt & '0' & ui_address & '0' & ui_nextinstr;
-dbg <= loopcnt(3 downto 0) & bitcnt(3 downto 0) & '0' & ui_address & '0' & ui_nextinstr;
+--dbg <= '0' & ui_nextinstr & loopcnt(3 downto 0) & bitcnt(3 downto 0) & '0' & ui_address;
+dbg <= input & loopcnt(3 downto 0) & bitcnt(3 downto 0) & '0' & ui_address;
 dbg_reg <= reg(to_integer(unsigned(dbg_row)));
 mt_ctrl <= hxc_MT_CTRL & hxc_MT_COL & hxc_MT_ROW;
 
@@ -325,7 +326,7 @@ TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
 with hxc_TXDCHAR select hexchar <= 
 	input(3 downto 0) when TXDCHAR_inp0,
 	input(7 downto 4) when TXDCHAR_inp1,
-	'0' & errcode when TXDCHAR_errcode,
+	"00" & errcode when TXDCHAR_errcode,
 	X"F" when others;
 
 ---- Start boilerplate code (use with utmost caution!)
@@ -352,12 +353,6 @@ with hxc_TXDCHAR select hexchar <=
 				errcode <= errcode_err_badchar;
 			when errcode_err_divzero =>
 				errcode <= errcode_err_divzero;
-			when errcode_err_3 =>
-				errcode <= errcode_err_3;
-			when errcode_err_4 =>
-				errcode <= errcode_err_4;
-			when errcode_err_5 =>
-				errcode <= errcode_err_5;
 --			when errcode_same =>
 --				errcode <= errcode;
 			when others =>

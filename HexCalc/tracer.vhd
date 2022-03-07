@@ -28,8 +28,8 @@ use IEEE.NUMERIC_STD.ALL;
 -- any Xilinx primitives in this code.
 --library UNISIM;
 --use UNISIM.VComponents.all;
-use work.hex2mem_sym.all;
-
+use work.hexcalc_sym.all;
+use work.sbc8816_package.all;
 
 entity tracer is
     Port ( reset : in  STD_LOGIC;
@@ -69,7 +69,7 @@ begin
 	gen_c: for c in 0 to SYMBOL_BYTE_LAST generate
 	begin
 			--assert false report "r= " & integer'image(r) & " c= " & integer'image(c) severity note;
-			h2m_symbol_byte(r * (SYMBOL_BYTE_LAST + 1) + c) <= h2m_symbol_entry(r)(SYMBOL_DATA_WIDTH - 8 * c - 1 downto SYMBOL_DATA_WIDTH - 8 * (c + 1));
+			hxc_symbol_byte(r * (SYMBOL_BYTE_LAST + 1) + c) <= hxc_symbol_entry(r)(SYMBOL_DATA_WIDTH - 8 * c - 1 downto SYMBOL_DATA_WIDTH - 8 * (c + 1));
 	end generate;
 end generate;
 
@@ -93,14 +93,14 @@ begin
 end process;
 
 -- output from source ROM or internal format
-h2m_sym_a <= ui_address & sympos(4 downto 0);
-h2m_sym_d <= h2m_symbol_byte(to_integer(unsigned(h2m_sym_a)));
+hxc_sym_a <= ui_address & sympos(4 downto 0);
+hxc_sym_d <= hxc_symbol_byte(to_integer(unsigned(hxc_sym_a)));
 with charpos(5 downto 3) select debug_data <=
 	format_d when O"0",
-	h2m_sym_d when O"1",
-	h2m_sym_d when O"2",
-	h2m_sym_d when O"3",
-	h2m_sym_d when O"4",
+	hxc_sym_d when O"1",
+	hxc_sym_d when O"2",
+	hxc_sym_d when O"3",
+	hxc_sym_d when O"4",
 	format_d when O"7",
 	X"20" when others;
 	
@@ -132,7 +132,7 @@ with ext_char(7 downto 5) select ascii_fix <=
 	ext_char when "011",	-- 60..7F
 	X"7E" when others;	-- 80..FF (show tilde)
 
--- sanitize input characted and make it displayable
+-- sanitize input character and make it displayable
 with char_inp(7 downto 5) select ascii_inp <= 
 	X"2E" when "000",		-- 00..1F (show dot)
 	char_inp when "001",	-- 20..3F

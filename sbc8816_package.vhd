@@ -22,26 +22,28 @@ constant char_r: std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(na
 constant char_equ: std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(natural(character'pos('=')), 8));
 constant char_space: std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(natural(character'pos(' ')), 8));
 
+impure function ascii(char: in character) return std_logic_vector;
+
 --type t_ascii is std_logic_vector(7 downto 0);
 
 type lookup is array(0 to 15) of std_logic_vector(7 downto 0);
 constant hex2ascii: lookup := (
-	std_logic_vector(to_unsigned(natural(character'pos('0')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('1')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('2')), 8)), 	
-	std_logic_vector(to_unsigned(natural(character'pos('3')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('4')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('5')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('6')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('7')), 8)),
-	std_logic_vector(to_unsigned(natural(character'pos('8')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('9')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('A')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('B')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('C')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('D')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('E')), 8)),	
-	std_logic_vector(to_unsigned(natural(character'pos('F')), 8))
+	ascii('0'),
+	ascii('1'),
+	ascii('2'),
+	ascii('3'),
+	ascii('4'),
+	ascii('5'),
+	ascii('6'),
+	ascii('7'),
+	ascii('8'),
+	ascii('9'),
+	ascii('A'),
+	ascii('B'),
+	ascii('C'),
+	ascii('D'),
+	ascii('E'),
+	ascii('F')
 );
 
 type table_16x16 is array (0 to 15) of std_logic_vector(15 downto 0);
@@ -110,5 +112,10 @@ package body sbc8816_package is
 --  begin
 --    
 --  end <procedure_name>;
+ 
+impure function ascii(char: in character) return std_logic_vector is
+begin
+	return std_logic_vector(to_unsigned(natural(character'pos(char)), 8));
+end ascii;
  
 end sbc8816_package;

@@ -92,14 +92,11 @@ opr 			.valfield 3 values
 				np_d2_d2,
 				m2_m2_np default np_np_np;
 				
-//	error codes are 1 to 6, 0 means no error
-errcode:		.regfield 3 values
+//	error codes are 1 to 2, 0 means no error
+errcode:		.regfield 2 values
 				ok, 
 				err_badchar,			// ERR1
 				err_divzero,			// ERR2
-				err_3,					// ERR3
-				err_4,					// ERR4
-				err_5,					// ERR5
 				same
 				default same;
 
@@ -129,7 +126,7 @@ loopcnt			.regfield 2 values
 				default same;
 				
 // placeholder
-//dummy:			.valfield 2 values * default 0;
+dummy:			.valfield 1 values * default 0;
 						
 //	useful aliases, these are evaluated as simple text replacement of label with everything between .alias and ; 
 goto:		.alias if false then next else;
@@ -138,7 +135,7 @@ back:	    .alias if true then return else return;
 data:		.alias opr = np_np_ld, MT_ROW = 0b0000, MT_COL =;
 const:		.alias opr = np_np_ld, MT_COL = 0b0000, MT_ROW =;
 load_bitcnt:.alias bitcnt <= load, MT_COL =;
-wait:		.alias 	if button then next else repeat;
+wait:		.alias if button then next else repeat;
 
 
 // switches in the matrix
@@ -200,7 +197,7 @@ matrix_pop:	.sub;
 matrix_push:.sub;
 div2:		.sub bitcnt;
 prep_regs:	.sub loopcnt;
-a_pm_m:		.sub c_flag;
+a_pm_m:		.sub c_flag;	// A <= A + M | A - M
 
 // other
 reset:		.alias MT_CTRL = clear, errcode <= ok;
@@ -242,7 +239,7 @@ nextchar:	STATUS = done, goto deadloop;
 			// TOS <=> NOS
 			.map 's';
 			.map 'S';
-			nuke, matrix_swap();
+swap:		nuke, matrix_swap();
 			goto exec;
 			
 			// nuke all registers and error code
@@ -287,24 +284,10 @@ div_loop:	disconnect row_q from col_q;
 			// A <= A - M
 			connect row_m to col_not;
 			connect row_not to col_adc2, a_pm_m(one);
-			disconnect row_not from col_adc2;
-
-			data 0b0001, if c_flag_is_set then next else restore_a;
+			
+			disconnect row_not from col_adc2, if c_flag_is_set then next else restore_a;
 
 			// Q(0) <= 1
-//			connect row_q to col_q;
-//			connect row_direct to col_q;
-//			connect row_a to col_a;
-//			wait;
-//			data 0b0001, z_flags <= set, div2(max);
-//			disconnect row_a from col_a;
-//			disconnect row_direct from col_q;
-//			wait;
-//			goto div_next;
-			
-			connect row_a to col_a;
-			connect row_direct to col_q;
-			
 			connect row_a to col_a;
 			disconnect row_q from col_q;
 			connect row_q to col_delay;
@@ -313,15 +296,13 @@ div_loop:	disconnect row_q from col_q;
 			d_flag <= one;
 			STATUS = busy_using_mt, opr = m2_m2_np;
 			nuke, matrix_nop();
-			wait;
-			goto div_next;
+
+div_next:	if loopcnt_is_zero then swap;	// quotient on TOS, remainder on NOS
+			loopcnt <= dec, goto div_loop;
 			
 			// A <= A + M, Q(0) <= 0
 restore_a:	connect row_m to col_adc2, a_pm_m(zero);
-			disconnect row_m from col_adc2;
-
-div_next:	if loopcnt_is_zero then nextchar;
-			loopcnt <= dec, goto div_loop;
+			disconnect row_m from col_adc2, goto div_next;
 			
 			// TOS, NOS <= TOS * NOS, R(7) destroyed
 //			.map '*';
@@ -475,7 +456,7 @@ print_crlf: emit(char_cr);
 			TXDCHAR <= char_lf;
 
 emit:		if TXDREADY then next else repeat;	// sync with baudrate clock that drives UART
-			if TXDREADY then next else repeat;
+//			if TXDREADY then next else repeat;
 			if TXDREADY then next else repeat;
 			if TXDSEND then return else return;	// generate a send pulse for UART sender	
 			
@@ -493,5 +474,16 @@ emit:		if TXDREADY then next else repeat;	// sync with baudrate clock that drive
 //			STATUS = busy_using_mt, opr = m2_m2_np;
 //			disconnect row_a from col_a;
 //			disconnect row_delay from col_q;
+//			wait;
+//			goto div_next;
+
+			// Q(0) <= 1
+//			connect row_q to col_q;
+//			connect row_direct to col_q;
+//			connect row_a to col_a;
+//			wait;
+//			data 0b0001, z_flags <= set, div2(max);
+//			disconnect row_a from col_a;
+//			disconnect row_direct from col_q;
 //			wait;
 //			goto div_next;
