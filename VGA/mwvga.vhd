@@ -68,7 +68,7 @@ type table16x12 is array(0 to 15) of std_logic_vector(11 downto 0);
 constant palette: table16x12 :=(
 -- pixel off
 	color8_blue,
-	color8_black,
+	color8_blue,
 	color8_black,
 	color8_black,
 	color8_black,

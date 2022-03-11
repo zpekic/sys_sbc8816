@@ -40,11 +40,10 @@ entity tracer is
            dev_data : in  STD_LOGIC_VECTOR(7 downto 0);
            dev_send : in  STD_LOGIC;
            dev_ready : out  STD_LOGIC;
-			  trace: in STD_LOGIC;
+			  trigger: in STD_LOGIC;
            enable : in  STD_LOGIC;
            debug : in  STD_LOGIC_VECTOR (15 downto 0);
-			  ext_char: in STD_LOGIC_VECTOR(7 downto 0);
-           dev_clk : out  STD_LOGIC);
+			  ext_char: in STD_LOGIC_VECTOR(7 downto 0));
 end tracer;
 
 architecture Behavioral of tracer is
@@ -59,6 +58,7 @@ signal debug_send: std_logic;
 signal hexout: std_logic_vector(3 downto 0);
 alias ui_address: std_logic_vector(6 downto 0) is debug(6 downto 0); -- 128 words microcode
 alias char_inp: std_logic_vector(7 downto 0) is debug(15 downto 8); -- input character
+signal tr_enable, tr_done, tr_enable_clk: std_logic;
 -- for tracer
 
 begin
@@ -76,14 +76,26 @@ end generate;
 uart_data <= dev_data when (enable = '0') else debug_data;
 uart_send <= dev_send when (enable = '0') else debug_send;
 dev_ready <= uart_ready when (enable = '0') else '1'; 	-- fool the device into not waiting for output
-dev_clk <= '1' when (charpos = O"00") else '0';	-- generate clock pulse at last 1/64 of cycle to avoid interfering with symbol table
+tr_done <= '0' when (charpos = O"77") else '1';
 
-debug_send <= trace when (bitpos = X"1") else '0';
+debug_send <= tr_enable when (bitpos = X"1") else '0';
 sympos <= std_logic_vector(unsigned(charpos) - 8);
+
+tr_enable_clk <= trigger when (tr_enable = '0') else tr_done;
+on_tr_enable_clk: process(reset, tr_enable, tr_enable_clk)
+begin
+	if (reset = '1') then
+		tr_enable <= '0';
+	else
+		if (rising_edge(tr_enable_clk)) then
+			tr_enable <= not tr_enable;
+		end if;
+	end if;
+end process;
 
 on_clk: process(reset, clk, cnt)
 begin
-	if (reset = '1') then
+	if ((reset = '1') or (tr_enable = '0')) then
 		cnt <= (others => '0');
 	else
 		if (rising_edge(clk)) then

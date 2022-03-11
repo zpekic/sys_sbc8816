@@ -132,8 +132,7 @@ dummy:			.valfield 1 values * default 0;
 goto:		.alias if false then next else;
 noop:		.alias if true then next else next;
 back:	    .alias if true then return else return;
-data:		.alias opr = np_np_ld, MT_ROW = 0b0000, MT_COL =;
-const:		.alias opr = np_np_ld, MT_COL = 0b0000, MT_ROW =;
+data:		.alias opr = np_np_ld, MT_COL =;
 load_bitcnt:.alias bitcnt <= load, MT_COL =;
 wait:		.alias if button then next else repeat;
 
@@ -227,8 +226,8 @@ printerror:	emit(char_E);		// ERR
 			emit(char_R);
 			emit(errcode);
 			emit(char_space);
-			emit(inp1);			// FF hex code of offending char
-			emit(inp0);			// FF hex code of offending char
+			emit(inp1);			// hex code of offending char
+			emit(inp0);			// hex code of offending char
 			print_crlf();
 
 			.map 0;
@@ -242,95 +241,100 @@ nextchar:	STATUS = done, goto deadloop;
 swap:		nuke, matrix_swap();
 			goto exec;
 			
-			// nuke all registers and error code
+			// R0..R7 <= 0, ERR <= 0 -----------------------
 			.map 'n';
 			.map 'N';
+			// ---------------------------------------------
 			errcode <= ok, nuke, goto exec;
 
-			// clear all registers
+			// TOS <= 0, ERR <= 0 --------------------------
 			.map 'z';	
 			.map 'Z';
+			// ---------------------------------------------
 			errcode <= ok, nuke, matrix_nop1();	// no switch on TOS means pull down, so it 0
-exec:		z_flags <= set, div2(max);				// 16 or 32 *
+exec:		z_flags <= set, div2(max);			// 16 or 32 *
 			goto nextchar;		
 
-			// TOS <= TOS + NOS, POP
+			// TOS <= TOS + NOS, POP -----------------------
 			.map '+';
+			// ---------------------------------------------
 plus:		c_flag <= zero, nuke, matrix_pop();
 			connect row_nos to col_adc2;
 pm:			connect row_sum to col_tos;
 			connect row_tos to col_adc1, goto exec;
 			
-			// TOS <= TOS - NOS, POP
+			// TOS <= TOS - NOS, POP -----------------------
 			.map '-';
+			// ---------------------------------------------
 minus:		c_flag <= one, nuke, matrix_pop();
 			connect row_nos to col_not;
 			connect row_not to col_adc2, goto pm;
 			
-			// unsigned division
-			.map '/';
-div:		prep_regs(max);
-			if z_flagtos_is_set then divzero;
+			// TOS <= NOS div TOS, NOS <= NOS mod TOS, -----
+//			.map '/';
+			// Note: R7 destroyed --------------------------
+//div:		prep_regs(max);
+//			if z_flagtos_is_set then divzero;
 			// A < Q < 0
-div_loop:	disconnect row_q from col_q;
-			d_flag <= zero, connect row_delay to col_q;
-			connect row_q to col_a;
-			STATUS = busy_using_mt, opr = m2_m2_np;
-			disconnect row_delay from col_q;
-			disconnect row_q from col_a;
-			connect row_q to col_q; 
-			//wait;
+//div_loop:	disconnect row_q from col_q;
+//			d_flag <= zero, connect row_delay to col_q;
+//			connect row_q to col_a;
+//			STATUS = busy_using_mt, opr = m2_m2_np;
+//			disconnect row_delay from col_q;
+//			disconnect row_q from col_a;
+//			connect row_q to col_q; 
 			
 			// A <= A - M
-			connect row_m to col_not;
-			connect row_not to col_adc2, a_pm_m(one);
+//			connect row_m to col_not;
+//			connect row_not to col_adc2, a_pm_m(one);
 			
-			disconnect row_not from col_adc2, if c_flag_is_set then next else restore_a;
+//			disconnect row_not from col_adc2, if c_flag_is_set then next else restore_a;
 
 			// Q(0) <= 1
-			connect row_a to col_a;
-			disconnect row_q from col_q;
-			connect row_q to col_delay;
-			connect row_delay to col_q;
-			STATUS = busy_using_mt, opr = d2_d2_np;
-			d_flag <= one;
-			STATUS = busy_using_mt, opr = m2_m2_np;
-			nuke, matrix_nop();
+//			connect row_a to col_a;
+//			disconnect row_q from col_q;
+//			connect row_q to col_delay;
+//			connect row_delay to col_q;
+//			STATUS = busy_using_mt, opr = d2_d2_np;
+//			d_flag <= one;
+//			STATUS = busy_using_mt, opr = m2_m2_np;
+//			nuke, matrix_nop();
 
-div_next:	if loopcnt_is_zero then swap;	// quotient on TOS, remainder on NOS
-			loopcnt <= dec, goto div_loop;
+//div_next:	if loopcnt_is_zero then swap;	// quotient on TOS, remainder on NOS
+//			loopcnt <= dec, goto div_loop;
 			
 			// A <= A + M, Q(0) <= 0
-restore_a:	connect row_m to col_adc2, a_pm_m(zero);
-			disconnect row_m from col_adc2, goto div_next;
+//restore_a:	connect row_m to col_adc2, a_pm_m(zero);
+//			disconnect row_m from col_adc2, goto div_next;
 			
-			// TOS, NOS <= TOS * NOS, R(7) destroyed
-//			.map '*';
-//mul:		loopcnt <= max, prep_regs();
-//			if z_flagnos_is_set then nextchar; // we already have TOS, NOS = 0
-//			// NOS(0) to d_flag
-//m_loop:		connect row_nos to col_delay;
-//			STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column;
-//			STATUS = busy_using_mt, opr = np_m2_m2;
-//			c_flag <= zero, disconnect row_nos from col_delay, if d_flag_is_set then m_add_r7 else m_shift0;
+			// TOS, NOS <= TOS * NOS -----------------------
+			.map '*';
+			// Note: R7 destroyed --------------------------
+mul:		prep_regs(max);			
+			if z_flagnos_is_set then nextchar; // we already have TOS, NOS = 0
+			// NOS(0) to d_flag
+m_loop:		connect row_nos to col_delay;
+			STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column;
+			STATUS = busy_using_mt, opr = np_m2_m2;
+			c_flag <= zero, disconnect row_nos from col_delay, if d_flag_is_set then m_add_r7 else m_shift0;
 			
 			// C,TOS <= TOS + R7 + 0
-//m_add_r7:	connect row_r7 to col_adc1;
-//m_add:		connect row_tos to col_adc2;
-//			bitcnt <= max, connect row_sum to col_tos, div2();
-//			disconnect row_sum from col_tos, if c_flag_is_set then m_shift1;
+m_add_r7:	connect row_r7 to col_adc1;
+m_add:		connect row_tos to col_adc2;
+			connect row_sum to col_tos, div2(max);
+			disconnect row_sum from col_tos, if c_flag_is_set then m_shift1;
 
 			// c_flag >> TOS >> NOS
-//m_shift0:	d_flag <= zero, connect row_tos to col_nos, goto m_shift;
-//m_shift1:	d_flag <= one, connect row_tos to col_nos;
-//m_shift:	connect row_delay to col_tos;
-//			disconnect row_nos from col_nos, opr = d2_d2_np;
+m_shift0:	d_flag <= zero, connect row_tos to col_nos, goto m_shift;
+m_shift1:	d_flag <= one, connect row_tos to col_nos;
+m_shift:	connect row_delay to col_tos;
+			disconnect row_nos from col_nos, opr = d2_d2_np;
 
 			// reset connections and iterate
-//			disconnect row_tos from col_nos;
-//			disconnect row_delay from col_tos;
-//			connect row_nos to col_nos, if loopcnt_is_zero then nextchar;
-//			loopcnt <= dec, goto m_loop;	// do it 16 or 32 times
+			disconnect row_tos from col_nos;
+			disconnect row_delay from col_tos;
+			connect row_nos to col_nos, if loopcnt_is_zero then nextchar;
+			loopcnt <= dec, goto m_loop;	// do it 16 or 32 times
 			
 			// enter: push all down, TOS <= 0
 			.map 0x0D;
@@ -339,64 +343,45 @@ enter:		nuke, matrix_push();
 			
 			// load digits to stack top (R0), note digits are in reverse bit order
 			.map '0';
-			data 0b0000, goto hexchar;
-
 			.map '1';
-			data 0b1000, goto hexchar;
-
 			.map '2';
-			data 0b0100, goto hexchar;
-
 			.map '3';
-			data 0b1100, goto hexchar;
-
 			.map '4';
-			data 0b0010, goto hexchar;
-
 			.map '5';
-			data 0b1010, goto hexchar;
-
 			.map '6';
-			data 0b0110, goto hexchar;
-
 			.map '7';
-			data 0b1110, goto hexchar;
-
 			.map '8';
-			data 0b0001, goto hexchar;
-
 			.map '9';
-			data 0b1001, goto hexchar;
+			data 0b0000, goto hexchar;	// correction from reverse ASCII is 0
 
 			.map 'a';
 			.map 'A';
-			data 0b0101, goto hexchar;
-
-			.map 'b';
-			.map 'B';
-			data 0b1101, goto hexchar;
+			.map 'e';
+			.map 'E';
+			data 0b1101, goto hexchar;	// correction from reverse ASCII is 11
 
 			.map 'c';
 			.map 'C';
-			data 0b0011, goto hexchar;
-
+			data 0b1111, goto hexchar;  // correction from reverse ASCII is 15
+			
+			.map 'b';
+			.map 'B';
 			.map 'd';
 			.map 'D';
-			data 0b1011, goto hexchar;
-
-			.map 'e';
-			.map 'E';
-			data 0b0111, goto hexchar;
-
 			.map 'f';
 			.map 'F';
-			data 0b1111;
-hexchar:	nuke, matrix_nop1();
-			load_bitcnt 3;
-			connect row_direct to col_tos;
+			data 0b1001;				// correction from reverse ASCII is 9
+hexchar:	load_bitcnt 3, c_flag <= zero, nuke, matrix_nop1();
+			connect row_const to col_adc1;
+			connect row_direct to col_adc2;
+			connect row_sum to col_tos;
 			STATUS = busy_using_mt, opr = m2_d2_d2, bitcnt <= dec, if bitcnt_is_zero then next else repeat;
-			load_bitcnt 3;
-			STATUS = busy_using_mt, opr = np_m2_m2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
+			disconnect row_sum from col_tos, bitcnt <= max;
+			connect row_tos to col_tos, bitcnt <= dec;
+			bitcnt <= dec;
+			bitcnt <= dec;
+			bitcnt <= dec;
+			STATUS = busy_using_mt, opr = np_d2_d2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
 			
 // subroutines (keep in mind max stack call level is 4!)
 a_pm_m:		connect row_a to col_adc1;
@@ -447,8 +432,8 @@ matrix_pop:	connect row_r2 to col_nos;
 			connect row_r7 to col_r6, back;
 			
 trace:		if TRACE_CHAR then next else return;
-//			emit(char_I);		// I=<received char>
-//			emit(char_EQU);
+			emit(char_I);		// I=<received char>
+			emit(char_EQU);
 			emit(inp1);			
 			emit(inp0);
 

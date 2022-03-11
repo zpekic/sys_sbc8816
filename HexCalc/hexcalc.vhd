@@ -189,8 +189,13 @@ end generate;
 				opr => (mode32 & opr_reg),	-- all other registers operate in unison 
 				so => row_const, 
 				si => '0',
-				pi(31 downto 16) => X"0000",
-				pi(15 downto 0) => decode4to16(to_integer(unsigned(hxc_MT_ROW))),	-- one hot bit
+				pi(31 downto 4) => (others => '0'),	-- zero all the way
+				pi(3) => input(0),		-- instruction low nibble reversed
+				pi(2) => input(1),		
+				pi(1) => input(2),		
+				pi(0) => input(3),		
+				--pi(31 downto 16) => X"0000",
+				--pi(15 downto 0) => decode4to16(to_integer(unsigned(hxc_MT_ROW))),	-- one hot bit
 				hexsel => dbg_col(2 downto 0), 
 				hexout => reg(12)
 			);

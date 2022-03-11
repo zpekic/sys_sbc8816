@@ -298,11 +298,10 @@ component tracer is
            dev_data : in  STD_LOGIC_VECTOR(7 downto 0);
            dev_send : in  STD_LOGIC;
            dev_ready : out  STD_LOGIC;
-			  trace: in STD_LOGIC;
+			  trigger: in STD_LOGIC;
            enable : in  STD_LOGIC;
            debug : in  STD_LOGIC_VECTOR (15 downto 0);
-			  ext_char: in STD_LOGIC_VECTOR(7 downto 0);
-           dev_clk : out  STD_LOGIC);
+			  ext_char: in STD_LOGIC_VECTOR(7 downto 0));
 end component;
 	
 type table_8x16 is array (0 to 7) of std_logic_vector(15 downto 0);
@@ -353,7 +352,7 @@ signal reset, reset_btn: std_logic;
 signal showdigit, showdot: std_logic_vector(5 downto 0);
 signal led_data: std_logic_vector(23 downto 0);
 signal led_dot: std_logic_vector(5 downto 0);
-signal tr_trace, tr_enable, tr_txdready: std_logic;
+signal tr_enable, tr_txdready: std_logic;
 --signal digit: std_logic_vector(3 downto 0);
 
 -- VGA
@@ -691,15 +690,15 @@ tr: tracer Port map (
 			dev_data => hc_txdchar,
 			dev_send => hc_txdsend,
 			dev_ready => open, --hc_txdready,
-			trace => '1',
+			trigger => phi0,
 			enable => tr_enable,
 			debug(15 downto 8) => hc_dbg(23 downto 16),	-- instruction register (== input char)
 			debug(7 downto 0) => hc_dbg(7 downto 0),		-- microinstruction address
-			ext_char => hc_txdchar,
-			dev_clk => open
+			ext_char => hc_txdchar
 		);
 		
-tr_enable <= '0' when (hc_status = STATUS_READY) else (phi3 and (not sw_clksel(2))); 
+tr_enable <= '0' when (hc_status = STATUS_READY) else (not sw_clksel(2));
+
 -- catch stacktop appearing to display it on the 7seg LED
 on_dot_clk: process(dot_clk, win_x, win_y, hc_reg)	-- TODO - improve this mess!
 begin
