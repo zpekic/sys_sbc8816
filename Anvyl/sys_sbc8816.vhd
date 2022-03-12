@@ -273,6 +273,7 @@ component hardwin is
 			  index: out STD_LOGIC_VECTOR(2 downto 0);
            win_x : out  STD_LOGIC_VECTOR (4 downto 0);
            win_y : out  STD_LOGIC_VECTOR (4 downto 0);
+  			  switch: in STD_LOGIC_VECTOR (7 downto 0);
            mt_x : in  STD_LOGIC;
            mt_y : in  STD_LOGIC;
            mt_c : in  STD_LOGIC;
@@ -812,6 +813,7 @@ win: hardwin Port map(
 		index	 => win_index,
 		win_x  => win_x,
 		win_y  => win_y,
+		switch => switch, -- display the modes in the last row of the window
 		mt_x   => hc_mt_x(to_integer(unsigned(win_y(3 downto 0)))),
 		mt_y   => mt_y(to_integer(unsigned(win_x(3 downto 0)))),
 		mt_c	 => hc_carry,
