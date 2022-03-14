@@ -43,6 +43,7 @@ entity tracer is
 			  trigger: in STD_LOGIC;
            enable : in  STD_LOGIC;
            debug : in  STD_LOGIC_VECTOR (15 downto 0);
+			  inp_char: in STD_LOGIC_VECTOR(7 downto 0);
 			  ext_char: in STD_LOGIC_VECTOR(7 downto 0));
 end tracer;
 
@@ -56,8 +57,7 @@ signal sympos: std_logic_vector(5 downto 0); -- symbols are offset by 8 chars
 signal debug_data, ascii_hex, ascii_fix, ascii_inp, format_d: std_logic_vector(7 downto 0);
 signal debug_send: std_logic;
 signal hexout: std_logic_vector(3 downto 0);
-alias ui_address: std_logic_vector(6 downto 0) is debug(6 downto 0); -- 128 words microcode
-alias char_inp: std_logic_vector(7 downto 0) is debug(15 downto 8); -- input character
+alias ui_address: std_logic_vector(7 downto 0) is debug(7 downto 0); -- 256 words microcode
 signal tr_enable, tr_done, tr_enable_clk: std_logic;
 -- for tracer
 
@@ -93,7 +93,7 @@ begin
 	end if;
 end process;
 
-on_clk: process(reset, clk, cnt)
+on_clk: process(reset, clk, cnt, tr_enable)
 begin
 	if ((reset = '1') or (tr_enable = '0')) then
 		cnt <= (others => '0');
@@ -145,11 +145,11 @@ with ext_char(7 downto 5) select ascii_fix <=
 	X"7E" when others;	-- 80..FF (show tilde)
 
 -- sanitize input character and make it displayable
-with char_inp(7 downto 5) select ascii_inp <= 
+with inp_char(7 downto 5) select ascii_inp <= 
 	X"2E" when "000",		-- 00..1F (show dot)
-	char_inp when "001",	-- 20..3F
-	char_inp when "010",	-- 40..5F
-	char_inp when "011",	-- 60..7F
+	inp_char when "001",	-- 20..3F
+	inp_char when "010",	-- 40..5F
+	inp_char when "011",	-- 60..7F
 	X"7E" when others;	-- 80..FF (show tilde)
 	
 end Behavioral;

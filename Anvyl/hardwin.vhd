@@ -29,6 +29,7 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 use work.sbc8816_package.all;
+
 entity hardwin is
     Port ( left : in  STD_LOGIC_VECTOR (7 downto 0);
            top : in  STD_LOGIC_VECTOR (7 downto 0);
@@ -87,64 +88,64 @@ constant winmask: table_1kx8 := (
 );
 
 constant bin2ascii: lookup := (
-	ascii('0'),	
-	ascii('1'),	
-	ascii('-'), 	
-	ascii('X'),	
-	ascii('?'),	
-	ascii('?'),	
-	ascii('?'),	
-	ascii('?'),
-	ascii('?'),	
-	ascii('?'),	
-	ascii('?'),	
-	ascii('?'),	
-	ascii('?'),	
-	ascii('?'),	
-	ascii('?'),	
-	ascii('?')
+	c('0'),	
+	c('1'),	
+	c('-'), 	
+	c('X'),	
+	c('?'),	
+	c('?'),	
+	c('?'),	
+	c('?'),
+	c('?'),	
+	c('?'),	
+	c('?'),	
+	c('?'),	
+	c('?'),	
+	c('?'),	
+	c('?'),	
+	c('?')
 );
 
 type table_32x32 is array (0 to 31) of std_logic_vector(31 downto 0);
 constant sw_lookup: table_32x32 := (
 -- switch 7
-	ascii(' ') & ascii(' ') & ascii('1') & ascii('6'),
-	ascii(' ') & ascii(' ') & ascii('3') & ascii('2'),
+	c(' ') & c(' ') & c('1') & c('6'),
+	c(' ') & c(' ') & c('3') & c('2'),
 -- switch 6 downto 5
-	ascii('b') & ascii('a') & ascii('u') & ascii('d'),
-	ascii('u') & ascii('a') & ascii('r') & ascii('t'),
-	ascii('r') & ascii('u') & ascii('n') & ascii('0'),
-	ascii('r') & ascii('u') & ascii('n') & ascii('1'),
+	c('b') & c('a') & c('u') & c('d'),
+	c('u') & c('a') & c('r') & c('t'),
+	c('r') & c('u') & c('n') & c('0'),
+	c('r') & c('u') & c('n') & c('1'),
 -- switch 4	downto 3
-	ascii('p') & ascii('0') & ascii('e') & ascii('0'),
-	ascii('p') & ascii('0') & ascii('e') & ascii('1'),
-	ascii('p') & ascii('1') & ascii('e') & ascii('0'),
-	ascii('p') & ascii('1') & ascii('e') & ascii('1'),
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c('t') & c('r'),
+	c('t') & c('i') & c(' ') & c(' '),
+	c('t') & c('i') & c('t') & c('r'),
 -- not used
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c(' ') & c(' '),
 -- switch 2 downto 0
-	ascii('b') & ascii('t') & ascii('n') & ascii('3'),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii('1'),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii('4'),
-	ascii(' ') & ascii(' ') & ascii('3') & ascii('2'),
-	ascii('1') & ascii('9') & ascii('5') & ascii('k'),
-	ascii('3') & ascii('9') & ascii('0') & ascii('k'),
-	ascii('7') & ascii('8') & ascii('1') & ascii('k'),
-	ascii('1') & ascii('.') & ascii('6') & ascii('M'),
+	c('b') & c('t') & c('n') & c('3'),
+	c(' ') & c(' ') & c(' ') & c('4'),
+	c(' ') & c(' ') & c('1') & c('6'),
+	c(' ') & c(' ') & c('6') & c('4'),
+	c('1') & c('9') & c('5') & c('k'),
+	c('3') & c('9') & c('0') & c('k'),
+	c('7') & c('8') & c('1') & c('k'),
+	c('1') & c('.') & c('6') & c('M'),
 -- not used
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' '),
-	ascii(' ') & ascii(' ') & ascii(' ') & ascii(' ')
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c(' ') & c(' '),
+	c(' ') & c(' ') & c(' ') & c(' ')
 );
 
 signal winaddr: std_logic_vector(9 downto 0);

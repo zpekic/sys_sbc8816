@@ -22,28 +22,28 @@ constant char_r: std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(na
 constant char_equ: std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(natural(character'pos('=')), 8));
 constant char_space: std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(natural(character'pos(' ')), 8));
 
-impure function ascii(char: in character) return std_logic_vector;
+impure function c(char: in character) return std_logic_vector;
 
 --type t_ascii is std_logic_vector(7 downto 0);
 
 type lookup is array(0 to 15) of std_logic_vector(7 downto 0);
 constant hex2ascii: lookup := (
-	ascii('0'),
-	ascii('1'),
-	ascii('2'),
-	ascii('3'),
-	ascii('4'),
-	ascii('5'),
-	ascii('6'),
-	ascii('7'),
-	ascii('8'),
-	ascii('9'),
-	ascii('A'),
-	ascii('B'),
-	ascii('C'),
-	ascii('D'),
-	ascii('E'),
-	ascii('F')
+	c('0'),
+	c('1'),
+	c('2'),
+	c('3'),
+	c('4'),
+	c('5'),
+	c('6'),
+	c('7'),
+	c('8'),
+	c('9'),
+	c('A'),
+	c('B'),
+	c('C'),
+	c('D'),
+	c('E'),
+	c('F')
 );
 
 type table_16x16 is array (0 to 15) of std_logic_vector(15 downto 0);
@@ -113,9 +113,9 @@ package body sbc8816_package is
 --    
 --  end <procedure_name>;
  
-impure function ascii(char: in character) return std_logic_vector is
+impure function c(char: in character) return std_logic_vector is
 begin
 	return std_logic_vector(to_unsigned(natural(character'pos(char)), 8));
-end ascii;
+end c;
  
 end sbc8816_package;

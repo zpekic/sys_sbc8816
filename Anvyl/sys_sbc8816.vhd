@@ -180,7 +180,7 @@ component hexcalc is
    		  dbg: out STD_LOGIC_VECTOR(23 downto 0);
    		  dbg_row: out STD_LOGIC_VECTOR(3 downto 0);
    		  dbg_col: out STD_LOGIC_VECTOR(3 downto 0);
-   		  dbg_reg: out STD_LOGIC_VECTOR(3 downto 0);
+   		  dbg_reg: buffer STD_LOGIC_VECTOR(3 downto 0);
 			  button: in STD_LOGIC;
 			  -- MATRIX CONTROL
 			  mt_ctrl: out STD_LOGIC_VECTOR(9 downto 0);
@@ -194,8 +194,8 @@ component hexcalc is
 			  d_flag: buffer STD_LOGIC;
 			  z_flags: buffer STD_LOGIC_VECTOR(15 downto 0);
 			  -- TRACING
-			  TRACE_ERROR: in STD_LOGIC;
-			  TRACE_CHAR: in STD_LOGIC;
+			  TRACE_INPUT: in STD_LOGIC;
+			  TRACE_RESULT: in STD_LOGIC;
            ERROR : buffer  STD_LOGIC;
            TXDREADY : in  STD_LOGIC;
 			  TXDSEND: out STD_LOGIC;
@@ -302,6 +302,7 @@ component tracer is
 			  trigger: in STD_LOGIC;
            enable : in  STD_LOGIC;
            debug : in  STD_LOGIC_VECTOR (15 downto 0);
+			  inp_char: in STD_LOGIC_VECTOR(7 downto 0);
 			  ext_char: in STD_LOGIC_VECTOR(7 downto 0));
 end component;
 	
@@ -383,8 +384,8 @@ signal counter_value: std_logic_vector(31 downto 0);
 signal switch: std_logic_vector(7 downto 0);
 alias sw_32: std_logic is switch(7);
 alias sw_mode: std_logic_vector(1 downto 0) is switch(6 downto 5);
-alias sw_traceerror: std_logic is switch(4);
-alias sw_tracechar: std_logic is switch(3);
+alias sw_traceinput: std_logic is switch(4);
+alias sw_traceresult: std_logic is switch(3);
 alias sw_clksel: std_logic_vector(2 downto 0) is switch(2 downto 0);
 
 signal button: std_logic_vector(3 downto 0);
@@ -403,39 +404,39 @@ signal input: std_logic_vector(7 downto 0);
 type table_32x8 is array(0 to 31) of std_logic_vector(7 downto 0);
 constant kypd2ascii: table_32x8 := (
 	-- no "shift", entering hex digits
-	ascii('0'),
-	ascii('1'),
-	ascii('2'),
-	ascii('3'),
-	ascii('4'),
-	ascii('5'),
-	ascii('6'),
-	ascii('7'),
-	ascii('8'),
-	ascii('9'),
-	ascii('A'),
-	ascii('B'),
-	ascii('C'),
-	ascii('D'),
-	ascii('E'),
-	ascii('F'),
+	c('0'),
+	c('1'),
+	c('2'),
+	c('3'),
+	c('4'),
+	c('5'),
+	c('6'),
+	c('7'),
+	c('8'),
+	c('9'),
+	c('A'),
+	c('B'),
+	c('C'),
+	c('D'),
+	c('E'),
+	c('F'),
 	-- with "shift", entering a command
-	ascii('Z'),	-- 0 == clear
-	X"00",		-- 1 == not used
-	X"00",		-- 2 == not used
-	X"00",		-- 3 == not used
-	X"00",		-- 4 == not used
-	X"00",		-- 5 == not used
-	X"00",		-- 6 == not used
-	X"00",		-- 7 == not used
-	X"00",		-- 8 == not used
-	ascii('N'),	-- 9 == nuke all
-	ascii('+'),	-- A == add
-	ascii('-'),	-- B == subtract
-	ascii('*'),	-- C == multiply
-	ascii('/'),	-- D == divide	
-	X"0D",		-- E == enter
-	ascii('S')  -- F == swap
+	c('Z'),	-- 0 == zero TOS
+	c('U'),	-- 1 == dUp(licate)
+	c('R'),	-- 2 == rotate registers
+	X"00",	-- 3 == not used
+	X"00",	-- 4 == not used
+	X"00",	-- 5 == not used
+	X"00",	-- 6 == not used
+	X"00",	-- 7 == not used
+	X"00",	-- 8 == not used
+	c('N'),	-- 9 == nuke all
+	c('+'),	-- A == add
+	c('-'),	-- B == subtract
+	c('*'),	-- C == multiply
+	c('/'),	-- D == divide	
+	X"0D",	-- E == enter
+	c('S')  -- F == swap
 );
 
 -- HC (hexcalc core) connections
@@ -630,9 +631,9 @@ with BTN(2 downto 0) select co_mt_ctrl(9 downto 8) <=
 -- select the clock
 with sw_clksel select mt_cnt <= 
 	ss_cnt	when "000",	-- single step
-	freq_2048(11 downto 10) when "001",	-- 1Hz
-	freq_2048(9 downto 8) when "010",	-- 4Hz
-	freq_2048(6 downto 5) when "011",	-- 32Hz
+	freq_2048(9 downto 8) when "001",	-- 4Hz
+	freq_2048(7 downto 6) when "010",	-- 16Hz
+	freq_2048(5 downto 4) when "011",	-- 64Hz
 	freq_50M(8 downto 7) when "100",		-- 0.195312
 	freq_50M(7 downto 6) when "101",		-- 0.390625
 	freq_50M(6 downto 5) when "110",		-- 0.781250
@@ -674,8 +675,8 @@ hc: hexcalc Port map (
 			d_flag => hc_delay,
 			z_flags => hc_zero,
 			--
-			TRACE_ERROR => sw_traceerror,
-			TRACE_CHAR  => sw_tracechar,
+			TRACE_INPUT => sw_traceinput,
+			TRACE_RESULT  => sw_traceresult,
 			ERROR => hc_error,
 			TXDREADY => hc_txdready,
 			TXDSEND => hc_txdsend,
@@ -693,9 +694,11 @@ tr: tracer Port map (
 			dev_ready => open, --hc_txdready,
 			trigger => phi0,
 			enable => tr_enable,
-			debug(15 downto 8) => hc_dbg(23 downto 16),	-- instruction register (== input char)
+--			debug(15 downto 8) => hc_dbg(23 downto 16),	-- instruction register (== input char)
+			debug(15 downto 8) => hc_dbg(15 downto 8),	-- loop and bit counters
 			debug(7 downto 0) => hc_dbg(7 downto 0),		-- microinstruction address
-			ext_char => hc_txdchar
+			inp_char => input,		-- character to process (== instruction register)
+			ext_char => hc_txdchar	-- what CPU would output
 		);
 		
 tr_enable <= '0' when (hc_status = STATUS_READY) else (not sw_clksel(2));
@@ -850,7 +853,7 @@ led6: sixdigitsevensegled Port map (
 		segment(7) => DP
 		);
 
-hc_led <= hc_dbg;-- when (sw_clksel = "100") else hc_tos(23 downto 0);  -- in single step mode, display microcode debug on LED
+hc_led <= hc_dbg when (sw_clksel(2) = '0') else hc_tos(23 downto 0);  -- in "slow" clock mode, display microcode debug on LED
 
 with sw_mode select led_data <= 
 		X"00" & uartmode_debug(to_integer(unsigned(dip_uart_mode))) when mode_ua_lb_lb,

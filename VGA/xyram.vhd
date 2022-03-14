@@ -66,7 +66,7 @@ end init_lookup;
 signal row_offset: lookup := init_lookup(maxcol);
 
 type generic_ram is array(0 to (maxram - 1)) of std_logic_vector(7 downto 0);
-signal vram: generic_ram := (others => X"2E"); -- .
+signal vram: generic_ram := (others => X"20"); -- (space)
 attribute ram_style: string;
 attribute ram_style of vram : signal is "block";
 

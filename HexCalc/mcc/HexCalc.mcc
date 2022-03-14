@@ -1,11 +1,14 @@
-//----------------------------------------------------------
+//---------------------------------------------------------------------------------------------
 //	hexcalc Microcode (c) 2021-... zpekic@hotmail.com
 //  Compile with https://github.com/zpekic/MicroCodeCompiler
-//----------------------------------------------------------
-			.code 7, 50, hexcalc_code.mif, hexcalc_code.cgf, hexcalc_code.coe, hxc:hexcalc_code.vhd, hexcalc_code.hex, hexcalc_code.bin, 8;
-			.mapper 8, 7, hexcalc_map.mif, hexcalc_map.cgf, hexcalc_map.coe, hxc:hexcalc_map.vhd, hexcalc_map.hex, hexcalc_map.bin, 1;
+//---------------------------------------------------------------------------------------------
+// Microcode for stack-based hex calculator using MT8816 cross-bar switches
+// Mul/div algorithms from "Computer Organization and Architecture" by W. Stallings, p. 212-222
+//---------------------------------------------------------------------------------------------
+			.code 8, 52, hexcalc_code.mif, hexcalc_code.cgf, hexcalc_code.coe, hxc:hexcalc_code.vhd, hexcalc_code.hex, hexcalc_code.bin, 8;
+			.mapper 8, 8, hexcalc_map.mif, hexcalc_map.cgf, hexcalc_map.coe, hxc:hexcalc_map.vhd, hexcalc_map.hex, hexcalc_map.bin, 1;
 			.controller hexcalc_control_unit.vhd, 4;
-			.symbol 7, 256, hexcalc_sym.mif, hexcalc_sym.cgf, hexcalc_sym.coe, hxc:hexcalc_sym.vhd, hexcalc_sym.hex, hexcalc_sym.bin, 32;
+			.symbol 8, 256, hexcalc_sym.mif, hexcalc_sym.cgf, hexcalc_sym.coe, hxc:hexcalc_sym.vhd, hexcalc_sym.hex, hexcalc_sym.bin, 32;
 
 // System interface signals
 MT_CTRL			.valfield 2 values 
@@ -16,9 +19,6 @@ MT_CTRL			.valfield 2 values
 				
 MT_ROW			.valfield 4 values * default 0;
 MT_COL			.valfield 4 values * default 0;
-
-//d_value			.valfield MT_ROW values * default 0;
-//c_value			.valfield MT_COL values * default 0;
 
 bitcnt			.regfield 2 values
 				same,
@@ -43,8 +43,8 @@ STATUS			.valfield 2 values
 seq_cond:		.if 4 values 
 				true, 			// hard-code to 1
 				input_is_zero,	// do not process 0x00 input char
-				TRACE_ERROR,
-				TRACE_CHAR,
+				TRACE_INPUT,
+				TRACE_RESULT,
 				TXDREADY,
 				TXDSEND,
 				bitcnt_is_zero,
@@ -58,8 +58,8 @@ seq_cond:		.if 4 values
 				cond_14,
 				false			// hard-code to 0
 				default true;
-seq_then:	.then 7 values next, repeat, return, fork, @ default next;				// any label
-seq_else:	.else 7 values next, repeat, return, fork, 0b0000000..0b1111111, @ default next;	// any value as it can be a trace char
+seq_then:	.then 8 values next, repeat, return, fork, @ default next;				// any label
+seq_else:	.else 8 values next, repeat, return, fork, 0b0000000..0b1111111, @ default next;	// any value as it can be a trace char
 			
 // contains ASCII char for UART trasmit
 TXDCHAR		.regfield 4 values 
@@ -75,8 +75,8 @@ TXDCHAR		.regfield 4 values
 				// use bit 4 to lookup using HEX2ASCII table
 				inp0,			// input character LSN
 				inp1,			// input character MSN
-				-,
-				-,
+				input,			// input character ASCII
+				reg,			// nibble(bitcnt) in register(loopcnt)
 				-,
 				-,
 				errcode
@@ -120,13 +120,14 @@ z_flags:		.regfield 2 values	// zero flags, one per row. Initialize with set all
 				
 loopcnt			.regfield 2 values
 				same,
-				-,			
+				inc,			
 				max,	// 31 or 15	
 				dec
 				default same;
 				
-// placeholder
-dummy:			.valfield 1 values * default 0;
+selreg:			.valfield 1 values
+				external,
+				internal default external;
 						
 //	useful aliases, these are evaluated as simple text replacement of label with everything between .alias and ; 
 goto:		.alias if false then next else;
@@ -186,8 +187,9 @@ col_and2:	.alias MT_COL = 0xF;
 
 // gosub definitions - this works because "jump" pushes return address to stack if both then/else are same
 emit:		.sub TXDCHAR;
+echo:		.sub TXDCHAR;
+print_st:	.sub;
 print_crlf:	.sub;	
-trace:		.sub;	
 matrix_nop:	.sub;
 matrix_nop1:.sub;
 matrix_push:.sub;
@@ -215,12 +217,11 @@ _reset3:	reset;
 //	indicate availability and wait for start signal
 //	---------------------------------------------------------------------------
 deadloop:	STATUS = ready, if input_is_zero then repeat else next;
-			trace();
 			if true then fork else fork;	// jump to entry point per character code (see .map statements below)
 
 			.map 0b????????;
-badchar:	errcode <= err_badchar, if TRACE_ERROR then printerror else nextchar;	// ERR1
-divzero:	errcode <= err_divzero, if TRACE_ERROR then printerror else nextchar;	// ERR2	
+badchar:	errcode <= err_badchar, goto printerror;	// ERR1
+divzero:	errcode <= err_divzero, goto printerror;	// ERR2	
 printerror:	emit(char_E);		// ERR
 			emit(char_R);
 			emit(char_R);
@@ -230,86 +231,121 @@ printerror:	emit(char_E);		// ERR
 			emit(inp0);			// hex code of offending char
 			print_crlf();
 
+// ignore whitespace ---------------------------------------
 			.map 0;
 			.map 0x09;	// treat tabs and spaces same way (ignore them)	
 			.map ' ';
+// ---------------------------------------------------------
+			echo(input);
 nextchar:	STATUS = done, goto deadloop;
+
+// enter: push all down, TOS <= 0 --------------------------
+			.map 0x0D;	// enter
+// -- Note: R7 lost -----------------------------------------
+			echo(input);
+enter:		nuke, matrix_push();
+			goto exec;
+
+// dup: NOS <= TOS, push others down ------------------------
+			.map 'u';
+			.map 'U';	// dUp
+// -- Note: R7 lost -----------------------------------------
+			echo(input);
+dup:		nuke, matrix_push();
+			connect row_tos to col_tos, goto exec;
+
+// rotate: TOS <= NOS, ... R7 <= TOS ------------------------
+			.map 'r';
+			.map 'R';	// "rotate"
+// -- Note: R7 lost -----------------------------------------
+			echo(input);
+rotate:		nuke, matrix_push();
+			connect row_r7 to col_tos, goto exec;
 					
-			// TOS <=> NOS
-			.map 's';
+// TOS <=> NOS ---------------------------------------------
+			.map 's';	// "swap"
 			.map 'S';
+// ---------------------------------------------------------
+			echo(input);
 swap:		nuke, matrix_swap();
 			goto exec;
 			
-			// R0..R7 <= 0, ERR <= 0 -----------------------
-			.map 'n';
+// R0..R7 <= 0, ERR <= 0 ----------------------------------
+			.map 'n';	// "nuke"
 			.map 'N';
-			// ---------------------------------------------
+// --------------------------------------------------------
+			echo(input);
 			errcode <= ok, nuke, goto exec;
 
-			// TOS <= 0, ERR <= 0 --------------------------
-			.map 'z';	
+// TOS <= 0, ERR <= 0 -------------------------------------
+			.map 'z';	// "zero"
 			.map 'Z';
-			// ---------------------------------------------
+// --------------------------------------------------------
+			echo(input);
 			errcode <= ok, nuke, matrix_nop1();	// no switch on TOS means pull down, so it 0
 exec:		z_flags <= set, div2(max);			// 16 or 32 *
+done:		print_st();
 			goto nextchar;		
 
-			// TOS <= TOS + NOS, POP -----------------------
-			.map '+';
-			// ---------------------------------------------
+// TOS <= TOS + NOS, POP ----------------------------------
+			.map '+';	// add
+// --------------------------------------------------------
+			echo(input);
 plus:		c_flag <= zero, nuke, matrix_pop();
 			connect row_nos to col_adc2;
 pm:			connect row_sum to col_tos;
 			connect row_tos to col_adc1, goto exec;
 			
-			// TOS <= TOS - NOS, POP -----------------------
-			.map '-';
-			// ---------------------------------------------
+// TOS <= TOS - NOS, POP ----------------------------------
+			.map '-';	// subtract
+// --------------------------------------------------------
+			echo(input);
 minus:		c_flag <= one, nuke, matrix_pop();
 			connect row_nos to col_not;
 			connect row_not to col_adc2, goto pm;
 			
-			// TOS <= NOS div TOS, NOS <= NOS mod TOS, -----
-//			.map '/';
-			// Note: R7 destroyed --------------------------
-//div:		prep_regs(max);
-//			if z_flagtos_is_set then divzero;
+// TOS <= NOS div TOS, NOS <= NOS mod TOS, ----------------
+			.map '/';	// div/mod
+// Note: R7 destroyed -------------------------------------
+			echo(input);
+div:		prep_regs(max);
+			if z_flagtos_is_set then divzero;
 			// A < Q < 0
-//div_loop:	disconnect row_q from col_q;
-//			d_flag <= zero, connect row_delay to col_q;
-//			connect row_q to col_a;
-//			STATUS = busy_using_mt, opr = m2_m2_np;
-//			disconnect row_delay from col_q;
-//			disconnect row_q from col_a;
-//			connect row_q to col_q; 
+div_loop:	disconnect row_q from col_q;
+			d_flag <= zero, connect row_delay to col_q;
+			connect row_q to col_a;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			disconnect row_delay from col_q;
+			disconnect row_q from col_a;
+			connect row_q to col_q; 
 			
 			// A <= A - M
-//			connect row_m to col_not;
-//			connect row_not to col_adc2, a_pm_m(one);
+			connect row_m to col_not;
+			connect row_not to col_adc2, a_pm_m(one);
 			
-//			disconnect row_not from col_adc2, if c_flag_is_set then next else restore_a;
+			disconnect row_not from col_adc2, if c_flag_is_set then next else restore_a;
 
 			// Q(0) <= 1
-//			connect row_a to col_a;
-//			disconnect row_q from col_q;
-//			connect row_q to col_delay;
-//			connect row_delay to col_q;
-//			STATUS = busy_using_mt, opr = d2_d2_np;
-//			d_flag <= one;
-//			STATUS = busy_using_mt, opr = m2_m2_np;
-//			nuke, matrix_nop();
+			connect row_a to col_a;
+			disconnect row_q from col_q;
+			connect row_q to col_delay;
+			connect row_delay to col_q;
+			STATUS = busy_using_mt, opr = d2_d2_np;
+			d_flag <= one;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			nuke, matrix_nop();
 
-//div_next:	if loopcnt_is_zero then swap;	// quotient on TOS, remainder on NOS
-//			loopcnt <= dec, goto div_loop;
+div_next:	if loopcnt_is_zero then swap;	// quotient on TOS, remainder on NOS
+			loopcnt <= dec, goto div_loop;
 			
 			// A <= A + M, Q(0) <= 0
-//restore_a:	connect row_m to col_adc2, a_pm_m(zero);
-//			disconnect row_m from col_adc2, goto div_next;
+restore_a:	connect row_m to col_adc2, a_pm_m(zero);
+			disconnect row_m from col_adc2, goto div_next;
 			
-			// TOS, NOS <= TOS * NOS -----------------------
-			.map '*';
-			// Note: R7 destroyed --------------------------
+// TOS, NOS <= TOS * NOS ----------------------------------
+			.map '*';	// multiply
+// Note: R7 destroyed -------------------------------------
+			echo(input);
 mul:		prep_regs(max);			
 			if z_flagnos_is_set then nextchar; // we already have TOS, NOS = 0
 			// NOS(0) to d_flag
@@ -333,15 +369,10 @@ m_shift:	connect row_delay to col_tos;
 			// reset connections and iterate
 			disconnect row_tos from col_nos;
 			disconnect row_delay from col_tos;
-			connect row_nos to col_nos, if loopcnt_is_zero then nextchar;
+			connect row_nos to col_nos, if loopcnt_is_zero then done;
 			loopcnt <= dec, goto m_loop;	// do it 16 or 32 times
 			
-			// enter: push all down, TOS <= 0
-			.map 0x0D;
-enter:		nuke, matrix_push();
-			goto exec;
-			
-			// load digits to stack top (R0), note digits are in reverse bit order
+// load digits to stack top (R0), note digits are in reverse bit order ----
 			.map '0';
 			.map '1';
 			.map '2';
@@ -370,8 +401,10 @@ enter:		nuke, matrix_push();
 			.map 'D';
 			.map 'f';
 			.map 'F';
+// --------------------------------------------------------
 			data 0b1001;				// correction from reverse ASCII is 9
-hexchar:	load_bitcnt 3, c_flag <= zero, nuke, matrix_nop1();
+hexchar:	echo(input);
+			load_bitcnt 3, c_flag <= zero, nuke, matrix_nop1();
 			connect row_const to col_adc1;
 			connect row_direct to col_adc2;
 			connect row_sum to col_tos;
@@ -431,44 +464,25 @@ matrix_pop:	connect row_r2 to col_nos;
 			connect row_r6 to col_r5;
 			connect row_r7 to col_r6, back;
 			
-trace:		if TRACE_CHAR then next else return;
-			emit(char_I);		// I=<received char>
-			emit(char_EQU);
-			emit(inp1);			
-			emit(inp0);
+// print stack top register (8 or 4 hex digits)			
+print_st:	loopcnt <= max, if TRACE_RESULT then next else return;
+			loopcnt <= inc, print_crlf();	// loopcnt is now 0
+st_loop:	selreg = internal, emit(reg);
+			loopcnt <= inc;
+			loopcnt <= inc;
+			loopcnt <= inc;
+			loopcnt <= inc; 
+			if loopcnt_is_zero then print_crlf else st_loop;
+			
+echo:		if TRACE_INPUT then emit else return;
 
 print_crlf: emit(char_cr);
 			TXDCHAR <= char_lf;
 
-emit:		if TXDREADY then next else repeat;	// sync with baudrate clock that drives UART
-//			if TXDREADY then next else repeat;
-			if TXDREADY then next else repeat;
-			if TXDSEND then return else return;	// generate a send pulse for UART sender	
-			
-/// -- junk --
-			// Q(0) <= 1
-//			connect row_a to col_a;
-//			connect row_direct to col_q;
-			
-//			connect row_a to col_a;
-//			disconnect row_q from col_q;
-//			connect row_q to col_delay;
-//			connect row_delay to col_q;
-//			STATUS = busy_using_mt, opr = d2_d2_np;
-//			d_flag <= one;
-//			STATUS = busy_using_mt, opr = m2_m2_np;
-//			disconnect row_a from col_a;
-//			disconnect row_delay from col_q;
-//			wait;
-//			goto div_next;
+//emit:		if TXDREADY then next else repeat;	// sync with baudrate clock that drives UART
+			//if TXDREADY then next else repeat;
+			//if TXDREADY then next else repeat;
+//			if TXDSEND then return else return;	// generate a send pulse for UART sender	
 
-			// Q(0) <= 1
-//			connect row_q to col_q;
-//			connect row_direct to col_q;
-//			connect row_a to col_a;
-//			wait;
-//			data 0b0001, z_flags <= set, div2(max);
-//			disconnect row_a from col_a;
-//			disconnect row_direct from col_q;
-//			wait;
-//			goto div_next;
+emit: 		if TXDSEND then next;
+			if TXDREADY then return else repeat;

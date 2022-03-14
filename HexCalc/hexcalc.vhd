@@ -42,7 +42,7 @@ entity hexcalc is
    		  dbg: out STD_LOGIC_VECTOR(23 downto 0);
    		  dbg_row: in STD_LOGIC_VECTOR(3 downto 0);
    		  dbg_col: in STD_LOGIC_VECTOR(3 downto 0);
-   		  dbg_reg: out STD_LOGIC_VECTOR(3 downto 0);
+   		  dbg_reg: buffer STD_LOGIC_VECTOR(3 downto 0);
 			  button: in STD_LOGIC;
 			  -- MATRIX CONTROL
 			  mt_ctrl: out STD_LOGIC_VECTOR(9 downto 0);
@@ -56,8 +56,8 @@ entity hexcalc is
 			  d_flag: buffer STD_LOGIC;
 			  z_flags: buffer STD_LOGIC_VECTOR(15 downto 0);
 			  -- TRACING
-			  TRACE_ERROR: in STD_LOGIC;
-			  TRACE_CHAR: in STD_LOGIC;
+			  TRACE_INPUT: in STD_LOGIC;
+			  TRACE_RESULT: in STD_LOGIC;
            ERROR : buffer  STD_LOGIC;
            TXDREADY : in  STD_LOGIC;
 			  TXDSEND: out STD_LOGIC;
@@ -110,16 +110,17 @@ signal ui_address: std_logic_vector(CODE_ADDRESS_WIDTH - 1 downto 0);
 signal ui_nextinstr: std_logic_vector(CODE_ADDRESS_WIDTH -1  downto 0);
 
 -- internal signals
---signal ascii: std_logic_vector(7 downto 0);
 signal hexchar: std_logic_vector(3 downto 0);
 signal errcode: std_logic_vector(1 downto 0);
 signal bitcnt: std_logic_vector(4 downto 0);
 signal loopcnt: std_logic_vector(4 downto 0);
---signal delay, carry: std_logic;
 signal opr: std_logic_vector(5 downto 0);	-- register operation control
 alias opr_tos: std_logic_vector(1 downto 0) is opr(5 downto 4); 
 alias opr_nos: std_logic_vector(1 downto 0) is opr(3 downto 2);
 alias opr_reg: std_logic_vector(1 downto 0) is opr(1 downto 0);
+-- select nibble from register array
+signal reg_row: std_logic_vector(3 downto 0);
+signal reg_col: std_logic_vector(2 downto 0);
 
 -- ALU input / outputs
 alias row_delay: std_logic is mt_x(8);
@@ -149,9 +150,12 @@ status <= hxc_status;
 --dbg <= loopcnt(3 downto 0) & bitcnt(3 downto 0) & input & '0' & ui_address;
 --dbg <= "000" & bitcnt & '0' & ui_address & '0' & ui_nextinstr;
 --dbg <= '0' & ui_nextinstr & loopcnt(3 downto 0) & bitcnt(3 downto 0) & '0' & ui_address;
-dbg <= input & loopcnt(3 downto 0) & bitcnt(3 downto 0) & '0' & ui_address;
-dbg_reg <= reg(to_integer(unsigned(dbg_row)));
+dbg <= input & loopcnt(3 downto 0) & bitcnt(3 downto 0) & ui_address;
 mt_ctrl <= hxc_MT_CTRL & hxc_MT_COL & hxc_MT_ROW;
+
+reg_row <= X"0" when (hxc_selreg = selreg_internal) else dbg_row; -- select TOS if internal
+reg_col <= loopcnt(4 downto 2) when (hxc_selreg = selreg_internal) else dbg_col(2 downto 0);
+dbg_reg <= reg(to_integer(unsigned(reg_row)));
 
 -- shift only registers
 	tos: shiftreg port map (
@@ -159,7 +163,7 @@ mt_ctrl <= hxc_MT_CTRL & hxc_MT_COL & hxc_MT_ROW;
 				opr => (mode32 & opr_tos),	-- TOS register can shift independently 
 				so => mt_x(0), 
 				si => mt_y(0), 
-				hexsel => dbg_col(2 downto 0), 
+				hexsel => reg_col, 
 				hexout => reg(0)
 			);
 
@@ -168,7 +172,7 @@ mt_ctrl <= hxc_MT_CTRL & hxc_MT_COL & hxc_MT_ROW;
 				opr => (mode32 & opr_nos),	-- NOS register can shift independently 
 				so => mt_x(1), 
 				si => mt_y(1), 
-				hexsel => dbg_col(2 downto 0), 
+				hexsel => reg_col, 
 				hexout => reg(1)
 			);
 
@@ -178,7 +182,7 @@ sr_generate: for i in 2 to 7 generate
 				opr => (mode32 & opr_reg),	-- all other registers operate in unison
 				so => mt_x(i), 
 				si => mt_y(i), 
-				hexsel => dbg_col(2 downto 0), 
+				hexsel => reg_col, 
 				hexout => reg(i)
 			);
 end generate;
@@ -190,13 +194,13 @@ end generate;
 				so => row_const, 
 				si => '0',
 				pi(31 downto 4) => (others => '0'),	-- zero all the way
-				pi(3) => input(0),		-- instruction low nibble reversed
+				pi(3) => input(0),	-- instruction low nibble reversed
 				pi(2) => input(1),		
 				pi(1) => input(2),		
 				pi(0) => input(3),		
 				--pi(31 downto 16) => X"0000",
 				--pi(15 downto 0) => decode4to16(to_integer(unsigned(hxc_MT_ROW))),	-- one hot bit
-				hexsel => dbg_col(2 downto 0), 
+				hexsel => reg_col, 
 				hexout => reg(12)
 			);
 
@@ -207,7 +211,7 @@ end generate;
 				si => '0',
 				pi(31 downto 4) => (others => hxc_MT_COL(3)),	-- sign extend
 				pi(3 downto 0) => hxc_MT_COL,							-- constant data
-				hexsel => dbg_col(2 downto 0), 
+				hexsel => reg_col, 
 				hexout => reg(13)
 			);
 
@@ -218,8 +222,8 @@ row_and <= col_and1 and col_and2;
 row_sum <= c_flag xor (col_adc1 xor col_adc2); -- 1 bit full adder sum
 -- 12 is constant register
 -- 13 is data register
-mt_x(14) <= '0'; -- TODO
-mt_x(15) <= '0'; -- TODO
+mt_x(14) <= '0';
+mt_x(15) <= '0';
  
 ERROR <= '0' when (errcode = errcode_ok) else '1';
  
@@ -244,8 +248,8 @@ cu_hxc: hexcalc_control_unit
 			 -- condition bits
 				cond(seq_cond_true) => '1',
 				cond(seq_cond_input_is_zero) => input_is_zero,
-				cond(seq_cond_TRACE_ERROR) => TRACE_ERROR,
-				cond(seq_cond_TRACE_CHAR) => TRACE_CHAR,
+				cond(seq_cond_TRACE_INPUT) => TRACE_INPUT,
+				cond(seq_cond_TRACE_RESULT) => TRACE_RESULT,
 				cond(seq_cond_TXDREADY) => TXDREADY,
 				cond(seq_cond_TXDSEND) => '1', -- HACKHACK (this will generate pulse for sending the char)
 				cond(seq_cond_bitcnt_is_zero) => bitcnt_is_zero,
@@ -269,7 +273,7 @@ bitcnt_is_zero <= (not bitcnt(4)) when (bitcnt(3 downto 0) = X"0") else '0';
 loopcnt_is_zero <= (not loopcnt(4)) when (loopcnt(3 downto 0) = X"0") else '0';
 
 -- hack that saves 1 microcode bit width
-TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
+TXDSEND <= (not clk) when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
 
 ---- Start boilerplate code (use with utmost caution!)
  update_bitcnt: process(clk, hxc_bitcnt)
@@ -315,12 +319,8 @@ TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
 				TXDCHAR <= char_I;
 			when TXDCHAR_char_zero =>
 				TXDCHAR <= char_zero;
---			when TXDCHAR_inp0 =>
---				TXDCHAR <= inp0;
---			when TXDCHAR_inp1 =>
---				TXDCHAR <= inp1;
---			when TXDCHAR_errcode =>
---				TXDCHAR <= errcode;
+			when TXDCHAR_input =>
+				TXDCHAR <= input;
 			when others =>
 				TXDCHAR <= hex2ascii(to_integer(unsigned(hexchar)));
 		end case;
@@ -331,6 +331,7 @@ TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
 with hxc_TXDCHAR select hexchar <= 
 	input(3 downto 0) when TXDCHAR_inp0,
 	input(7 downto 4) when TXDCHAR_inp1,
+	dbg_reg when TXDCHAR_reg,
 	"00" & errcode when TXDCHAR_errcode,
 	X"F" when others;
 
@@ -434,6 +435,8 @@ end process;
 --				loopcnt <= loopcnt;
 			when loopcnt_max =>
 				loopcnt <= mode32 & X"F";	-- 31 or 15
+			when loopcnt_inc =>
+				loopcnt <= std_logic_vector(unsigned(loopcnt) + 1);
 			when loopcnt_dec =>
 				loopcnt <= std_logic_vector(unsigned(loopcnt) - 1);
 			when others =>
