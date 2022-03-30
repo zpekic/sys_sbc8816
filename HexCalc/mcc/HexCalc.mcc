@@ -52,10 +52,10 @@ seq_cond:		.if 4 values
 				d_flag_is_set,
 				c_flag_is_set,
 				z_flagand_is_set,
-				button,
+				loopcnt_is_max,
 				z_flagtos_is_set,
 				z_flagnos_is_set,
-				cond_14,
+				daa_flag_is_set,
 				false			// hard-code to 0
 				default true;
 seq_then:	.then 8 values next, repeat, return, fork, @ default next;				// any label
@@ -199,6 +199,7 @@ matrix_push:.sub;
 div2:		.sub bitcnt;
 prep_regs:	.sub loopcnt;
 a_pm_m:		.sub c_flag;	// A <= A + M | A - M
+bcd_add:	.sub;
 
 // other
 reset:		.alias MT_CTRL = clear, errcode <= ok;
@@ -291,10 +292,51 @@ done:		print_st();
 			.map '+';	// add
 // --------------------------------------------------------
 			echo(input);
+			bcd_add();
+			goto done;
+			
 plus:		c_flag <= zero, nuke, matrix_pop();
-			connect row_nos to col_adc2;
+add:		connect row_nos to col_adc2;
 pm:			connect row_sum to col_tos;
-			connect row_tos to col_adc1, goto exec;
+			connect row_tos to col_adc1, goto exec; 
+			
+// -- BCD addition ----------------------------------------
+// TOS <= TOS + NOS (only TOS changed, other not affected
+// ---------------------------------------------------------
+bcd_add:	c_flag <= zero, loopcnt <= max;
+			loopcnt <= inc;
+bcd_loop:	nuke;
+			connect row_tos to col_adc1; 
+			connect row_nos to col_adc2;
+			connect row_sum to col_tos;
+			connect row_nos to col_nos;
+bcd_digadd:	STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update, loopcnt <= dec;
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update, loopcnt <= dec;
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update, loopcnt <= dec;
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update, loopcnt <= dec;
+			if daa_flag_is_set then next else next_digit;
+bcd_daa:	nuke;
+			connect row_tos to col_tos;
+			connect row_nos to col_nos;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			nuke;
+			connect row_tos to col_adc1;
+			connect row_direct to col_adc2;
+			connect row_sum to col_tos;
+			connect row_nos to col_nos;
+			c_flag <= zero, data 0;	// adjust by adding 0110 (6)
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update;
+			data 1;
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update;
+			data 1;
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update;
+			data 0;
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update;
+			c_flag <= one;
+next_digit: if loopcnt_is_zero then return else bcd_loop;
 			
 // TOS <= TOS - NOS, POP ----------------------------------
 			.map '-';	// subtract
@@ -347,7 +389,7 @@ restore_a:	connect row_m to col_adc2, a_pm_m(zero);
 // Note: R7 destroyed -------------------------------------
 			echo(input);
 mul:		prep_regs(max);			
-			if z_flagnos_is_set then nextchar; // we already have TOS, NOS = 0
+			if z_flagnos_is_set then done; // we already have TOS, NOS = 0
 			// NOS(0) to d_flag
 m_loop:		connect row_nos to col_delay;
 			STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column;
@@ -479,10 +521,8 @@ echo:		if TRACE_INPUT then emit else return;
 print_crlf: emit(char_cr);
 			TXDCHAR <= char_lf;
 
-//emit:		if TXDREADY then next else repeat;	// sync with baudrate clock that drives UART
-			//if TXDREADY then next else repeat;
-			//if TXDREADY then next else repeat;
-//			if TXDSEND then return else return;	// generate a send pulse for UART sender	
-
-emit: 		if TXDSEND then next;
+emit:		if TXDREADY then next else repeat;	// sync with baudrate clock that drives UART
+			if TXDREADY then next else repeat;
+			if TXDREADY then next else repeat;
+			if TXDSEND then next;	// generate a send pulse for UART sender	
 			if TXDREADY then return else repeat;

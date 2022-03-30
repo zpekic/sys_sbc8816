@@ -54,6 +54,7 @@ entity hexcalc is
 			  -- FLAGS
 			  c_flag: buffer STD_LOGIC;
 			  d_flag: buffer STD_LOGIC;
+			  daa_flag: buffer STD_LOGIC;
 			  z_flags: buffer STD_LOGIC_VECTOR(15 downto 0);
 			  -- TRACING
 			  TRACE_INPUT: in STD_LOGIC;
@@ -121,6 +122,8 @@ alias opr_reg: std_logic_vector(1 downto 0) is opr(1 downto 0);
 -- select nibble from register array
 signal reg_row: std_logic_vector(3 downto 0);
 signal reg_col: std_logic_vector(2 downto 0);
+-- for BCD add
+signal bcd_sum: std_logic_vector(3 downto 0);
 
 -- ALU input / outputs
 alias row_delay: std_logic is mt_x(8);
@@ -137,7 +140,7 @@ alias col_and1: std_logic is mt_y(14);
 alias col_and2: std_logic is mt_y(15);
 
 -- conditions
-signal input_is_zero, bitcnt_is_zero, loopcnt_is_zero: std_logic;
+signal input_is_zero, bitcnt_is_zero, loopcnt_is_zero, loopcnt_is_max: std_logic;
 
 -- just for visualisation
 type table_16x4 is array (0 to 15) of std_logic_vector(3 downto 0);
@@ -148,9 +151,9 @@ begin
 -- outputs
 status <= hxc_status;
 --dbg <= loopcnt(3 downto 0) & bitcnt(3 downto 0) & input & '0' & ui_address;
---dbg <= "000" & bitcnt & '0' & ui_address & '0' & ui_nextinstr;
+dbg <= "000" & loopcnt & "000" & bitcnt & ui_address;
 --dbg <= '0' & ui_nextinstr & loopcnt(3 downto 0) & bitcnt(3 downto 0) & '0' & ui_address;
-dbg <= input & loopcnt(3 downto 0) & bitcnt(3 downto 0) & ui_address;
+--dbg <= input & loopcnt(3 downto 0) & bitcnt(3 downto 0) & ui_address;
 mt_ctrl <= hxc_MT_CTRL & hxc_MT_COL & hxc_MT_ROW;
 
 reg_row <= X"0" when (hxc_selreg = selreg_internal) else dbg_row; -- select TOS if internal
@@ -257,10 +260,10 @@ cu_hxc: hexcalc_control_unit
 				cond(seq_cond_d_flag_is_set) => d_flag,
 				cond(seq_cond_c_flag_is_set) => c_flag,
 				cond(seq_cond_z_flagand_is_set) => z_flags(10),
-				cond(seq_cond_button) => button, 
+				cond(seq_cond_loopcnt_is_max) => loopcnt_is_max, 
 				cond(seq_cond_z_flagtos_is_set) => z_flags(0),
 				cond(seq_cond_z_flagnos_is_set) => z_flags(1),
-				cond(seq_cond_cond_14) => '1', -- TODO
+				cond(seq_cond_daa_flag_is_set) => daa_flag, 
 				cond(seq_cond_false) => '0',
           -- outputs
           ui_nextinstr => ui_nextinstr,
@@ -270,10 +273,13 @@ cu_hxc: hexcalc_control_unit
 -- conditions
 input_is_zero <= '1' when (input = char_zero) else '0';
 bitcnt_is_zero <= (not bitcnt(4)) when (bitcnt(3 downto 0) = X"0") else '0';
+--bitcnt_is_digit <= '1' when (bitcnt(1 downto 0) = "00") else '0';
 loopcnt_is_zero <= (not loopcnt(4)) when (loopcnt(3 downto 0) = X"0") else '0';
+loopcnt_is_max <= (loopcnt(4) and loopcnt(3) and loopcnt(2) and loopcnt(1) and loopcnt(0)) when (mode32 = '1') else ((not loopcnt(4)) and loopcnt(3) and loopcnt(2) and loopcnt(1) and loopcnt(0));
+daa_flag <= '1' when (to_integer(unsigned(bcd_sum)) > 9) else c_flag;
 
 -- hack that saves 1 microcode bit width
-TXDSEND <= (not clk) when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
+TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
 
 ---- Start boilerplate code (use with utmost caution!)
  update_bitcnt: process(clk, hxc_bitcnt)
@@ -397,10 +403,13 @@ with hxc_TXDCHAR select hexchar <=
 --				carry <= carry;
 			when c_flag_adder =>
 				c_flag <= (col_adc1 and col_adc2) or (c_flag and (col_adc1 xor col_adc2));	-- carry out for 1 bit full adder
+				bcd_sum <= row_sum & bcd_sum(3 downto 1);
 			when c_flag_zero =>
 				c_flag <= '0';
+				bcd_sum <= X"0";
 			when c_flag_one =>
 				c_flag <= '1';
+				bcd_sum <= X"0"; -- TODO??
 			when others =>
 				null;
 		end case;

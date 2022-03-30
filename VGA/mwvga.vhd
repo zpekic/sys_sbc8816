@@ -64,8 +64,8 @@ constant color8_purple: std_logic_vector(11 downto 0) := X"F0F";
 constant color8_cyan	 : std_logic_vector(11 downto 0) := X"FF0"; 
 constant color8_white : std_logic_vector(11 downto 0) := X"FFF"; 
 
-type table16x12 is array(0 to 15) of std_logic_vector(11 downto 0);
-constant palette: table16x12 :=(
+type table8x12 is array(0 to 7) of std_logic_vector(11 downto 0);
+constant palette0: table8x12 :=(
 -- pixel off
 	color8_blue,
 	color8_blue,
@@ -74,13 +74,15 @@ constant palette: table16x12 :=(
 	color8_black,
 	color8_black,
 	color8_black,
-	color8_black,
+	color8_black
+	);
+constant palette1: table8x12 := (
 -- pixel on
 	color8_cyan,
 	color8_green,
-	color8_green,
-	color8_green,
 	color8_red,
+	color8_green,
+	color8_cyan,
 	color8_yellow,
 	color8_white,
 	color8_purple
@@ -92,6 +94,7 @@ signal vpulse, v, vfp: std_logic_vector(11 downto 0);
 signal h_clk, v_clk: std_logic;
 signal pixel: std_logic;
 signal reverse: std_logic;
+signal index: STD_LOGIC_VECTOR(2 downto 0);
 
 begin
 
@@ -105,6 +108,7 @@ y <= v(10 downto 3);
 
 --active <= hactive and vactive;
 --rgb <= X"000" when (active = '0') else color;
+--color <= palette(to_integer(unsigned(pixel & color_index)));
 
 h_clk <= clk;
 h_drive: process(reset, h_clk)
@@ -113,6 +117,7 @@ begin
 		hfp <= X"00F";
 	else
 		if (rising_edge(h_clk)) then
+			--index <= color_index;
 			if (hfp = X"00F") then
 				hpulse <= X"FA0"; -- -96
 				h <= X"F70";		-- -(96 + 48)
@@ -125,7 +130,12 @@ begin
 		end if;
 		-- prevent any change outside of pixel periods
 		if (falling_edge(h_clk)) then
-			color <= palette(to_integer(unsigned(pixel & color_index)));
+			if (pixel = '1') then
+				color <= palette1(to_integer(unsigned(color_index)));
+			else
+				color <= palette0(to_integer(unsigned(color_index)));
+			end if;
+			--color <= palette(to_integer(unsigned(pixel & color_index)));
 		end if;
 	end if;
 end process;

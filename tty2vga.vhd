@@ -169,7 +169,7 @@ ascii_sent <= '1' when (char = X"00") else '0';
 
 -- Allow MT8816 switch matrix to be displayed in 32*32 char block
 	vga_char 	<= mem_char when (win_char = X"00") else win_char; 
-	vga_index 	<= "000"		when (win_char = X"00") else win_char(7 downto 5); -- points to palette
+--	vga_index 	<= "000"		when (win_char = X"00") else win_char(7 downto 5); -- points to palette
 	
 	vga_controller: mwvga 
 	port map ( 

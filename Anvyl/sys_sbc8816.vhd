@@ -192,6 +192,7 @@ component hexcalc is
 			  -- FLAGS
 			  c_flag: buffer STD_LOGIC;
 			  d_flag: buffer STD_LOGIC;
+			  daa_flag: buffer STD_LOGIC;
 			  z_flags: buffer STD_LOGIC_VECTOR(15 downto 0);
 			  -- TRACING
 			  TRACE_INPUT: in STD_LOGIC;
@@ -278,6 +279,7 @@ component hardwin is
            mt_y : in  STD_LOGIC;
            mt_c : in  STD_LOGIC;
            mt_d : in  STD_LOGIC;
+			  mt_daa:in  STD_LOGIC;
            mt_z : in  STD_LOGIC;
            mt_hex : in  STD_LOGIC_VECTOR (3 downto 0));
 end component;
@@ -450,7 +452,7 @@ signal hc_txdsend, hc_txdready, hc_error: std_logic;
 signal hc_txdchar: std_logic_vector(7 downto 0);
 signal hc_mt_x: std_logic_vector(15 downto 0);
 signal hc_reg: std_logic_vector(3 downto 0);
-signal hc_delay, hc_carry: std_logic;
+signal hc_delay, hc_carry, hc_daa: std_logic;	-- calculator internal flags
 signal hc_zero: std_logic_vector(15 downto 0);
 signal hc_dbg, hc_led: std_logic_vector(23 downto 0);
 
@@ -673,6 +675,7 @@ hc: hexcalc Port map (
 			--
 			c_flag => hc_carry,
 			d_flag => hc_delay,
+			daa_flag => hc_daa,
 			z_flags => hc_zero,
 			--
 			TRACE_INPUT => sw_traceinput,
@@ -777,9 +780,9 @@ tty: tty2vga Port map(
 		vga_clk => dot_clk,	-- 25MHz
 		vga_hsync => HSYNC_O,
 		vga_vsync => VSYNC_O,
-		vga_color(11 downto 8) => RED_O,
+		vga_color(11 downto 8) => BLUE_O,
 		vga_color(7 downto 4) => GREEN_O,
-		vga_color(3 downto 0) => BLUE_O,
+		vga_color(3 downto 0) => RED_O,
 		-- for system hardware window
 		vga_x => vga_x,
 		vga_y => vga_y,
@@ -791,6 +794,7 @@ tty: tty2vga Port map(
 -- if in 16-bit mode, simply chop off first four columns from hardware window (register bits 31..16)
 win_char_x <= X"00" when ((sw_32 = '0') and (win_x(4 downto 2) = "000")) else win_char;
 color_index <= O"0" when (win_char_x = X"00") else win_index;
+--color_index <= win_index when (win_active = '1') else O"0";
 
 with sw_mode select tty_char <= 
 		tr_txdchar when mode_st_tr_hc,		
@@ -821,6 +825,7 @@ win: hardwin Port map(
 		mt_y   => mt_y(to_integer(unsigned(win_x(3 downto 0)))),
 		mt_c	 => hc_carry,
 		mt_d	 => hc_delay, 
+		mt_daa => hc_daa,
 		mt_z	 => hc_zero(to_integer(unsigned(win_y(3 downto 0)))),
 		mt_hex => hc_reg
 		);
