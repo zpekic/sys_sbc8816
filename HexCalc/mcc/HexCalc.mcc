@@ -292,51 +292,13 @@ done:		print_st();
 			.map '+';	// add
 // --------------------------------------------------------
 			echo(input);
-			bcd_add();
-			goto done;
+//			bcd_add();
+//			goto done;
 			
 plus:		c_flag <= zero, nuke, matrix_pop();
 add:		connect row_nos to col_adc2;
 pm:			connect row_sum to col_tos;
 			connect row_tos to col_adc1, goto exec; 
-			
-// -- BCD addition ----------------------------------------
-// TOS <= TOS + NOS (only TOS changed, other not affected
-// ---------------------------------------------------------
-bcd_add:	c_flag <= zero, loopcnt <= max;
-			loopcnt <= inc;
-bcd_loop:	nuke;
-			connect row_tos to col_adc1; 
-			connect row_nos to col_adc2;
-			connect row_sum to col_tos;
-			connect row_nos to col_nos;
-bcd_digadd:	STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update, loopcnt <= dec;
-			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update, loopcnt <= dec;
-			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update, loopcnt <= dec;
-			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update, loopcnt <= dec;
-			if daa_flag_is_set then next else next_digit;
-bcd_daa:	nuke;
-			connect row_tos to col_tos;
-			connect row_nos to col_nos;
-			STATUS = busy_using_mt, opr = m2_m2_np;
-			STATUS = busy_using_mt, opr = m2_m2_np;
-			STATUS = busy_using_mt, opr = m2_m2_np;
-			STATUS = busy_using_mt, opr = m2_m2_np;
-			nuke;
-			connect row_tos to col_adc1;
-			connect row_direct to col_adc2;
-			connect row_sum to col_tos;
-			connect row_nos to col_nos;
-			c_flag <= zero, data 0;	// adjust by adding 0110 (6)
-			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update;
-			data 1;
-			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update;
-			data 1;
-			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update;
-			data 0;
-			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update;
-			c_flag <= one;
-next_digit: if loopcnt_is_zero then return else bcd_loop;
 			
 // TOS <= TOS - NOS, POP ----------------------------------
 			.map '-';	// subtract
@@ -413,6 +375,55 @@ m_shift:	connect row_delay to col_tos;
 			disconnect row_delay from col_tos;
 			connect row_nos to col_nos, if loopcnt_is_zero then done;
 			loopcnt <= dec, goto m_loop;	// do it 16 or 32 times
+
+// TOS(HEX) <= TOS (BCD) ----------------------------------
+			.map '$';	// convert BCD to binary
+// Note: R7 destroyed -------------------------------------
+			echo(input);
+			nuke, matrix_push();
+			div2(max);	
+			bitcnt <= max;
+bitcnt_s:		nuke, matrix_nop();
+				connect row_nos to col_tos;	// TOS = BIN, NOS = BCD
+				noop;
+				STATUS = busy_using_mt, opr = d2_d2_np;	// one bit from BCD to binary
+				disconnect row_nos from col_tos;
+				loopcnt <= max;
+				loopcnt <= inc;
+loopcnt_s:			connect row_nos to col_delay;
+					connect row_nos to col_nos;
+					noop;
+					// rotate down to examine bit 3 in LSB BCD digit
+					STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column, loopcnt <= dec;
+					STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column, loopcnt <= dec;
+					STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column, loopcnt <= dec;
+					STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column, loopcnt <= dec;
+					if d_flag_is_set then next else loopcnt_n;
+					// rotate back to prepare for adjust
+					STATUS = busy_using_mt, opr = np_m2_m2;
+					STATUS = busy_using_mt, opr = np_m2_m2;
+					STATUS = busy_using_mt, opr = np_m2_m2;
+					STATUS = busy_using_mt, opr = np_m2_m2;
+					// adjust by substracting 0011
+					disconnect row_nos from col_nos;
+					connect row_nos to col_adc1;
+					connect row_direct to col_not;
+					connect row_not to col_adc2;
+					connect row_sum to col_nos;
+					c_flag <= one, data 3;
+					noop;
+					STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
+					STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
+					STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
+					STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
+					disconnect row_sum from col_nos;
+					noop;
+loopcnt_n:			if loopcnt_is_zero then next else loopcnt_s;
+				if bitcnt_is_zero then conv_done;
+				bitcnt <= dec, goto bitcnt_s; 
+conv_done:	nuke, matrix_pop();
+			div2(max);
+			goto done;
 			
 // load digits to stack top (R0), note digits are in reverse bit order ----
 			.map '0';
@@ -459,6 +470,8 @@ hexchar:	echo(input);
 			STATUS = busy_using_mt, opr = np_d2_d2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
 			
 // subroutines (keep in mind max stack call level is 4!)
+
+
 a_pm_m:		connect row_a to col_adc1;
 			connect row_sum to col_a, z_flags <= set, div2(max);
 			disconnect row_sum from col_a, back;
@@ -522,7 +535,49 @@ print_crlf: emit(char_cr);
 			TXDCHAR <= char_lf;
 
 emit:		if TXDREADY then next else repeat;	// sync with baudrate clock that drives UART
-			if TXDREADY then next else repeat;
-			if TXDREADY then next else repeat;
-			if TXDSEND then next;	// generate a send pulse for UART sender	
-			if TXDREADY then return else repeat;
+//			if TXDREADY then next else repeat;
+//			if TXDREADY then next else repeat;
+//			if TXDREADY then next else repeat;
+			if TXDSEND then return else repeat;	// generate a send pulse for UART sender	
+
+// -- BCD addition ----------------------------------------
+// TOS <= TOS + NOS (only TOS changed, other not affected
+// ---------------------------------------------------------
+bcd_add:	c_flag <= zero, loopcnt <= max;
+			loopcnt <= inc;
+bcd_loop:	nuke;
+			connect row_tos to col_adc1; 
+			connect row_nos to col_adc2;
+			connect row_sum to col_tos;
+			connect row_nos to col_nos;
+bcd_digadd:	STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update, loopcnt <= dec;
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update, loopcnt <= dec;
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update, loopcnt <= dec;
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update, loopcnt <= dec;
+			if daa_flag_is_set then next else next_digit;
+bcd_daa:	nuke;
+			connect row_tos to col_tos;
+			connect row_nos to col_nos;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			nuke;
+			connect row_tos to col_adc1;
+			connect row_direct to col_adc2;
+			connect row_sum to col_tos;
+			connect row_nos to col_nos;
+			c_flag <= zero, data 0;	// adjust by adding 0110 (6)
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update;
+			data 1;
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update;
+			data 1;
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update;
+			data 0;
+			STATUS = busy_using_mt, opr = d2_d2_np, c_flag <= adder, z_flags <= update;
+			c_flag <= one;
+next_digit: if loopcnt_is_zero then return else bcd_loop;
+			
+			// stack guard - bottom of return stack is filled with all 1, so too many "pops" will go here
+			.org 0xFF;
+			goto divzero;
