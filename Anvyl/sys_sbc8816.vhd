@@ -405,7 +405,7 @@ signal input: std_logic_vector(7 downto 0);
 -----------------------------------------------------------------
 type table_32x8 is array(0 to 31) of std_logic_vector(7 downto 0);
 constant kypd2ascii: table_32x8 := (
-	-- no "shift", entering hex digits
+	-- no "shift", entering hex digits into TOS
 	c('0'),
 	c('1'),
 	c('2'),
@@ -425,14 +425,14 @@ constant kypd2ascii: table_32x8 := (
 	-- with "shift", entering a command
 	c('Z'),	-- 0 == zero TOS
 	c('U'),	-- 1 == dUp(licate)
-	c('R'),	-- 2 == rotate registers
-	X"00",	-- 3 == not used
-	X"00",	-- 4 == not used
+	c('$'),	-- 2 == BCD to binary
+	c('#'),	-- 3 == binary to BCD
+	c('R'),	-- 4 == rotate registers
 	X"00",	-- 5 == not used
 	X"00",	-- 6 == not used
-	X"00",	-- 7 == not used
+	c('N'),	-- 7 == nuke all
 	X"00",	-- 8 == not used
-	c('N'),	-- 9 == nuke all
+	X"00",	-- 9 == not used
 	c('+'),	-- A == add
 	c('-'),	-- B == subtract
 	c('*'),	-- C == multiply
@@ -448,7 +448,7 @@ constant status_done: std_logic_vector(1 downto 0) := "01";
 constant status_busy: std_logic_vector(1 downto 0) := "10";
 constant status_busy_using_mt: std_logic_vector(1 downto 0) := "11";
 signal hc_tos: std_logic_vector(31 downto 0); -- capture value of TOS (R0)
-signal hc_txdsend, hc_txdready, hc_error: std_logic;
+signal hc_txdsend, hc_txdready, hc_error, hc_clk, hc_clk_uart: std_logic := '0';
 signal hc_txdchar: std_logic_vector(7 downto 0);
 signal hc_mt_x: std_logic_vector(15 downto 0);
 signal hc_reg: std_logic_vector(3 downto 0);
@@ -655,8 +655,18 @@ begin
 	end if;
 end process;
 
+-- lame attempt at clock sync
+hc_clk <= '1' when (hc_clk_uart = '1') else phi0;
+
+on_phi0: process(phi0, hc_txdsend, hc_txdready)
+begin
+	if (rising_edge(phi0)) then
+		hc_clk_uart <= hc_txdsend and (not hc_txdready);
+	end if;
+end process;
+
 hc: hexcalc Port map (
-			clk => phi0,
+			clk => hc_clk,
 			reset => reset,
 			status => hc_status,
 			mode32 => sw_32,

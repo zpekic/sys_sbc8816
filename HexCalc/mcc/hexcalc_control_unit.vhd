@@ -1,5 +1,5 @@
 --------------------------------------------------------
--- mcc V1.2.0208 - Custom microcode compiler (c)2020-... 
+-- mcc V1.2.0404 - Custom microcode compiler (c)2020-... 
 --    https://github.com/zpekic/MicroCodeCompiler
 --------------------------------------------------------
 -- Auto-generated file, do not modify. To customize, create 'controller_template.vhd' file in mcc.exe folder

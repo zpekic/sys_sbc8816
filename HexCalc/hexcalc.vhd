@@ -254,7 +254,7 @@ cu_hxc: hexcalc_control_unit
 				cond(seq_cond_TRACE_INPUT) => TRACE_INPUT,
 				cond(seq_cond_TRACE_RESULT) => TRACE_RESULT,
 				cond(seq_cond_TXDREADY) => TXDREADY,
-				cond(seq_cond_TXDSEND) => TXDREADY, --'1', -- HACKHACK (this will generate pulse for sending the char)
+				cond(seq_cond_TXDSEND) => '1', -- HACKHACK (this will generate pulse for sending the char)
 				cond(seq_cond_bitcnt_is_zero) => bitcnt_is_zero,
 				cond(seq_cond_loopcnt_is_zero) => loopcnt_is_zero,
 				cond(seq_cond_d_flag_is_set) => d_flag,
