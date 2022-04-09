@@ -11,16 +11,16 @@
 			.symbol 8, 256, hexcalc_sym.mif, hexcalc_sym.cgf, hexcalc_sym.coe, hxc:hexcalc_sym.vhd, hexcalc_sym.hex, hexcalc_sym.bin, 32;
 
 // System interface signals
-MT_CTRL			.valfield 2 values 
+MT_CTRL		.valfield 2 values 
 				nop,
 				on,
 				off,
 				clear default nop;
 				
-MT_ROW			.valfield 4 values * default 0;
-MT_COL			.valfield 4 values * default 0;
+MT_ROW		.valfield 4 values * default 0;
+MT_COL		.valfield 4 values * default 0;
 
-bitcnt			.regfield 2 values
+bitcnt		.regfield 2 values
 				same,
 				load,	// from MT_COL		
 				max,	// 31 or 15	
@@ -28,7 +28,7 @@ bitcnt			.regfield 2 values
 				default same;
 				
 // Component interface signals
-STATUS			.valfield 2 values
+STATUS		.valfield 2 values
 				ready,	// waiting for input character
 				done,	// input processed, will go ready on next clock cycle
 				busy,	// processing
@@ -40,7 +40,7 @@ STATUS			.valfield 2 values
 // CHAR			8-bit ASCII or 0x00 if no char is to be sent
 // TXDREADY		sender is ready
 
-seq_cond:		.if 4 values 
+seq_cond:	.if 4 values 
 				true, 			// hard-code to 1
 				input_is_zero,	// do not process 0x00 input char
 				TRACE_INPUT,
@@ -81,11 +81,12 @@ TXDCHAR		.regfield 4 values
 				-,
 				errcode
 				default same;
-				
-opr 			.valfield 3 values
-				np_np_np,
+
+// shift register operations in format: TOS_NOS_Other 				
+opr 		.valfield 3 values
+				np_np_np,	// no shifts
 				np_np_ld,	// only effects 0xC[onstant] and 0xD[ata]
-				m2_d2_d2,
+				m2_d2_d2,	// TOS shift up, NOS and other regs shift down
 				np_m2_m2,
 				d2_d2_d2,
 				d2_d2_np,	// used for multiplication
@@ -93,39 +94,39 @@ opr 			.valfield 3 values
 				m2_m2_np default np_np_np;
 				
 //	error codes are 1 to 2, 0 means no error
-errcode:		.regfield 2 values
+errcode:	.regfield 2 values
 				ok, 
 				err_badchar,			// ERR1
 				err_divzero,			// ERR2
 				same
 				default same;
 
-d_flag:			.regfield 2 values	// delay flag
+d_flag:		.regfield 2 values	// delay flag
 				same,
 				column,
 				zero,
 				one default same;
 
-c_flag:			.regfield 2 values	// carry flag
+c_flag:		.regfield 2 values	// carry flag
 				same,
 				adder,
 				zero,
 				one default same;
 
-z_flags:		.regfield 2 values	// zero flags, one per row. Initialize with set all to 1!
+z_flags:	.regfield 2 values	// zero flags, one per row. Initialize with set all to 1!
 				same,
 				update,
 				-,
 				set default same;
 				
-loopcnt			.regfield 2 values
+loopcnt		.regfield 2 values
 				same,
 				inc,			
 				max,	// 31 or 15	
 				dec
 				default same;
 				
-selreg:			.valfield 1 values
+selreg:		.valfield 1 values
 				external,
 				internal default external;
 						
@@ -136,7 +137,6 @@ back:	    .alias if true then return else return;
 data:		.alias opr = np_np_ld, MT_COL =;
 load_bitcnt:.alias bitcnt <= load, MT_COL =;
 wait:		.alias if button then next else repeat;
-
 
 // switches in the matrix
 nuke		.alias STATUS = busy_using_mt, MT_CTRL = clear;
@@ -162,8 +162,8 @@ row_and:	.alias MT_ROW = 0xA;
 row_sum:	.alias MT_ROW = 0xB;
 row_const:	.alias MT_ROW = 0xC;
 row_direct:	.alias MT_ROW = 0xD;
-row_14:		.alias MT_ROW = 0xE;
-row_15:		.alias MT_ROW = 0xF;
+//row_14:	.alias MT_ROW = 0xE; (not used)
+//row_15:	.alias MT_ROW = 0xF; (not used)
 
 col_tos:	.alias MT_COL = 0;
 col_nos:	.alias MT_COL = 1;
@@ -498,8 +498,8 @@ a_pm_m:		connect row_a to col_adc1;
 			connect row_sum to col_a, div2(max, set);
 			disconnect row_sum from col_a, back;
 
+// common for mul and div: save TOS to R7, R7 lost
 prep_regs:	nuke, matrix_nop1();
-			// set up registers
 			disconnect row_r7 from col_r7;
 			connect row_tos to col_r7, div2(max, set);	// R7 <= TOS, TOS <= 0
 			connect row_r7 to col_r7;
@@ -513,8 +513,9 @@ div2:		STATUS = busy_using_mt, opr = d2_d2_d2, c_flag <= adder, z_flags <= updat
 matrix_swap:connect row_tos to col_nos;
 			connect row_nos to col_tos, goto matrix_nop;
 
-// set the diagonal switches for R2..R7, which means after shift up or down these regs will be the same
+// set the diagonal switches for R1..R7, which means after shift up or down these regs will be the same
 matrix_nop1:connect row_nos to col_nos;
+// set the diagonal switches for R2..R7, which means after shift up or down these regs will be the same
 matrix_nop: connect row_r2 to col_r2;	
 			connect row_r3 to col_r3;	
 			connect row_r4 to col_r4;	
@@ -585,7 +586,6 @@ emit:		if TXDSEND then next else repeat;	// generate a send pulse for UART sende
 			if TXDREADY then next else repeat;
 			if TXDREADY then next else repeat;
 			TXDCHAR <= char_zero, back;
-			//if TXDREADY then return else repeat;
 
 //* -- BCD addition ----------------------------------------
 // TOS <= TOS + NOS (only TOS changed, other not affected

@@ -305,8 +305,8 @@ L0498@00A3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, di
 Line 499: resolved aliases:  col_a, row_sum, from, disconnect, back
 L0499@00A4.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, if true then return else return;
 
-Line 501: resolved aliases:  nuke
-L0501@00A5.prep_regs:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
+Line 502: resolved aliases:  nuke
+L0502@00A5.prep_regs:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 
 Line 503: resolved aliases:  col_r7, row_r7, from, disconnect
 L0503@00A6.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
@@ -333,94 +333,94 @@ L0514@00AD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0, if f
 Line 517: resolved aliases:  col_nos, row_nos, to, connect
 L0517@00AE.matrix_nop1:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
 
-Line 518: resolved aliases:  col_r2, row_r2, to, connect
-L0518@00AF.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
+Line 519: resolved aliases:  col_r2, row_r2, to, connect
+L0519@00AF.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
 
-Line 519: resolved aliases:  col_r3, row_r3, to, connect
-L0519@00B0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
+Line 520: resolved aliases:  col_r3, row_r3, to, connect
+L0520@00B0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
 
-Line 520: resolved aliases:  col_r4, row_r4, to, connect
-L0520@00B1.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
+Line 521: resolved aliases:  col_r4, row_r4, to, connect
+L0521@00B1.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
 
-Line 521: resolved aliases:  col_r5, row_r5, to, connect
-L0521@00B2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
+Line 522: resolved aliases:  col_r5, row_r5, to, connect
+L0522@00B2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
 
-Line 522: resolved aliases:  col_r6, row_r6, to, connect
-L0522@00B3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
+Line 523: resolved aliases:  col_r6, row_r6, to, connect
+L0523@00B3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
 
-Line 523: resolved aliases:  col_r7, row_r7, to, connect, back
-L0523@00B4.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
+Line 524: resolved aliases:  col_r7, row_r7, to, connect, back
+L0524@00B4.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
 
-Line 526: resolved aliases:  col_nos, row_tos, to, connect
-L0526@00B5.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+Line 527: resolved aliases:  col_nos, row_tos, to, connect
+L0527@00B5.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
 
-Line 527: resolved aliases:  col_r2, row_nos, to, connect
-L0527@00B6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
+Line 528: resolved aliases:  col_r2, row_nos, to, connect
+L0528@00B6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
 
-Line 528: resolved aliases:  col_r3, row_r2, to, connect
-L0528@00B7.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
+Line 529: resolved aliases:  col_r3, row_r2, to, connect
+L0529@00B7.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
 
-Line 529: resolved aliases:  col_r4, row_r3, to, connect
-L0529@00B8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
+Line 530: resolved aliases:  col_r4, row_r3, to, connect
+L0530@00B8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
 
-Line 530: resolved aliases:  col_r5, row_r4, to, connect
-L0530@00B9.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
+Line 531: resolved aliases:  col_r5, row_r4, to, connect
+L0531@00B9.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
 
-Line 531: resolved aliases:  col_r6, row_r5, to, connect
-L0531@00BA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
+Line 532: resolved aliases:  col_r6, row_r5, to, connect
+L0532@00BA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
 
-Line 532: resolved aliases:  col_r7, row_r6, to, connect, back
-L0532@00BB.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
+Line 533: resolved aliases:  col_r7, row_r6, to, connect, back
+L0533@00BB.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
 
-Line 535: resolved aliases:  col_nos, row_r2, to, connect
-L0535@00BC.matrix_pop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
+Line 536: resolved aliases:  col_nos, row_r2, to, connect
+L0536@00BC.matrix_pop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
 
-Line 536: resolved aliases:  col_r2, row_r3, to, connect
-L0536@00BD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 2;
+Line 537: resolved aliases:  col_r2, row_r3, to, connect
+L0537@00BD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 2;
 
-Line 537: resolved aliases:  col_r3, row_r4, to, connect
-L0537@00BE.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 3;
+Line 538: resolved aliases:  col_r3, row_r4, to, connect
+L0538@00BE.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 3;
 
-Line 538: resolved aliases:  col_r4, row_r5, to, connect
-L0538@00BF.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 4;
+Line 539: resolved aliases:  col_r4, row_r5, to, connect
+L0539@00BF.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 4;
 
-Line 539: resolved aliases:  col_r5, row_r6, to, connect
-L0539@00C0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 5;
+Line 540: resolved aliases:  col_r5, row_r6, to, connect
+L0540@00C0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 5;
 
-Line 540: resolved aliases:  col_r6, row_r7, to, connect, back
-L0540@00C1.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 6, if true then return else return;
+Line 541: resolved aliases:  col_r6, row_r7, to, connect, back
+L0541@00C1.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 6, if true then return else return;
 
-Line 550: resolved aliases:  col_nos, row_nos, from, disconnect
-L0550@00C6.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
+Line 551: resolved aliases:  col_nos, row_nos, from, disconnect
+L0551@00C6.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
 
-Line 551: resolved aliases:  col_adc1, row_nos, to, connect
-L0551@00C7.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
+Line 552: resolved aliases:  col_adc1, row_nos, to, connect
+L0552@00C7.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
 
-Line 552: resolved aliases:  data
-L0552@00C8.  opr = np_np_ld, MT_COL = 3, if c_flag_is_set then next else bcd_add3;
+Line 553: resolved aliases:  data
+L0553@00C8.  opr = np_np_ld, MT_COL = 3, if c_flag_is_set then next else bcd_add3;
 
-Line 555: resolved aliases:  col_not, row_direct, to, connect
-L0555@00C9.bcd_sub3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
+Line 556: resolved aliases:  col_not, row_direct, to, connect
+L0556@00C9.bcd_sub3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
 
-Line 556: resolved aliases:  col_adc2, row_not, to, connect, goto
-L0556@00CA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, if false then next else bcd_3;
+Line 557: resolved aliases:  col_adc2, row_not, to, connect, goto
+L0557@00CA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, if false then next else bcd_3;
 
-Line 559: resolved aliases:  col_adc2, row_direct, to, connect
-L0559@00CB.bcd_add3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
+Line 560: resolved aliases:  col_adc2, row_direct, to, connect
+L0560@00CB.bcd_add3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
 
-Line 561: resolved aliases:  col_nos, row_sum, to, connect
-L0561@00CC.bcd_3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 1;
+Line 562: resolved aliases:  col_nos, row_sum, to, connect
+L0562@00CC.bcd_3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 1;
 
-Line 566: resolved aliases:  col_nos, row_sum, from, disconnect
-L0566@00D1.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 1;
+Line 567: resolved aliases:  col_nos, row_sum, from, disconnect
+L0567@00D1.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 1;
 
-Line 567: resolved aliases:  col_adc2, row_direct, from, disconnect, back
-L0567@00D2.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xD , MT_COL = 0xD, if true then return else return;
+Line 568: resolved aliases:  col_adc2, row_direct, from, disconnect, back
+L0568@00D2.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xD , MT_COL = 0xD, if true then return else return;
 
-Line 587: resolved aliases:  back
-L0587@00E1.  TXDCHAR <= char_zero, if true then return else return;
+Line 588: resolved aliases:  back
+L0588@00E1.  TXDCHAR <= char_zero, if true then return else return;
 
-Success: pass 1 630 line(s) read, 354 statement(s) parsed.
+Success: pass 1 630 line(s) read, 352 statement(s) parsed.
 Compiling HexCalc.mcc, pass 2 out of 2.
 Info: line -1 - symbol[0000] <= 'System.Byte[]'
 Info: line -1 - symbol[0001] <= 'System.Byte[]'

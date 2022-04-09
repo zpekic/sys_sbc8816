@@ -707,7 +707,7 @@ constant hxc_symbol_entry: t_hxc_symbol_entry := (
 -- STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, if true then return else return;
 164 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0501@00A5.prep_regs:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
+-- L0502@00A5.prep_regs:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 -- prep_regs: STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 165 => X"70_72_65_70_5F_72_65_67_73_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D",
 
@@ -747,207 +747,207 @@ constant hxc_symbol_entry: t_hxc_symbol_entry := (
 -- matrix_nop1: STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
 174 => X"6D_61_74_72_69_78_5F_6E_6F_70_31_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67",
 
--- L0518@00AF.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
+-- L0519@00AF.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
 -- matrix_nop: STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
 175 => X"6D_61_74_72_69_78_5F_6E_6F_70_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F",
 
--- L0519@00B0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
+-- L0520@00B0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
 176 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0520@00B1.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
+-- L0521@00B1.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
 177 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0521@00B2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
+-- L0522@00B2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
 178 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0522@00B3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
+-- L0523@00B3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
 179 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0523@00B4.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
+-- L0524@00B4.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
 180 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0526@00B5.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+-- L0527@00B5.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
 -- matrix_push: STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
 181 => X"6D_61_74_72_69_78_5F_70_75_73_68_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67",
 
--- L0527@00B6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
+-- L0528@00B6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
 182 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0528@00B7.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
+-- L0529@00B7.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
 183 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0529@00B8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
+-- L0530@00B8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
 184 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0530@00B9.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
+-- L0531@00B9.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
 185 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0531@00BA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
+-- L0532@00BA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
 186 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0532@00BB.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
+-- L0533@00BB.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
 187 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0535@00BC.matrix_pop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
+-- L0536@00BC.matrix_pop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
 -- matrix_pop: STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
 188 => X"6D_61_74_72_69_78_5F_70_6F_70_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F",
 
--- L0536@00BD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 2;
+-- L0537@00BD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 2;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 2;
 189 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0537@00BE.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 3;
+-- L0538@00BE.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 3;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 3;
 190 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0538@00BF.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 4;
+-- L0539@00BF.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 4;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 4;
 191 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0539@00C0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 5;
+-- L0540@00C0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 5;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 5;
 192 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0540@00C1.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 6, if true then return else return;
+-- L0541@00C1.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 6, if true then return else return;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 6, if true then return else return;
 193 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0544@00C2.bcd_adjust:  STATUS = busy_using_mt, opr = np_m2_m2;
+-- L0545@00C2.bcd_adjust:  STATUS = busy_using_mt, opr = np_m2_m2;
 -- bcd_adjust: STATUS = busy_using_mt, opr = np_m2_m2;
 194 => X"62_63_64_5F_61_64_6A_75_73_74_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F",
 
--- L0545@00C3.  STATUS = busy_using_mt, opr = np_m2_m2;
+-- L0546@00C3.  STATUS = busy_using_mt, opr = np_m2_m2;
 -- STATUS = busy_using_mt, opr = np_m2_m2;
 195 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_6F_70_72_20_3D_20_6E_70",
 
--- L0546@00C4.  STATUS = busy_using_mt, opr = np_m2_m2;
+-- L0547@00C4.  STATUS = busy_using_mt, opr = np_m2_m2;
 -- STATUS = busy_using_mt, opr = np_m2_m2;
 196 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_6F_70_72_20_3D_20_6E_70",
 
--- L0547@00C5.  STATUS = busy_using_mt, opr = np_m2_m2;
+-- L0548@00C5.  STATUS = busy_using_mt, opr = np_m2_m2;
 -- STATUS = busy_using_mt, opr = np_m2_m2;
 197 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_6F_70_72_20_3D_20_6E_70",
 
--- L0550@00C6.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
+-- L0551@00C6.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
 -- STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
 198 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0551@00C7.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
+-- L0552@00C7.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
 199 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0552@00C8.  opr = np_np_ld, MT_COL = 3, if c_flag_is_set then next else bcd_add3;
+-- L0553@00C8.  opr = np_np_ld, MT_COL = 3, if c_flag_is_set then next else bcd_add3;
 -- opr = np_np_ld, MT_COL = 3, if c_flag_is_set then next else bcd_add3;
 200 => X"6F_70_72_20_3D_20_6E_70_5F_6E_70_5F_6C_64_2C_20_4D_54_5F_43_4F_4C_20_3D_20_33_2C_20_69_66_20_63",
 
--- L0555@00C9.bcd_sub3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
+-- L0556@00C9.bcd_sub3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
 -- bcd_sub3: STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
 201 => X"62_63_64_5F_73_75_62_33_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74",
 
--- L0556@00CA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, if false then next else bcd_3;
+-- L0557@00CA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, if false then next else bcd_3;
 -- STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, if false then next else bcd_3;
 202 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0559@00CB.bcd_add3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
+-- L0560@00CB.bcd_add3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
 -- bcd_add3: STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
 203 => X"62_63_64_5F_61_64_64_33_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74",
 
--- L0561@00CC.bcd_3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 1;
+-- L0562@00CC.bcd_3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 1;
 -- bcd_3: STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 1;
 204 => X"62_63_64_5F_33_3A_20_53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D",
 
--- L0562@00CD.  STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
+-- L0563@00CD.  STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
 -- STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
 205 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_6F_70_72_20_3D_20_6E_70",
 
--- L0563@00CE.  STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
+-- L0564@00CE.  STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
 -- STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
 206 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_6F_70_72_20_3D_20_6E_70",
 
--- L0564@00CF.  STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
+-- L0565@00CF.  STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
 -- STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
 207 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_6F_70_72_20_3D_20_6E_70",
 
--- L0565@00D0.  STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
+-- L0566@00D0.  STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
 -- STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update;
 208 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_6F_70_72_20_3D_20_6E_70",
 
--- L0566@00D1.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 1;
+-- L0567@00D1.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 1;
 -- STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 1;
 209 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0567@00D2.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xD , MT_COL = 0xD, if true then return else return;
+-- L0568@00D2.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xD , MT_COL = 0xD, if true then return else return;
 -- STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xD , MT_COL = 0xD, if true then return else return;
 210 => X"53_54_41_54_55_53_20_3D_20_62_75_73_79_5F_75_73_69_6E_67_5F_6D_74_2C_20_4D_54_5F_43_54_52_4C_20",
 
--- L0570@00D3.print_st:  loopcnt <= max, if TRACE_RESULT then next else return;
+-- L0571@00D3.print_st:  loopcnt <= max, if TRACE_RESULT then next else return;
 -- print_st: loopcnt <= max, if TRACE_RESULT then next else return;
 211 => X"70_72_69_6E_74_5F_73_74_3A_20_6C_6F_6F_70_63_6E_74_20_3C_3D_20_6D_61_78_2C_20_69_66_20_54_52_41",
 
--- L0571@00D4.  loopcnt <= inc, print_crlf();
+-- L0572@00D4.  loopcnt <= inc, print_crlf();
 -- loopcnt <= inc, print_crlf();
 212 => X"6C_6F_6F_70_63_6E_74_20_3C_3D_20_69_6E_63_2C_20_70_72_69_6E_74_5F_63_72_6C_66_28_29_3B_20_20_20",
 
--- L0572@00D5.st_loop:  selreg = internal, emit(reg);
+-- L0573@00D5.st_loop:  selreg = internal, emit(reg);
 -- st_loop: selreg = internal, emit(reg);
 213 => X"73_74_5F_6C_6F_6F_70_3A_20_73_65_6C_72_65_67_20_3D_20_69_6E_74_65_72_6E_61_6C_2C_20_65_6D_69_74",
 
--- L0573@00D6.  loopcnt <= inc;
+-- L0574@00D6.  loopcnt <= inc;
 -- loopcnt <= inc;
 214 => X"6C_6F_6F_70_63_6E_74_20_3C_3D_20_69_6E_63_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
--- L0574@00D7.  loopcnt <= inc;
+-- L0575@00D7.  loopcnt <= inc;
 -- loopcnt <= inc;
 215 => X"6C_6F_6F_70_63_6E_74_20_3C_3D_20_69_6E_63_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
--- L0575@00D8.  loopcnt <= inc;
+-- L0576@00D8.  loopcnt <= inc;
 -- loopcnt <= inc;
 216 => X"6C_6F_6F_70_63_6E_74_20_3C_3D_20_69_6E_63_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
--- L0576@00D9.  loopcnt <= inc;
+-- L0577@00D9.  loopcnt <= inc;
 -- loopcnt <= inc;
 217 => X"6C_6F_6F_70_63_6E_74_20_3C_3D_20_69_6E_63_3B_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
--- L0577@00DA.  if loopcnt_is_zero then print_crlf else st_loop;
+-- L0578@00DA.  if loopcnt_is_zero then print_crlf else st_loop;
 -- if loopcnt_is_zero then print_crlf else st_loop;
 218 => X"69_66_20_6C_6F_6F_70_63_6E_74_5F_69_73_5F_7A_65_72_6F_20_74_68_65_6E_20_70_72_69_6E_74_5F_63_72",
 
--- L0579@00DB.echo:  if TRACE_INPUT then emit else return;
+-- L0580@00DB.echo:  if TRACE_INPUT then emit else return;
 -- echo: if TRACE_INPUT then emit else return;
 219 => X"65_63_68_6F_3A_20_69_66_20_54_52_41_43_45_5F_49_4E_50_55_54_20_74_68_65_6E_20_65_6D_69_74_20_65",
 
--- L0581@00DC.print_crlf:  emit(char_cr);
+-- L0582@00DC.print_crlf:  emit(char_cr);
 -- print_crlf: emit(char_cr);
 220 => X"70_72_69_6E_74_5F_63_72_6C_66_3A_20_65_6D_69_74_28_63_68_61_72_5F_63_72_29_3B_20_20_20_20_20_20",
 
--- L0582@00DD.  TXDCHAR <= char_lf;
+-- L0583@00DD.  TXDCHAR <= char_lf;
 -- TXDCHAR <= char_lf;
 221 => X"54_58_44_43_48_41_52_20_3C_3D_20_63_68_61_72_5F_6C_66_3B_20_20_20_20_20_20_20_20_20_20_20_20_20",
 
--- L0584@00DE.emit:  if TXDSEND then next else repeat;
+-- L0585@00DE.emit:  if TXDSEND then next else repeat;
 -- emit: if TXDSEND then next else repeat;
 222 => X"65_6D_69_74_3A_20_69_66_20_54_58_44_53_45_4E_44_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20",
 
--- L0585@00DF.  if TXDREADY then next else repeat;
+-- L0586@00DF.  if TXDREADY then next else repeat;
 -- if TXDREADY then next else repeat;
 223 => X"69_66_20_54_58_44_52_45_41_44_59_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_72_65_70_65_61",
 
--- L0586@00E0.  if TXDREADY then next else repeat;
+-- L0587@00E0.  if TXDREADY then next else repeat;
 -- if TXDREADY then next else repeat;
 224 => X"69_66_20_54_58_44_52_45_41_44_59_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_72_65_70_65_61",
 
--- L0587@00E1.  TXDCHAR <= char_zero, if true then return else return;
+-- L0588@00E1.  TXDCHAR <= char_zero, if true then return else return;
 -- TXDCHAR <= char_zero, if true then return else return;
 225 => X"54_58_44_43_48_41_52_20_3C_3D_20_63_68_61_72_5F_7A_65_72_6F_2C_20_69_66_20_74_72_75_65_20_74_68",
 

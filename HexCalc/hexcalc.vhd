@@ -150,8 +150,8 @@ begin
 
 -- outputs
 status <= hxc_status;
---dbg <= loopcnt(3 downto 0) & bitcnt(3 downto 0) & input & '0' & ui_address;
 dbg <= "000" & loopcnt & "000" & bitcnt & ui_address;
+--dbg <= loopcnt(3 downto 0) & bitcnt(3 downto 0) & input & '0' & ui_address;
 --dbg <= '0' & ui_nextinstr & loopcnt(3 downto 0) & bitcnt(3 downto 0) & '0' & ui_address;
 --dbg <= input & loopcnt(3 downto 0) & bitcnt(3 downto 0) & ui_address;
 mt_ctrl <= hxc_MT_CTRL & hxc_MT_COL & hxc_MT_ROW;
@@ -301,7 +301,6 @@ TXDSEND <= '1' when (unsigned(hxc_seq_cond) = seq_cond_TXDSEND) else '0';
  end process;
 ---- End boilerplate code
 
---ascii <= hex2ascii(to_integer(unsigned(hexchar)));
 ---- Start boilerplate code (use with utmost caution!)
  update_TXDCHAR: process(clk, hxc_TXDCHAR)
  begin

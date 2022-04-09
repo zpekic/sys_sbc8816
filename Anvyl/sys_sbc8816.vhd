@@ -357,7 +357,6 @@ signal showdigit, showdot: std_logic_vector(5 downto 0);
 signal led_data: std_logic_vector(23 downto 0);
 signal led_dot: std_logic_vector(5 downto 0);
 signal tr_enable, tr_txdready: std_logic;
---signal digit: std_logic_vector(3 downto 0);
 
 -- VGA
 signal vga_x, vga_y: std_logic_vector(7 downto 0);
@@ -437,7 +436,7 @@ constant kypd2ascii: table_32x8 := (
 	c('-'),	-- B == subtract
 	c('*'),	-- C == multiply
 	c('/'),	-- D == divide	
-	X"0D",	-- E == enter
+	X"0D",	-- E == enter (TOS = 0, push other regs)
 	c('S')  -- F == swap
 );
 
