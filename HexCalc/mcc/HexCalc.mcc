@@ -198,6 +198,7 @@ matrix_pop:	.sub;
 matrix_push:.sub;
 div2:		.sub bitcnt, z_flags;
 prep_regs:	.sub loopcnt;
+prep_shift:	.sub;
 a_pm_m:		.sub c_flag;	// A <= A + M | A - M
 //bcd_add:	.sub;
 bcd_adjust: .sub c_flag;	// TOS.LSN <= TOS.LSN + 3 | TOS.LSN - 3
@@ -271,6 +272,20 @@ rotate:		nuke, matrix_push();
 			echo(input);
 swap:		nuke, matrix_swap();
 			goto exec;
+			
+// TOS logical shift right (down) -------------------------
+			.map '>';
+// --------------------------------------------------------
+			prep_shift();
+lsr_loop:	STATUS = busy_using_mt, opr = m2_m2_np, z_flags <= update, d_flag <= column, if bitcnt_is_zero then done;
+			bitcnt <= dec, goto lsr_loop;	
+
+// TOS logical shift left (up) ----------------------------
+			.map '<';
+// --------------------------------------------------------
+			prep_shift();
+lsl_loop:	STATUS = busy_using_mt, opr = d2_d2_np, z_flags <= update, d_flag <= column, if bitcnt_is_zero then done;
+			bitcnt <= dec, goto lsl_loop;	
 			
 // R0..R7 <= 0, ERR <= 0 ----------------------------------
 			.map 'n';	// "nuke"
@@ -504,6 +519,13 @@ prep_regs:	nuke, matrix_nop1();
 			connect row_tos to col_r7, div2(max, set);	// R7 <= TOS, TOS <= 0
 			connect row_r7 to col_r7;
 			disconnect row_tos from col_r7, back;		
+
+// common for shift up and down
+prep_shift: echo(input);
+lsr:		nuke, matrix_nop1();
+			connect row_tos to col_delay;
+			connect row_delay to col_tos;
+			d_flag <= zero, bitcnt <= max, z_flags <= set, back;
 
 // rotate all registers right (LSB first) through switch matrix;
 div2:		STATUS = busy_using_mt, opr = d2_d2_d2, c_flag <= adder, z_flags <= update, if bitcnt_is_zero then return;
