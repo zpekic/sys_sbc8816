@@ -10,7 +10,7 @@
 -- Input devices: 
 --
 -- Tool Versions: ISE 14.7 (nt)
--- Description: https://hackaday.io/projects/hacker/233652
+-- Description: https://hackaday.io/project/184782-cross-bar-switch-serial-cpu-and-rpn-calculator
 -- 
 -- Dependencies: 
 -- 
@@ -39,15 +39,8 @@ entity sys_sbc8816 is
 	 			-- 100MHz on the Anvyl board
 				CLK: in std_logic;
 				-- Switches
-				-- SW(2 downto 0) -- 
-				-- SW(5 downto 3) -- 
-				-- SW(7 downto 6) --  
 				SW: in std_logic_vector(7 downto 0); 
 				-- Push buttons 
-				-- BTN0 - 
-				-- BTN1 - 
-				-- BTN2 - 
-				-- BTN3 - 
 				BTN: in std_logic_vector(3 downto 0); 
 				-- 6 7seg LED digits
 				SEG: out std_logic_vector(6 downto 0); 
@@ -421,23 +414,23 @@ constant kypd2ascii: table_32x8 := (
 	c('D'),
 	c('E'),
 	c('F'),
-	-- with "shift", entering a command
-	c('Z'),	-- 0 == zero TOS
-	c('U'),	-- 1 == dUp(licate)
-	c('$'),	-- 2 == BCD to binary
-	c('#'),	-- 3 == binary to BCD
-	c('R'),	-- 4 == rotate registers
-	X"00",	-- 5 == not used
-	X"00",	-- 6 == not used
-	c('N'),	-- 7 == nuke all
+	-- with "shift", entering a command (TOS = R0, top of stack, NOS = R1, next on stack)
+	c('Z'),	-- 0 == TOS <= 0
+	c('U'),	-- 1 == dUp(licate) NOS <= TOS, push all regs down, R7 lost)
+	c('$'),	-- 2 == BCD to binary (TOS changes, R7 destroyed)
+	c('#'),	-- 3 == binary to BCD (TOS changes, R7 destroyed)
+	c('R'),	-- 4 == rotate registers (R7 <= TOS, ... TOS <= NOS etc.)
+	c('<'),	-- 5 == shift (logical) TOS up
+	c('>'),	-- 6 == shift (logical) TOS down
+	c('N'),	-- 7 == nuke all (all registers = 0)
 	X"00",	-- 8 == not used
 	X"00",	-- 9 == not used
-	c('+'),	-- A == add
-	c('-'),	-- B == subtract
-	c('*'),	-- C == multiply
-	c('/'),	-- D == divide	
-	X"0D",	-- E == enter (TOS = 0, push other regs)
-	c('S')  -- F == swap
+	c('+'),	-- A == add (TOS <= TOS + NOS, pop regs, R7 <= 0)
+	c('-'),	-- B == subtract (TOS <= TOS - NOS, pop regs, R7 <= 0)
+	c('*'),	-- C == multiply (TOS/NOS = TOS * NOS, R7 lost)
+	c('/'),	-- D == divide	(TOS is div, NOS is mod after TOS/NOS, R7 lost)
+	X"0D",	-- E == enter (TOS = 0, push other regs down, R7 lost)
+	c('S')  -- F == swap (TOS <=> NOS)
 );
 
 -- HC (hexcalc core) connections
@@ -716,7 +709,7 @@ tr: tracer Port map (
 tr_enable <= '0' when (hc_status = STATUS_READY) else (not sw_clksel(2));
 
 -- catch stacktop appearing to display it on the 7seg LED
-on_dot_clk: process(dot_clk, win_x, win_y, hc_reg)	-- TODO - improve this mess!
+on_dot_clk: process(dot_clk, win_x, win_y, hc_reg)
 begin
 	if (rising_edge(dot_clk)) then
 		if (win_y = "00000") then
@@ -894,7 +887,7 @@ uart_rx: uart_ser2par Port map (
 
 kypd: keypad4x4 Port map ( 
 		clk => freq128,
-		row => keypad_row, --KYPD_ROW,
+		row => keypad_row,
 		col => KYPD_COL,
 		hex => kypd_hex,
 		keypressed => kypd_keypressed
@@ -911,7 +904,6 @@ begin
 		if (rising_edge(key)) then
 			if (kypd_keypressed = '1') then
 				input <= kypd2ascii(to_integer(unsigned(kypd_shift & kypd_hex)));
-				--input <= kypd_shift & "000" & kypd_hex;
 			else
 				input <= rx_char;
 			end if;

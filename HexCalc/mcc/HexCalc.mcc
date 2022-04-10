@@ -4,6 +4,7 @@
 //---------------------------------------------------------------------------------------------
 // Microcode for stack-based hex calculator using MT8816 cross-bar switches
 // Mul/div algorithms from "Computer Organization and Architecture" by W. Stallings, p. 212-222
+// Full description: https://hackaday.io/project/184782-cross-bar-switch-serial-cpu-and-rpn-calculator
 //---------------------------------------------------------------------------------------------
 			.code 8, 52, hexcalc_code.mif, hexcalc_code.cgf, hexcalc_code.coe, hxc:hexcalc_code.vhd, hexcalc_code.hex, hexcalc_code.bin, 8;
 			.mapper 8, 8, hexcalc_map.mif, hexcalc_map.cgf, hexcalc_map.coe, hxc:hexcalc_map.vhd, hexcalc_map.hex, hexcalc_map.bin, 1;
@@ -126,7 +127,7 @@ loopcnt		.regfield 2 values
 				dec
 				default same;
 				
-selreg:		.valfield 1 values
+selreg:		.valfield 1 values	// take over from external (VGA) when reading reg nibble to display
 				external,
 				internal default external;
 						
