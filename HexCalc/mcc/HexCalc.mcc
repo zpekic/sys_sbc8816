@@ -402,14 +402,12 @@ m_shift:	connect row_delay to col_tos;
 			bitcnt <= max, if z_flagtos_is_set then conv_done0;
 bitcnt_s0:		nuke, matrix_nop();
 				connect row_nos to col_tos;	// TOS = BIN, NOS = BCD
-				//noop;
 				STATUS = busy_using_mt, opr = d2_d2_np;	// one bit from BCD to binary
 				disconnect row_nos from col_tos;
 				loopcnt <= max;
 				loopcnt <= inc;
 loopcnt_s0:			connect row_nos to col_delay;
 					connect row_nos to col_nos;
-					//noop;
 					// rotate down to examine bit 3 in LSN BCD digit
 					STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column, loopcnt <= dec;
 					STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column, loopcnt <= dec;
@@ -417,7 +415,6 @@ loopcnt_s0:			connect row_nos to col_delay;
 					STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column, loopcnt <= dec;
 					if d_flag_is_set then next else loopcnt_n0;
 					bcd_adjust(one);	// subtract 3 from digit
-					//noop;
 loopcnt_n0:			if loopcnt_is_zero then next else loopcnt_s0;
 				if bitcnt_is_zero then conv_done0;
 				bitcnt <= dec, goto bitcnt_s0; 
@@ -610,7 +607,7 @@ emit:		if TXDSEND then next else repeat;	// generate a send pulse for UART sende
 			if TXDREADY then next else repeat;
 			TXDCHAR <= char_zero, back;
 
-//* -- BCD addition ----------------------------------------
+//* -- BCD addition -- (example only, not used) ------------
 // TOS <= TOS + NOS (only TOS changed, other not affected
 // ---------------------------------------------------------
 bcd_add:	c_flag <= zero, loopcnt <= max;

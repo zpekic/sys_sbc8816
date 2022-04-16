@@ -697,7 +697,7 @@ tr: tracer Port map (
 			dev_data => hc_txdchar,
 			dev_send => hc_txdsend,
 			dev_ready => open, --hc_txdready,
-			trigger => phi0,
+			trigger => phi1,
 			enable => tr_enable,
 --			debug(15 downto 8) => hc_dbg(23 downto 16),	-- instruction register (== input char)
 			debug(15 downto 8) => hc_dbg(15 downto 8),	-- loop and bit counters
