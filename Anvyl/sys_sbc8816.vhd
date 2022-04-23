@@ -267,6 +267,7 @@ component hardwin is
 			  index: out STD_LOGIC_VECTOR(2 downto 0);
            win_x : out  STD_LOGIC_VECTOR (4 downto 0);
            win_y : out  STD_LOGIC_VECTOR (4 downto 0);
+			  sy_cnt: in STD_LOGIC_VECTOR (3 downto 0);
   			  switch: in STD_LOGIC_VECTOR (7 downto 0);
            mt_x : in  STD_LOGIC;
            mt_y : in  STD_LOGIC;
@@ -299,6 +300,13 @@ component tracer is
            debug : in  STD_LOGIC_VECTOR (15 downto 0);
 			  inp_char: in STD_LOGIC_VECTOR(7 downto 0);
 			  ext_char: in STD_LOGIC_VECTOR(7 downto 0));
+end component;
+
+component bcdcounter is
+    Port ( reset : in  STD_LOGIC;
+           clk : in  STD_LOGIC;
+           enable : in  STD_LOGIC;
+           value : buffer  STD_LOGIC_VECTOR (15 downto 0));
 end component;
 	
 type table_8x16 is array (0 to 7) of std_logic_vector(15 downto 0);
@@ -372,7 +380,7 @@ alias freq128: std_logic is freq_2048(4);
 signal mt_cnt, ss_cnt: std_logic_vector(1 downto 0);
 signal phi0, phi1, phi2, phi3: std_logic;
 signal prescale_baud, prescale_power: integer range 0 to 65535;
-signal counter_value: std_logic_vector(31 downto 0);
+signal baudcnt_value: std_logic_vector(31 downto 0);
 
 -- input by switches and buttons
 signal switch: std_logic_vector(7 downto 0);
@@ -435,10 +443,10 @@ constant kypd2ascii: table_32x8 := (
 
 -- HC (hexcalc core) connections
 signal hc_status: std_logic_vector(1 downto 0);
-constant status_ready: std_logic_vector(1 downto 0) := "00";
-constant status_done: std_logic_vector(1 downto 0) := "01";
-constant status_busy: std_logic_vector(1 downto 0) := "10";
-constant status_busy_using_mt: std_logic_vector(1 downto 0) := "11";
+constant hc_status_ready: std_logic_vector(1 downto 0) := "00";
+constant hc_status_done: std_logic_vector(1 downto 0) := "01";
+constant hc_status_busy: std_logic_vector(1 downto 0) := "10";
+constant hc_status_busy_using_mt: std_logic_vector(1 downto 0) := "11";
 signal hc_tos: std_logic_vector(31 downto 0); -- capture value of TOS (R0)
 signal hc_txdsend, hc_txdready, hc_error, hc_clk, hc_clk_uart: std_logic := '0';
 signal hc_txdchar: std_logic_vector(7 downto 0);
@@ -447,6 +455,11 @@ signal hc_reg: std_logic_vector(3 downto 0);
 signal hc_delay, hc_carry, hc_daa: std_logic;	-- calculator internal flags
 signal hc_zero: std_logic_vector(15 downto 0);
 signal hc_dbg, hc_led: std_logic_vector(23 downto 0);
+-- calculator counters
+signal i_done: std_logic; -- pulse when done with instruction
+signal i_cnt: std_logic_vector(15 downto 0);	-- instructions executed
+signal c_cnt: std_logic_vector(15 downto 0); -- clock cycles per instruction
+signal sy_cnt: std_logic_vector(3 downto 0);
 
 -- MT8816 connections
 signal mt_mode_seldisplay: std_logic;
@@ -539,6 +552,7 @@ baudgen: sn74hc4040 port map (
 			q(11 downto 3) => open		
 		);	
 
+-- condition input signals (switches and buttons)
 	debounce_sw: debouncer8channel Port map ( 
 		clock => debounce_clk, 
 		reset => RESET,
@@ -555,17 +569,6 @@ baudgen: sn74hc4040 port map (
 		signal_debounced(3 downto 0) => button
 	);
 	
-counter: freqcounter Port map ( 
-		reset => RESET,
-      clk => freq1,
-      freq => baudrate_x1,
-		bcd => '1',
-		add => X"00000001",
-		cin => '1',
-		cout => open,
-      value => counter_value
-	);
-		
 ----------------------------------------
 -- MT8816
 ----------------------------------------
@@ -657,6 +660,7 @@ begin
 	end if;
 end process;
 
+-- 16 or 32-bit wide stack based calculator
 hc: hexcalc Port map (
 			clk => hc_clk,
 			reset => reset,
@@ -822,6 +826,7 @@ win: hardwin Port map(
 		index	 => win_index,
 		win_x  => win_x,
 		win_y  => win_y,
+		sy_cnt => sy_cnt,
 		switch => switch, -- display the modes in the last row of the window
 		mt_x   => hc_mt_x(to_integer(unsigned(win_y(3 downto 0)))),
 		mt_y   => mt_y(to_integer(unsigned(win_x(3 downto 0)))),
@@ -831,6 +836,49 @@ win: hardwin Port map(
 		mt_z	 => hc_zero(to_integer(unsigned(win_y(3 downto 0)))),
 		mt_hex => hc_reg
 		);
+
+-- sy_cnt is either instruction count or clock cycle count (BCD) of last executed instruction
+with (win_x(3 downto 0)) select sy_cnt <=
+		-- instruction clock count, up to 9999
+		c_cnt(15 downto 12)	when X"4",
+		c_cnt(11 downto 8)	when X"5",
+		c_cnt(7 downto 4)		when X"6",
+		c_cnt(3 downto 0)		when X"7",
+		-- instruction count, up to 9999
+		i_cnt(15 downto 12)	when X"C",
+		i_cnt(11 downto 8)	when X"D",
+		i_cnt(7 downto 4)		when X"E",
+		i_cnt(3 downto 0)		when X"F",
+		X"0" 						when others;
+	
+-- count clock cycles per instruction	
+cclkcnt: bcdcounter Port map ( 
+		reset => RESET,
+      clk => hc_clk,		
+		enable => hc_status(1),	-- only count when status is "busy"
+      value => c_cnt
+	);
+
+-- count number of instructions executed
+i_done <= '1' when (hc_status = hc_status_done) else '0';	-- generate pulse at done of each instruction
+instcnt: bcdcounter Port map ( 
+		reset => RESET,
+      clk => hc_clk,		
+		enable => i_done,	-- only count when status is "done"
+      value => i_cnt
+	);
+
+-- count baudrate	
+baudcnt: freqcounter Port map ( 
+		reset => RESET,
+      clk => freq1,
+      freq => baudrate_x1,
+		bcd => '1',
+		add => X"00000001",
+		cin => '1',
+		cout => open,
+      value => baudcnt_value
+	);
 
 -- 8 single LEDs
 --LED <= mt_ctrl(7 downto 0);
@@ -864,7 +912,7 @@ hc_led <= hc_dbg when (sw_clksel(2) = '0') else hc_tos(23 downto 0);  -- in "slo
 
 with sw_mode select led_data <= 
 		X"00" & uartmode_debug(to_integer(unsigned(dip_uart_mode))) when mode_ua_lb_lb,
-		counter_value(23 downto 0) when mode_bd_lb_lb,
+		baudcnt_value(23 downto 0) when mode_bd_lb_lb,
 		hc_led when others;
 
 with sw_mode select led_dot <= 
@@ -894,7 +942,7 @@ kypd: keypad4x4 Port map (
 		);
 		
 key <= rx_ready or kypd_keypressed;
-input_clear <= '1' when (hc_status = status_done) else reset;
+input_clear <= '1' when (hc_status = hc_status_done) else reset;
 
 on_key: process(key, kypd_hex, kypd_shift, rx_char, input_clear)
 begin

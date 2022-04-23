@@ -191,337 +191,337 @@ Line 394: resolved aliases:  col_adc2, row_m, from, disconnect, goto
 L0394@005A.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 0xD, if false then next else div_next;
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 403: resolved aliases:  col_delay, row_nos, to, connect
-L0403@005D.m_loop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 8;
+Line 402: resolved aliases:  col_delay, row_nos, to, connect
+L0402@005D.m_loop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 8;
 
-Line 406: resolved aliases:  col_delay, row_nos, from, disconnect
-L0406@0060.  c_flag <= zero, STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 8, if d_flag_is_set then m_add_r7 else m_shift0;
+Line 405: resolved aliases:  col_delay, row_nos, from, disconnect
+L0405@0060.  c_flag <= zero, STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 8, if d_flag_is_set then m_add_r7 else m_shift0;
 
-Line 409: resolved aliases:  col_adc1, row_r7, to, connect
-L0409@0061.m_add_r7:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0xC;
+Line 408: resolved aliases:  col_adc1, row_r7, to, connect
+L0408@0061.m_add_r7:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0xC;
 
-Line 410: resolved aliases:  col_adc2, row_tos, to, connect
-L0410@0062.m_add:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xD;
+Line 409: resolved aliases:  col_adc2, row_tos, to, connect
+L0409@0062.m_add:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xD;
 
-Line 411: resolved aliases:  col_tos, row_sum, to, connect
-L0411@0063.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, div2(max, set);
+Line 410: resolved aliases:  col_tos, row_sum, to, connect
+L0410@0063.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, div2(max, set);
 
-Line 412: resolved aliases:  col_tos, row_sum, from, disconnect
-L0412@0064.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, if c_flag_is_set then m_shift1;
-
-Warning: else clause missing in if statement, default value '' will be used
-Line 415: resolved aliases:  col_nos, row_tos, to, connect, goto
-L0415@0065.m_shift0:  d_flag <= zero, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1, if false then next else m_shift;
-
-Line 416: resolved aliases:  col_nos, row_tos, to, connect
-L0416@0066.m_shift1:  d_flag <= one, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
-
-Line 417: resolved aliases:  col_tos, row_delay, to, connect
-L0417@0067.m_shift:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 0;
-
-Line 418: resolved aliases:  col_nos, row_nos, from, disconnect
-L0418@0068.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1, opr = d2_d2_np;
-
-Line 421: resolved aliases:  col_nos, row_tos, from, disconnect
-L0421@0069.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 1;
-
-Line 422: resolved aliases:  col_tos, row_delay, from, disconnect
-L0422@006A.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 8 , MT_COL = 0;
-
-Line 423: resolved aliases:  col_nos, row_nos, to, connect
-L0423@006B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1, if loopcnt_is_zero then done;
+Line 411: resolved aliases:  col_tos, row_sum, from, disconnect
+L0411@0064.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, if c_flag_is_set then m_shift1;
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 424: resolved aliases:  goto
-L0424@006C.  loopcnt <= dec, if false then next else m_loop;
+Line 414: resolved aliases:  col_nos, row_tos, to, connect, goto
+L0414@0065.m_shift0:  d_flag <= zero, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1, if false then next else m_shift;
 
-Line 429: resolved aliases:  nuke
-L0429@006D.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
+Line 415: resolved aliases:  col_nos, row_tos, to, connect
+L0415@0066.m_shift1:  d_flag <= one, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
 
-Warning: else clause missing in if statement, default value '' will be used
-Line 432: resolved aliases:  nuke
-L0432@0070.bitcnt_s0:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+Line 416: resolved aliases:  col_tos, row_delay, to, connect
+L0416@0067.m_shift:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 0;
 
-Line 433: resolved aliases:  col_tos, row_nos, to, connect
-L0433@0071.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
+Line 417: resolved aliases:  col_nos, row_nos, from, disconnect
+L0417@0068.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1, opr = d2_d2_np;
 
-Line 435: resolved aliases:  col_tos, row_nos, from, disconnect
-L0435@0073.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 0;
+Line 420: resolved aliases:  col_nos, row_tos, from, disconnect
+L0420@0069.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 1;
 
-Line 438: resolved aliases:  col_delay, row_nos, to, connect
-L0438@0076.loopcnt_s0:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 8;
+Line 421: resolved aliases:  col_tos, row_delay, from, disconnect
+L0421@006A.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 8 , MT_COL = 0;
 
-Line 439: resolved aliases:  col_nos, row_nos, to, connect
-L0439@0077.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
-
-Warning: else clause missing in if statement, default value '' will be used
-Line 447: resolved aliases:  goto
-L0447@007E.  bitcnt <= dec, if false then next else bitcnt_s0;
-
-Line 448: resolved aliases:  nuke
-L0448@007F.conv_done0:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
-
-Line 449: resolved aliases:  col_tos, row_tos, to, connect, goto
-L0449@0080.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, if false then next else exec;
-
-Line 454: resolved aliases:  nuke
-L0454@0081.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
-
-Line 455: resolved aliases:  col_r7, row_r7, from, disconnect
-L0455@0082.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
-
-Line 456: resolved aliases:  col_r7, row_nos, to, connect
-L0456@0083.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 7;
-
-Line 457: resolved aliases:  col_tos, row_tos, to, connect
-L0457@0084.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, div2(max, set);
+Line 422: resolved aliases:  col_nos, row_nos, to, connect
+L0422@006B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1, if loopcnt_is_zero then done;
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 459: resolved aliases:  nuke
-L0459@0086.bitcnt_s1:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+Line 423: resolved aliases:  goto
+L0423@006C.  loopcnt <= dec, if false then next else m_loop;
 
-Line 460: resolved aliases:  col_nos, row_tos, to, connect
-L0460@0087.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
-
-Line 462: resolved aliases:  col_nos, row_tos, from, disconnect
-L0462@0089.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 1;
-
-Line 465: resolved aliases:  data
-L0465@008C.loopcnt_s1:  c_flag <= one, opr = np_np_ld, MT_COL = 5;
-
-Line 466: resolved aliases:  col_nos, row_nos, to, connect
-L0466@008D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
-
-Line 467: resolved aliases:  col_adc1, row_nos, to, connect
-L0467@008E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
-
-Line 468: resolved aliases:  col_not, row_direct, to, connect
-L0468@008F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
-
-Line 469: resolved aliases:  col_adc2, row_not, to, connect
-L0469@0090.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD;
-
-Line 475: resolved aliases:  col_adc2, row_not, from, disconnect
-L0475@0095.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 9 , MT_COL = 0xD;
+Line 428: resolved aliases:  nuke
+L0428@006D.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 479: resolved aliases:  goto
-L0479@0099.  bitcnt <= dec, if false then next else bitcnt_s1;
+Line 431: resolved aliases:  nuke
+L0431@0070.bitcnt_s0:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
 
-Line 480: resolved aliases:  nuke
-L0480@009A.conv_done1:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+Line 432: resolved aliases:  col_tos, row_nos, to, connect
+L0432@0071.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
 
-Line 481: resolved aliases:  col_r7, row_r7, from, disconnect
-L0481@009B.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
+Line 434: resolved aliases:  col_tos, row_nos, from, disconnect
+L0434@0073.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 0;
 
-Line 482: resolved aliases:  col_tos, row_nos, to, connect
-L0482@009C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
+Line 437: resolved aliases:  col_delay, row_nos, to, connect
+L0437@0076.loopcnt_s0:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 8;
 
-Line 483: resolved aliases:  col_nos, row_r7, to, connect, goto
-L0483@009D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 1, if false then next else exec;
-
-Line 496: resolved aliases:  data, goto
-L0496@009E.  opr = np_np_ld, MT_COL = 0b0000, if false then next else hexchar;
-
-Line 502: resolved aliases:  data, goto
-L0502@009F.  opr = np_np_ld, MT_COL = 0b1101, if false then next else hexchar;
-
-Line 506: resolved aliases:  data, goto
-L0506@00A0.  opr = np_np_ld, MT_COL = 0b1111, if false then next else hexchar;
-
-Line 515: resolved aliases:  data
-L0515@00A1.  opr = np_np_ld, MT_COL = 0b1001;
-
-Line 516: resolved aliases:  nuke, load_bitcnt
-L0516@00A2.hexchar:  bitcnt <= load, MT_COL = 3, c_flag <= zero, STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
-
-Line 517: resolved aliases:  col_adc1, row_const, to, connect
-L0517@00A3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xC , MT_COL = 0xC;
-
-Line 518: resolved aliases:  col_adc2, row_direct, to, connect
-L0518@00A4.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
-
-Line 519: resolved aliases:  col_tos, row_sum, to, connect
-L0519@00A5.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0;
-
-Line 521: resolved aliases:  col_tos, row_sum, from, disconnect
-L0521@00A7.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, bitcnt <= max;
-
-Line 522: resolved aliases:  col_tos, row_tos, to, connect
-L0522@00A8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, bitcnt <= dec;
-
-Line 531: resolved aliases:  col_adc1, row_a, to, connect
-L0531@00AD.a_pm_m:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC;
-
-Line 532: resolved aliases:  col_a, row_sum, to, connect
-L0532@00AE.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, div2(max, set);
-
-Line 533: resolved aliases:  col_a, row_sum, from, disconnect, back
-L0533@00AF.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, if true then return else return;
-
-Line 536: resolved aliases:  nuke
-L0536@00B0.prep_regs:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
-
-Line 537: resolved aliases:  col_r7, row_r7, from, disconnect
-L0537@00B1.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
-
-Line 538: resolved aliases:  col_r7, row_tos, to, connect
-L0538@00B2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 7, div2(max, set);
-
-Line 539: resolved aliases:  col_r7, row_r7, to, connect
-L0539@00B3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7;
-
-Line 540: resolved aliases:  col_r7, row_tos, from, disconnect, back
-L0540@00B4.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 7, if true then return else return;
-
-Line 543: resolved aliases:  nuke
-L0543@00B5.heron_step:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
-
-Line 544: resolved aliases:  col_tos, row_r7, to, connect
-L0544@00B6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0, div2(max, set);
-
-Line 546: resolved aliases:  nuke
-L0546@00B8.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
-
-Line 547: resolved aliases:  col_nos, row_nos, from, disconnect
-L0547@00B9.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
-
-Line 548: resolved aliases:  col_nos, row_r2, to, connect
-L0548@00BA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
-
-Line 549: resolved aliases:  col_adc1, row_nos, to, connect
-L0549@00BB.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
-
-Line 550: resolved aliases:  col_adc2, row_r7, to, connect
-L0550@00BC.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0xD;
-
-Line 551: resolved aliases:  col_tos, row_sum, to, connect
-L0551@00BD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, c_flag <= zero, div2(max, set);
+Line 438: resolved aliases:  col_nos, row_nos, to, connect
+L0438@0077.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 558: resolved aliases:  goto
-L0558@00C0.  bitcnt <= dec, if false then next else shift_dloop;
+Line 446: resolved aliases:  goto
+L0446@007E.  bitcnt <= dec, if false then next else bitcnt_s0;
+
+Line 447: resolved aliases:  nuke
+L0447@007F.conv_done0:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
+
+Line 448: resolved aliases:  col_tos, row_tos, to, connect, goto
+L0448@0080.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, if false then next else exec;
+
+Line 453: resolved aliases:  nuke
+L0453@0081.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+
+Line 454: resolved aliases:  col_r7, row_r7, from, disconnect
+L0454@0082.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
+
+Line 455: resolved aliases:  col_r7, row_nos, to, connect
+L0455@0083.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 7;
+
+Line 456: resolved aliases:  col_tos, row_tos, to, connect
+L0456@0084.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, div2(max, set);
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 563: resolved aliases:  goto
-L0563@00C3.  bitcnt <= dec, if false then next else shift_uloop;
+Line 458: resolved aliases:  nuke
+L0458@0086.bitcnt_s1:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
 
-Line 566: resolved aliases:  nuke
-L0566@00C4.prep_shift:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
+Line 459: resolved aliases:  col_nos, row_tos, to, connect
+L0459@0087.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
 
-Line 567: resolved aliases:  col_delay, row_tos, to, connect
-L0567@00C5.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 8;
+Line 461: resolved aliases:  col_nos, row_tos, from, disconnect
+L0461@0089.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 1;
 
-Line 568: resolved aliases:  col_tos, row_delay, to, connect, back
-L0568@00C6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 0, d_flag <= zero, bitcnt <= max, z_flags <= set, if true then return else return;
+Line 464: resolved aliases:  data
+L0464@008C.loopcnt_s1:  c_flag <= one, opr = np_np_ld, MT_COL = 5;
 
-Line 570: resolved aliases:  nuke
-L0570@00C7.dup:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
+Line 465: resolved aliases:  col_nos, row_nos, to, connect
+L0465@008D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
 
-Line 571: resolved aliases:  col_tos, row_tos, to, connect
-L0571@00C8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, bitcnt <= max, z_flags <= set;
+Line 466: resolved aliases:  col_adc1, row_nos, to, connect
+L0466@008E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
+
+Line 467: resolved aliases:  col_not, row_direct, to, connect
+L0467@008F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
+
+Line 468: resolved aliases:  col_adc2, row_not, to, connect
+L0468@0090.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD;
+
+Line 474: resolved aliases:  col_adc2, row_not, from, disconnect
+L0474@0095.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 9 , MT_COL = 0xD;
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 576: resolved aliases:  goto
-L0576@00CA.  bitcnt <= dec, if false then next else div2;
+Line 478: resolved aliases:  goto
+L0478@0099.  bitcnt <= dec, if false then next else bitcnt_s1;
 
-Line 579: resolved aliases:  col_nos, row_tos, to, connect
-L0579@00CB.matrix_swap:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+Line 479: resolved aliases:  nuke
+L0479@009A.conv_done1:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
 
-Line 580: resolved aliases:  col_tos, row_nos, to, connect, goto
-L0580@00CC.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0, if false then next else matrix_nop;
+Line 480: resolved aliases:  col_r7, row_r7, from, disconnect
+L0480@009B.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
 
-Line 583: resolved aliases:  col_nos, row_nos, to, connect
-L0583@00CD.matrix_nop1:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+Line 481: resolved aliases:  col_tos, row_nos, to, connect
+L0481@009C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
 
-Line 585: resolved aliases:  col_r2, row_r2, to, connect
-L0585@00CE.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
+Line 482: resolved aliases:  col_nos, row_r7, to, connect, goto
+L0482@009D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 1, if false then next else exec;
 
-Line 586: resolved aliases:  col_r3, row_r3, to, connect
-L0586@00CF.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
+Line 495: resolved aliases:  data, goto
+L0495@009E.  opr = np_np_ld, MT_COL = 0b0000, if false then next else hexchar;
 
-Line 587: resolved aliases:  col_r4, row_r4, to, connect
-L0587@00D0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
+Line 501: resolved aliases:  data, goto
+L0501@009F.  opr = np_np_ld, MT_COL = 0b1101, if false then next else hexchar;
 
-Line 588: resolved aliases:  col_r5, row_r5, to, connect
-L0588@00D1.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
+Line 505: resolved aliases:  data, goto
+L0505@00A0.  opr = np_np_ld, MT_COL = 0b1111, if false then next else hexchar;
 
-Line 589: resolved aliases:  col_r6, row_r6, to, connect
-L0589@00D2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
+Line 514: resolved aliases:  data
+L0514@00A1.  opr = np_np_ld, MT_COL = 0b1001;
 
-Line 590: resolved aliases:  col_r7, row_r7, to, connect, back
-L0590@00D3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
+Line 515: resolved aliases:  nuke, load_bitcnt
+L0515@00A2.hexchar:  bitcnt <= load, MT_COL = 3, c_flag <= zero, STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 
-Line 593: resolved aliases:  col_nos, row_tos, to, connect
-L0593@00D4.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+Line 516: resolved aliases:  col_adc1, row_const, to, connect
+L0516@00A3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xC , MT_COL = 0xC;
 
-Line 594: resolved aliases:  col_r2, row_nos, to, connect
-L0594@00D5.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
+Line 517: resolved aliases:  col_adc2, row_direct, to, connect
+L0517@00A4.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
 
-Line 595: resolved aliases:  col_r3, row_r2, to, connect
-L0595@00D6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
+Line 518: resolved aliases:  col_tos, row_sum, to, connect
+L0518@00A5.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0;
 
-Line 596: resolved aliases:  col_r4, row_r3, to, connect
-L0596@00D7.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
+Line 520: resolved aliases:  col_tos, row_sum, from, disconnect
+L0520@00A7.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, bitcnt <= max;
 
-Line 597: resolved aliases:  col_r5, row_r4, to, connect
-L0597@00D8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
+Line 521: resolved aliases:  col_tos, row_tos, to, connect
+L0521@00A8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, bitcnt <= dec;
 
-Line 598: resolved aliases:  col_r6, row_r5, to, connect
-L0598@00D9.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
+Line 530: resolved aliases:  col_adc1, row_a, to, connect
+L0530@00AD.a_pm_m:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC;
 
-Line 599: resolved aliases:  col_r7, row_r6, to, connect, back
-L0599@00DA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
+Line 531: resolved aliases:  col_a, row_sum, to, connect
+L0531@00AE.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, div2(max, set);
 
-Line 602: resolved aliases:  col_nos, row_r2, to, connect
-L0602@00DB.matrix_pop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
+Line 532: resolved aliases:  col_a, row_sum, from, disconnect, back
+L0532@00AF.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, if true then return else return;
 
-Line 603: resolved aliases:  col_r2, row_r3, to, connect
-L0603@00DC.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 2;
+Line 535: resolved aliases:  nuke
+L0535@00B0.prep_regs:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 
-Line 604: resolved aliases:  col_r3, row_r4, to, connect
-L0604@00DD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 3;
+Line 536: resolved aliases:  col_r7, row_r7, from, disconnect
+L0536@00B1.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
 
-Line 605: resolved aliases:  col_r4, row_r5, to, connect
-L0605@00DE.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 4;
+Line 537: resolved aliases:  col_r7, row_tos, to, connect
+L0537@00B2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 7, div2(max, set);
 
-Line 606: resolved aliases:  col_r5, row_r6, to, connect
-L0606@00DF.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 5;
+Line 538: resolved aliases:  col_r7, row_r7, to, connect
+L0538@00B3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7;
 
-Line 607: resolved aliases:  col_r6, row_r7, to, connect, back
-L0607@00E0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 6, if true then return else return;
+Line 539: resolved aliases:  col_r7, row_tos, from, disconnect, back
+L0539@00B4.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 7, if true then return else return;
 
-Line 617: resolved aliases:  col_nos, row_nos, from, disconnect
-L0617@00E5.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
+Line 542: resolved aliases:  nuke
+L0542@00B5.heron_step:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 
-Line 618: resolved aliases:  col_adc1, row_nos, to, connect
-L0618@00E6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
+Line 543: resolved aliases:  col_tos, row_r7, to, connect
+L0543@00B6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0, div2(max, set);
 
-Line 619: resolved aliases:  data
-L0619@00E7.  opr = np_np_ld, MT_COL = 3, if c_flag_is_set then next else bcd_add3;
+Line 545: resolved aliases:  nuke
+L0545@00B8.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 
-Line 622: resolved aliases:  col_not, row_direct, to, connect
-L0622@00E8.bcd_sub3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
+Line 546: resolved aliases:  col_nos, row_nos, from, disconnect
+L0546@00B9.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
 
-Line 623: resolved aliases:  col_adc2, row_not, to, connect, goto
-L0623@00E9.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, if false then next else bcd_3;
+Line 547: resolved aliases:  col_nos, row_r2, to, connect
+L0547@00BA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
 
-Line 626: resolved aliases:  col_adc2, row_direct, to, connect
-L0626@00EA.bcd_add3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
+Line 548: resolved aliases:  col_adc1, row_nos, to, connect
+L0548@00BB.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
 
-Line 628: resolved aliases:  col_nos, row_sum, to, connect
-L0628@00EB.bcd_3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 1;
+Line 549: resolved aliases:  col_adc2, row_r7, to, connect
+L0549@00BC.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0xD;
 
-Line 633: resolved aliases:  col_nos, row_sum, from, disconnect
-L0633@00F0.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 1;
+Line 550: resolved aliases:  col_tos, row_sum, to, connect
+L0550@00BD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, c_flag <= zero, div2(max, set);
 
-Line 634: resolved aliases:  col_adc2, row_direct, from, disconnect, back
-L0634@00F1.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xD , MT_COL = 0xD, if true then return else return;
+Warning: else clause missing in if statement, default value '' will be used
+Line 556: resolved aliases:  goto
+L0556@00C0.  bitcnt <= dec, if false then next else shift_dloop;
 
-Line 652: resolved aliases:  back
-L0652@00FE.  TXDCHAR <= char_zero, if true then return else return;
+Warning: else clause missing in if statement, default value '' will be used
+Line 561: resolved aliases:  goto
+L0561@00C3.  bitcnt <= dec, if false then next else shift_uloop;
 
-Success: pass 1 694 line(s) read, 392 statement(s) parsed.
+Line 564: resolved aliases:  nuke
+L0564@00C4.prep_shift:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
+
+Line 565: resolved aliases:  col_delay, row_tos, to, connect
+L0565@00C5.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 8;
+
+Line 566: resolved aliases:  col_tos, row_delay, to, connect, back
+L0566@00C6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 0, d_flag <= zero, bitcnt <= max, z_flags <= set, if true then return else return;
+
+Line 568: resolved aliases:  nuke
+L0568@00C7.dup:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
+
+Line 569: resolved aliases:  col_tos, row_tos, to, connect
+L0569@00C8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, bitcnt <= max, z_flags <= set;
+
+Warning: else clause missing in if statement, default value '' will be used
+Line 574: resolved aliases:  goto
+L0574@00CA.  bitcnt <= dec, if false then next else div2;
+
+Line 577: resolved aliases:  col_nos, row_tos, to, connect
+L0577@00CB.matrix_swap:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+
+Line 578: resolved aliases:  col_tos, row_nos, to, connect, goto
+L0578@00CC.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0, if false then next else matrix_nop;
+
+Line 581: resolved aliases:  col_nos, row_nos, to, connect
+L0581@00CD.matrix_nop1:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+
+Line 583: resolved aliases:  col_r2, row_r2, to, connect
+L0583@00CE.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
+
+Line 584: resolved aliases:  col_r3, row_r3, to, connect
+L0584@00CF.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
+
+Line 585: resolved aliases:  col_r4, row_r4, to, connect
+L0585@00D0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
+
+Line 586: resolved aliases:  col_r5, row_r5, to, connect
+L0586@00D1.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
+
+Line 587: resolved aliases:  col_r6, row_r6, to, connect
+L0587@00D2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
+
+Line 588: resolved aliases:  col_r7, row_r7, to, connect, back
+L0588@00D3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
+
+Line 591: resolved aliases:  col_nos, row_tos, to, connect
+L0591@00D4.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+
+Line 592: resolved aliases:  col_r2, row_nos, to, connect
+L0592@00D5.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
+
+Line 593: resolved aliases:  col_r3, row_r2, to, connect
+L0593@00D6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
+
+Line 594: resolved aliases:  col_r4, row_r3, to, connect
+L0594@00D7.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
+
+Line 595: resolved aliases:  col_r5, row_r4, to, connect
+L0595@00D8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
+
+Line 596: resolved aliases:  col_r6, row_r5, to, connect
+L0596@00D9.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
+
+Line 597: resolved aliases:  col_r7, row_r6, to, connect, back
+L0597@00DA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
+
+Line 600: resolved aliases:  col_nos, row_r2, to, connect
+L0600@00DB.matrix_pop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
+
+Line 601: resolved aliases:  col_r2, row_r3, to, connect
+L0601@00DC.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 2;
+
+Line 602: resolved aliases:  col_r3, row_r4, to, connect
+L0602@00DD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 3;
+
+Line 603: resolved aliases:  col_r4, row_r5, to, connect
+L0603@00DE.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 4;
+
+Line 604: resolved aliases:  col_r5, row_r6, to, connect
+L0604@00DF.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 5;
+
+Line 605: resolved aliases:  col_r6, row_r7, to, connect, back
+L0605@00E0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 6, if true then return else return;
+
+Line 615: resolved aliases:  col_nos, row_nos, from, disconnect
+L0615@00E5.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
+
+Line 616: resolved aliases:  col_adc1, row_nos, to, connect
+L0616@00E6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
+
+Line 617: resolved aliases:  data
+L0617@00E7.  opr = np_np_ld, MT_COL = 3, if c_flag_is_set then next else bcd_add3;
+
+Line 620: resolved aliases:  col_not, row_direct, to, connect
+L0620@00E8.bcd_sub3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
+
+Line 621: resolved aliases:  col_adc2, row_not, to, connect, goto
+L0621@00E9.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, if false then next else bcd_3;
+
+Line 624: resolved aliases:  col_adc2, row_direct, to, connect
+L0624@00EA.bcd_add3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
+
+Line 626: resolved aliases:  col_nos, row_sum, to, connect
+L0626@00EB.bcd_3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 1;
+
+Line 631: resolved aliases:  col_nos, row_sum, from, disconnect
+L0631@00F0.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 1;
+
+Line 632: resolved aliases:  col_adc2, row_direct, from, disconnect, back
+L0632@00F1.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xD , MT_COL = 0xD, if true then return else return;
+
+Line 650: resolved aliases:  back
+L0650@00FE.  TXDCHAR <= char_zero, if true then return else return;
+
+Success: pass 1 692 line(s) read, 390 statement(s) parsed.
 Compiling HexCalc.mcc, pass 2 out of 2.
 Info: line -1 - symbol[0000] <= 'System.Byte[]'
 Info: line -1 - symbol[0001] <= 'System.Byte[]'

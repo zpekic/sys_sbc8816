@@ -180,8 +180,8 @@ col_r7:		.alias MT_COL = 7;
 col_m:		.alias MT_COL = 7;
 col_delay:	.alias MT_COL = 8;
 col_not:	.alias MT_COL = 9;
-col_10:		.alias MT_COL = 0xA;
-col_11:		.alias MT_COL = 0xB;
+//col_10:	.alias MT_COL = 0xA; (not used)
+//col_11:	.alias MT_COL = 0xB; (not used)
 col_adc1:	.alias MT_COL = 0xC;
 col_adc2:	.alias MT_COL = 0xD;
 col_and1:	.alias MT_COL = 0xE;
@@ -548,7 +548,6 @@ heron_step:	nuke, matrix_nop1();
 			connect row_nos to col_adc1;
 			connect row_r7 to col_adc2;					// TOS <= R7 + NOS 
 			connect row_sum to col_tos, c_flag <= zero, div2(max, set);
-			//goto shift_down;							// TOS is the new X1
 			// NOTE terrible fall-through!! 
 			
 // shift TOS >> 1			
