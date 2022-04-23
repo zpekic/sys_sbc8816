@@ -263,7 +263,8 @@ cu_hxc: hexcalc_control_unit
 				cond(seq_cond_loopcnt_is_max) => loopcnt_is_max, 
 				cond(seq_cond_z_flagtos_is_set) => z_flags(0),
 				cond(seq_cond_z_flagnos_is_set) => z_flags(1),
-				cond(seq_cond_daa_flag_is_set) => daa_flag, 
+				--cond(seq_cond_daa_flag_is_set) => daa_flag, 
+				cond(seq_cond_loopcnt_nibble) => not(loopcnt(1)) and not(loopcnt(0)), 
 				cond(seq_cond_false) => '0',
           -- outputs
           ui_nextinstr => ui_nextinstr,

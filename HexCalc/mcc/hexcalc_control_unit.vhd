@@ -33,7 +33,7 @@ architecture Behavioral of hexcalc_control_unit is
 
 constant zero: std_logic_vector(31 downto 0) := X"00000000";
 
-signal uPC0, uPC1, uPC2, uPC3 : std_logic_vector(CODE_DEPTH - 1 downto 0);
+signal uPC0, uPC1, uPC2, uPC3, uPC4, uPC5, uPC6, uPC7 : std_logic_vector(CODE_DEPTH - 1 downto 0);
 signal condition, push, jump: std_logic;
 
 begin
@@ -61,6 +61,10 @@ begin
 						uPC1 <= std_logic_vector(unsigned(uPC0) + 1);
 						uPC2 <= uPC1;
 						uPC3 <= uPC2;
+						uPC4 <= uPC3;
+						uPC5 <= uPC4;
+						uPC6 <= uPC5;
+						uPC7 <= uPC6;
                   else
                      uPC0 <= ui_nextinstr;
                   end if;
@@ -74,7 +78,11 @@ begin
 								uPC0 <= uPC1;
 								uPC1 <= uPC2;
 								uPC2 <= uPC3;
-								uPC3 <= (others => '1');
+								uPC3 <= uPC4;
+								uPC4 <= uPC5;
+								uPC5 <= uPC6;
+								uPC6 <= uPC7;
+								uPC7 <= (others => '1');
                      when "11" =>	-- fork
                          uPC0 <= seq_fork;
                      when others =>

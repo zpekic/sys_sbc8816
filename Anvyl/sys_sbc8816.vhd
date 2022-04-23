@@ -415,20 +415,20 @@ constant kypd2ascii: table_32x8 := (
 	c('E'),
 	c('F'),
 	-- with "shift", entering a command (TOS = R0, top of stack, NOS = R1, next on stack)
-	c('Z'),	-- 0 == TOS <= 0
+	c('Z'),	-- 0 == TOS <= 0, reset flags, clear error
 	c('U'),	-- 1 == dUp(licate) NOS <= TOS, push all regs down, R7 lost)
-	c('$'),	-- 2 == BCD to binary (TOS changes, R7 destroyed)
-	c('#'),	-- 3 == binary to BCD (TOS changes, R7 destroyed)
+	c('$'),	-- 2 == BCD to binary (unsigned) (TOS changes, R7 destroyed)
+	c('#'),	-- 3 == binary to BCD (unsigned) (TOS changes, R7 destroyed)
 	c('R'),	-- 4 == rotate registers (R7 <= TOS, ... TOS <= NOS etc.)
 	c('<'),	-- 5 == shift (logical) TOS up
 	c('>'),	-- 6 == shift (logical) TOS down
-	c('N'),	-- 7 == nuke all (all registers = 0)
-	X"00",	-- 8 == not used
+	c('N'),	-- 7 == nuke all (all registers <= 0), reset flags, clear error
+	c('Q'),	-- 8 == integer square root (TOS assumed positive / unsigned)
 	X"00",	-- 9 == not used
-	c('+'),	-- A == add (TOS <= TOS + NOS, pop regs, R7 <= 0)
-	c('-'),	-- B == subtract (TOS <= TOS - NOS, pop regs, R7 <= 0)
-	c('*'),	-- C == multiply (TOS/NOS = TOS * NOS, R7 lost)
-	c('/'),	-- D == divide	(TOS is div, NOS is mod after TOS/NOS, R7 lost)
+	c('+'),	-- A == add (signed) (TOS <= TOS + NOS, pop regs, R7 <= 0)
+	c('-'),	-- B == subtract (signed) (TOS <= TOS - NOS, pop regs, R7 <= 0)
+	c('*'),	-- C == multiply (unsigned) (TOS/NOS <= TOS * NOS, R7 lost)
+	c('/'),	-- D == divide	(unsigned TOS is div, NOS is mod after TOS/NOS, R7 lost)
 	X"0D",	-- E == enter (TOS = 0, push other regs down, R7 lost)
 	c('S')  -- F == swap (TOS <=> NOS)
 );

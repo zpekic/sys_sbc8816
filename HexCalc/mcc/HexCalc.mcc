@@ -8,7 +8,7 @@
 //---------------------------------------------------------------------------------------------
 			.code 8, 52, hexcalc_code.mif, hexcalc_code.cgf, hexcalc_code.coe, hxc:hexcalc_code.vhd, hexcalc_code.hex, hexcalc_code.bin, 8;
 			.mapper 8, 8, hexcalc_map.mif, hexcalc_map.cgf, hexcalc_map.coe, hxc:hexcalc_map.vhd, hexcalc_map.hex, hexcalc_map.bin, 1;
-			.controller hexcalc_control_unit.vhd, 4;
+			.controller hexcalc_control_unit.vhd, 8;
 			.symbol 8, 256, hexcalc_sym.mif, hexcalc_sym.cgf, hexcalc_sym.coe, hxc:hexcalc_sym.vhd, hexcalc_sym.hex, hexcalc_sym.bin, 32;
 
 // System interface signals
@@ -56,7 +56,8 @@ seq_cond:	.if 4 values
 				loopcnt_is_max,
 				z_flagtos_is_set,
 				z_flagnos_is_set,
-				daa_flag_is_set,
+				//daa_flag_is_set,
+				loopcnt_nibble,
 				false			// hard-code to 0
 				default true;
 seq_then:	.then 8 values next, repeat, return, fork, @ default next;				// any label
@@ -137,7 +138,7 @@ noop:		.alias if true then next else next;
 back:	    .alias if true then return else return;
 data:		.alias opr = np_np_ld, MT_COL =;
 load_bitcnt:.alias bitcnt <= load, MT_COL =;
-wait:		.alias if button then next else repeat;
+//wait:		.alias if TRACE_RESULT then next else repeat;	// debug only
 
 // switches in the matrix
 nuke		.alias STATUS = busy_using_mt, MT_CTRL = clear;
@@ -197,33 +198,41 @@ matrix_push:.sub;
 matrix_swap:.sub;
 matrix_pop:	.sub;
 matrix_push:.sub;
+divmod:		.sub;
 div2:		.sub bitcnt, z_flags;
+dup:		.sub;
 prep_regs:	.sub loopcnt;
 prep_shift:	.sub;
+shift_up:	.sub;
+shift_down:	.sub;
 a_pm_m:		.sub c_flag;	// A <= A + M | A - M
 //bcd_add:	.sub;
 bcd_adjust: .sub c_flag;	// TOS.LSN <= TOS.LSN + 3 | TOS.LSN - 3
+heron_step:	.sub;
 
 // other
-reset:		.alias MT_CTRL = clear, errcode <= ok;
+clear:		.alias MT_CTRL = clear, errcode <= ok;
+reset_flags:.alias c_flag <= zero, d_flag <= zero, z_flags <= set;
+reset_all:	.alias reset_flags, clear; 
 
 			.org 0;
 //	First 4 microcode locations can't be used branch destinations
 //	---------------------------------------------------------------------------
-_reset:		reset;  
+_reset:		reset_all;  
 
-_reset1:	reset;
+_reset1:	reset_all;
 
-_reset2:	reset;
+_reset2:	reset_all;
 
-_reset3:	reset;
+_reset3:	reset_all;
 
 //	indicate availability and wait for start signal
 //	---------------------------------------------------------------------------
 deadloop:	STATUS = ready, if input_is_zero then repeat else next;
+			echo(input);
 			if true then fork else fork;	// jump to entry point per character code (see .map statements below)
 
-			.map 0b????????;
+			.map 0b????????;				// default destination for all input ASCII chars
 badchar:	errcode <= err_badchar, goto printerror;	// ERR1
 divzero:	errcode <= err_divzero, goto printerror;	// ERR2	
 printerror:	emit(char_E);		// ERR
@@ -240,78 +249,98 @@ printerror:	emit(char_E);		// ERR
 			.map 0x09;	// treat tabs and spaces same way (ignore them)	
 			.map ' ';
 // ---------------------------------------------------------
-			echo(input);
 nextchar:	STATUS = done, goto deadloop;
 
 // enter: push all down, TOS <= 0 --------------------------
 			.map 0x0D;	// enter
-// -- Note: R7 lost -----------------------------------------
-			echo(input);
+// -- Note: R7 lost ----------------------------------------
 enter:		nuke, matrix_push();
 			goto exec;
 
-// dup: NOS <= TOS, push others down ------------------------
+// dup: NOS <= TOS, push others down -----------------------
 			.map 'u';
 			.map 'U';	// dUp
-// -- Note: R7 lost -----------------------------------------
-			echo(input);
-dup:		nuke, matrix_push();
-			connect row_tos to col_tos, goto exec;
+// -- Note: R7 lost ----------------------------------------
+			dup();
+			goto done;
 
-// rotate: TOS <= NOS, ... R7 <= TOS ------------------------
+// rotate: TOS <= NOS, ... R7 <= TOS -----------------------
 			.map 'r';
 			.map 'R';	// "rotate"
-// -- Note: R7 lost -----------------------------------------
-			echo(input);
+// -- Note: R7 lost ----------------------------------------
 rotate:		nuke, matrix_push();
-			connect row_r7 to col_tos, goto exec;
+r7_to_tos:	connect row_r7 to col_tos, goto exec;
 					
 // TOS <=> NOS ---------------------------------------------
 			.map 's';	// "swap"
 			.map 'S';
 // ---------------------------------------------------------
-			echo(input);
 swap:		nuke, matrix_swap();
 			goto exec;
-			
-// TOS logical shift right (down) -------------------------
-			.map '>';
-// --------------------------------------------------------
-			prep_shift();
-lsr_loop:	STATUS = busy_using_mt, opr = m2_m2_np, z_flags <= update, d_flag <= column, if bitcnt_is_zero then done;
-			bitcnt <= dec, goto lsr_loop;	
 
-// TOS logical shift left (up) ----------------------------
+// TOS logical shift right (down) --------------------------
+			.map '>';
+// ---------------------------------------------------------
+			shift_down();
+			goto done;
+
+// TOS logical shift left (up) -----------------------------
 			.map '<';
-// --------------------------------------------------------
-			prep_shift();
-lsl_loop:	STATUS = busy_using_mt, opr = d2_d2_np, z_flags <= update, d_flag <= column, if bitcnt_is_zero then done;
-			bitcnt <= dec, goto lsl_loop;	
-			
+// ---------------------------------------------------------
+			shift_up();
+			goto done;
+
+// Integer Square root (TODO: order stack after done) ------
+			.map 'q';
+			.map 'Q';
+// ---------------------------------------------------------
+			dup();							// S, S, ?, ?, ?, ?, ?, ?
+			shift_down();					// X0, S, ?, ?, ?, ?, ?, ?
+			if z_flagtos_is_set then next else root;
+			nuke, matrix_pop();				// S is 0 or 1
+			goto exec;						// S (after 1 pop result is on TOS, R7 was lost)	
+root:		nuke, matrix_push();
+			disconnect row_tos from col_nos;
+			connect row_tos to col_tos;
+			connect row_nos to col_nos;
+			disconnect row_r6 from col_r7;
+			connect row_tos to col_r7, div2(max, set);
+											// X0, S, S, ?, ?, ?, ?, X0
+			heron_step();					// X1, S, S, ?, ?, ?, ?, X0
+			// X1 - X0
+root_loop:	nuke, matrix_nop1();
+			connect row_tos to col_tos;
+			connect row_tos to col_adc1;
+			connect row_r7 to col_not;
+			connect row_not to col_adc2, c_flag <= one, div2(max, set);
+			if c_flag_is_set then next else root_cont;		
+			disconnect row_tos from col_tos, goto r7_to_tos;	// Done, copy result to TOS
+			// X0 <= X1
+root_cont:	disconnect row_r7 from col_r7;
+			connect row_tos to col_r7, div2(max, set);
+			heron_step();
+			goto root_loop;
+
 // R0..R7 <= 0, ERR <= 0 ----------------------------------
 			.map 'n';	// "nuke"
 			.map 'N';
 // --------------------------------------------------------
-			echo(input);
-			errcode <= ok, nuke, goto exec;
+			reset_flags, errcode <= ok, nuke, goto exec;
 
 // TOS <= 0, ERR <= 0 -------------------------------------
 			.map 'z';	// "zero"
 			.map 'Z';
 // --------------------------------------------------------
-			echo(input);
-			errcode <= ok, nuke, matrix_nop1();	// no switch on TOS means pull down, so it 0
-exec:		div2(max, set);						// 16 or 32 *
-done:		print_st();
-			goto nextchar;		
+			reset_flags, errcode <= ok, nuke, matrix_nop1();	// no switch on TOS means pull down, so it 0
+exec:		div2(max, set);										// 16 or 32 *
+done:		print_st();											// output stack top
+			goto nextchar;										// go for next command
 
 // TOS <= TOS + NOS, POP ----------------------------------
 			.map '+';	// add
 // --------------------------------------------------------
-			echo(input);
 //			bcd_add();
 //			goto done;
-			
 plus:		c_flag <= zero, nuke, matrix_pop();
 add:		connect row_nos to col_adc2;
 pm:			connect row_sum to col_tos;
@@ -320,7 +349,6 @@ pm:			connect row_sum to col_tos;
 // TOS <= TOS - NOS, POP ----------------------------------
 			.map '-';	// subtract
 // --------------------------------------------------------
-			echo(input);
 minus:		c_flag <= one, nuke, matrix_pop();
 			connect row_nos to col_not;
 			connect row_not to col_adc2, goto pm;
@@ -328,8 +356,10 @@ minus:		c_flag <= one, nuke, matrix_pop();
 // TOS <= NOS div TOS, NOS <= NOS mod TOS, ----------------
 			.map '/';	// div/mod
 // Note: R7 destroyed -------------------------------------
-			echo(input);
-div:		prep_regs(max);
+			divmod();
+			goto swap; // quotient on TOS, remainder on NOS
+			
+divmod:		prep_regs(max);
 			if z_flagtos_is_set then divzero;
 			// A < Q < 0
 div_loop:	disconnect row_q from col_q;
@@ -356,7 +386,7 @@ div_loop:	disconnect row_q from col_q;
 			STATUS = busy_using_mt, opr = m2_m2_np;
 			nuke, matrix_nop();
 
-div_next:	if loopcnt_is_zero then swap;	// quotient on TOS, remainder on NOS
+div_next:	if loopcnt_is_zero then return;	
 			loopcnt <= dec, goto div_loop;
 			
 			// A <= A + M, Q(0) <= 0
@@ -366,7 +396,6 @@ restore_a:	connect row_m to col_adc2, a_pm_m(zero);
 // TOS, NOS <= TOS * NOS ----------------------------------
 			.map '*';	// multiply
 // Note: R7 destroyed -------------------------------------
-			echo(input);
 mul:		prep_regs(max);			
 			if z_flagnos_is_set then done; // we already have TOS, NOS = 0
 			// NOS(0) to d_flag
@@ -396,7 +425,6 @@ m_shift:	connect row_delay to col_tos;
 // TOS(BIN) <= TOS (BCD) ----------------------------------
 			.map '$';	// convert BCD to binary
 // Note: R7 destroyed -------------------------------------
-			echo(input);
 			nuke, matrix_push();
 			div2(max, set);	
 			bitcnt <= max, if z_flagtos_is_set then conv_done0;
@@ -409,10 +437,8 @@ bitcnt_s0:		nuke, matrix_nop();
 loopcnt_s0:			connect row_nos to col_delay;
 					connect row_nos to col_nos;
 					// rotate down to examine bit 3 in LSN BCD digit
-					STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column, loopcnt <= dec;
-					STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column, loopcnt <= dec;
-					STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column, loopcnt <= dec;
-					STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column, loopcnt <= dec;
+loopcnt_d0:			STATUS = busy_using_mt, opr = np_d2_d2, d_flag <= column, loopcnt <= dec;
+					if loopcnt_nibble then next else loopcnt_d0;
 					if d_flag_is_set then next else loopcnt_n0;
 					bcd_adjust(one);	// subtract 3 from digit
 loopcnt_n0:			if loopcnt_is_zero then next else loopcnt_s0;
@@ -424,7 +450,6 @@ conv_done0:	nuke, matrix_pop();
 // TOS(BCD) <= TOS (BIN) ----------------------------------
 			.map '#';	// convert binary to BCD
 // Note: R7 destroyed -------------------------------------
-			echo(input);
 			nuke, matrix_nop();
 			disconnect row_r7 from col_r7;
 			connect row_nos to col_r7;
@@ -432,7 +457,6 @@ conv_done0:	nuke, matrix_pop();
 			bitcnt <= max, if z_flagtos_is_set then done;
 bitcnt_s1:		nuke, matrix_nop();
 				connect row_tos to col_nos;	// TOS = BIN, NOS = BCD
-				noop;
 				STATUS = busy_using_mt, opr = m2_m2_np;	// one bit from binary to BCD
 				disconnect row_tos from col_nos;
 				loopcnt <= max;
@@ -443,10 +467,8 @@ loopcnt_s1:			c_flag <= one, data 5;
 					connect row_direct to col_not;
 					connect row_not to col_adc2;
 					// compare LSN BCD digit to 5
-					STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update, loopcnt <= dec;
-					STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update, loopcnt <= dec;
-					STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update, loopcnt <= dec;
-					STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update, loopcnt <= dec;
+loopcnt_d1:			STATUS = busy_using_mt, opr = np_d2_d2, c_flag <= adder, z_flags <= update, loopcnt <= dec;
+					if loopcnt_nibble then next else loopcnt_d1;
 					if c_flag_is_set then next else loopcnt_n1;
 					if bitcnt_is_zero then loopcnt_n1 else next; // no need to adjust in last iteration bc no more shifting will be done
 					disconnect row_not from col_adc2;
@@ -490,8 +512,7 @@ conv_done1: 	nuke, matrix_nop();
 			.map 'F';
 // --------------------------------------------------------
 			data 0b1001;				// correction from reverse ASCII is 9
-hexchar:	echo(input);
-			load_bitcnt 3, c_flag <= zero, nuke, matrix_nop1();
+hexchar:	load_bitcnt 3, c_flag <= zero, nuke, matrix_nop1();
 			connect row_const to col_adc1;
 			connect row_direct to col_adc2;
 			connect row_sum to col_tos;
@@ -506,7 +527,6 @@ hexchar:	echo(input);
 // -----------------------------------------------------------			
 // subroutines (keep in mind max stack call level is 4!)
 // -----------------------------------------------------------
-
 a_pm_m:		connect row_a to col_adc1;
 			connect row_sum to col_a, div2(max, set);
 			disconnect row_sum from col_a, back;
@@ -518,13 +538,38 @@ prep_regs:	nuke, matrix_nop1();
 			connect row_r7 to col_r7;
 			disconnect row_tos from col_r7, back;		
 
-// common for shift up and down
-prep_shift: echo(input);
-lsr:		nuke, matrix_nop1();
-			connect row_tos to col_delay;
-			connect row_delay to col_tos;
-			d_flag <= zero, bitcnt <= max, z_flags <= set, back;
+// used as step in integer square root
+heron_step:	nuke, matrix_nop1();
+			connect row_r7 to col_tos, div2(max, set); 	// X0, S, S, ?, ?, ?, ?, X0
+			divmod();									// mod, div, S, ?, ?, ?, ?, X0
+			nuke, matrix_nop1();
+			disconnect row_nos from col_nos;
+			connect row_r2 to col_nos;					// NOS <= R2 (S)
+			connect row_nos to col_adc1;
+			connect row_r7 to col_adc2;					// TOS <= R7 + NOS 
+			connect row_sum to col_tos, c_flag <= zero, div2(max, set);
+			//goto shift_down;							// TOS is the new X1
+			// NOTE terrible fall-through!! 
+			
+// shift TOS >> 1			
+shift_down:	prep_shift();
+shift_dloop:STATUS = busy_using_mt, opr = m2_m2_np, z_flags <= update, d_flag <= column, if bitcnt_is_zero then return;
+			bitcnt <= dec, goto shift_dloop;	
 
+// shift TOS << 1			
+shift_up:	prep_shift();
+shift_uloop:STATUS = busy_using_mt, opr = d2_d2_np, z_flags <= update, d_flag <= column, if bitcnt_is_zero then return;
+			bitcnt <= dec, goto shift_uloop;	
+
+// common for shift up and down
+prep_shift: nuke, matrix_nop1();
+			connect row_tos to col_delay;
+			connect row_delay to col_tos, d_flag <= zero, bitcnt <= max, z_flags <= set, back;
+
+dup:		nuke, matrix_push();
+			connect row_tos to col_tos, bitcnt <= max, z_flags <= set;
+			// NOTE terrible fall-through!!
+			
 // rotate all registers right (LSB first) through switch matrix;
 div2:		STATUS = busy_using_mt, opr = d2_d2_d2, c_flag <= adder, z_flags <= update, if bitcnt_is_zero then return;
 			bitcnt <= dec, goto div2;
@@ -591,10 +636,8 @@ bcd_3:		connect row_sum to col_nos;
 print_st:	loopcnt <= max, if TRACE_RESULT then next else return;
 			loopcnt <= inc, print_crlf();	// loopcnt is now 0
 st_loop:	selreg = internal, emit(reg);
-			loopcnt <= inc;
-			loopcnt <= inc;
-			loopcnt <= inc;
-			loopcnt <= inc; 
+st_loop1:	loopcnt <= inc;
+			if loopcnt_nibble then next else st_loop1;
 			if loopcnt_is_zero then print_crlf else st_loop;
 			
 echo:		if TRACE_INPUT then emit else return;

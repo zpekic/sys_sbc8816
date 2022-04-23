@@ -4,443 +4,524 @@
 --------------------------------------------------------
 Compiling HexCalc.mcc, pass 1 out of 2.
 Warning: Clock edge implicitly (by default) set to rising_edge()
-Line 213: resolved aliases:  reset
-L0213@0000._reset:  MT_CTRL = clear, errcode <= ok;
+Line 221: resolved aliases:  reset_all, reset_flags, clear
+L0221@0000._reset:  c_flag <= zero, d_flag <= zero, z_flags <= set, MT_CTRL = clear, errcode <= ok;
 
-Line 215: resolved aliases:  reset
-L0215@0001._reset1:  MT_CTRL = clear, errcode <= ok;
+Line 223: resolved aliases:  reset_all, reset_flags, clear
+L0223@0001._reset1:  c_flag <= zero, d_flag <= zero, z_flags <= set, MT_CTRL = clear, errcode <= ok;
 
-Line 217: resolved aliases:  reset
-L0217@0002._reset2:  MT_CTRL = clear, errcode <= ok;
+Line 225: resolved aliases:  reset_all, reset_flags, clear
+L0225@0002._reset2:  c_flag <= zero, d_flag <= zero, z_flags <= set, MT_CTRL = clear, errcode <= ok;
 
-Line 219: resolved aliases:  reset
-L0219@0003._reset3:  MT_CTRL = clear, errcode <= ok;
+Line 227: resolved aliases:  reset_all, reset_flags, clear
+L0227@0003._reset3:  c_flag <= zero, d_flag <= zero, z_flags <= set, MT_CTRL = clear, errcode <= ok;
 
 Warning: mask value 255 detected. Range will be 0 to 255
-Line 227: resolved aliases:  goto
-L0227@0006.badchar:  errcode <= err_badchar, if false then next else printerror;
+Line 236: resolved aliases:  goto
+L0236@0007.badchar:  errcode <= err_badchar, if false then next else printerror;
 
-Line 228: resolved aliases:  goto
-L0228@0007.divzero:  errcode <= err_divzero, if false then next else printerror;
+Line 237: resolved aliases:  goto
+L0237@0008.divzero:  errcode <= err_divzero, if false then next else printerror;
 
-Line 244: resolved aliases:  goto
-L0244@0011.nextchar:  STATUS = done, if false then next else deadloop;
+Line 252: resolved aliases:  goto
+L0252@0011.nextchar:  STATUS = done, if false then next else deadloop;
 
-Line 250: resolved aliases:  nuke
-L0250@0013.enter:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
+Line 257: resolved aliases:  nuke
+L0257@0012.enter:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
 
-Line 251: resolved aliases:  goto
-L0251@0014.  if false then next else exec;
+Line 258: resolved aliases:  goto
+L0258@0013.  if false then next else exec;
 
-Line 258: resolved aliases:  nuke
-L0258@0016.dup:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
+Line 265: resolved aliases:  goto
+L0265@0015.  if false then next else done;
 
-Line 259: resolved aliases:  col_tos, row_tos, to, connect, goto
-L0259@0017.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, if false then next else exec;
+Line 271: resolved aliases:  nuke
+L0271@0016.rotate:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
 
-Line 266: resolved aliases:  nuke
-L0266@0019.rotate:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
+Line 272: resolved aliases:  col_tos, row_r7, to, connect, goto
+L0272@0017.r7_to_tos:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0, if false then next else exec;
 
-Line 267: resolved aliases:  col_tos, row_r7, to, connect, goto
-L0267@001A.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0, if false then next else exec;
+Line 278: resolved aliases:  nuke
+L0278@0018.swap:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_swap();
 
-Line 274: resolved aliases:  nuke
-L0274@001C.swap:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_swap();
+Line 279: resolved aliases:  goto
+L0279@0019.  if false then next else exec;
 
-Line 275: resolved aliases:  goto
-L0275@001D.  if false then next else exec;
+Line 285: resolved aliases:  goto
+L0285@001B.  if false then next else done;
 
-Warning: else clause missing in if statement, default value '' will be used
-Line 282: resolved aliases:  goto
-L0282@0020.  bitcnt <= dec, if false then next else lsr_loop;
+Line 291: resolved aliases:  goto
+L0291@001D.  if false then next else done;
 
-Warning: else clause missing in if statement, default value '' will be used
-Line 289: resolved aliases:  goto
-L0289@0023.  bitcnt <= dec, if false then next else lsl_loop;
+Line 300: resolved aliases:  nuke
+L0300@0021.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
 
-Line 296: resolved aliases:  nuke, goto
-L0296@0025.  errcode <= ok, STATUS = busy_using_mt, MT_CTRL = clear, if false then next else exec;
+Line 301: resolved aliases:  goto
+L0301@0022.  if false then next else exec;
 
-Line 303: resolved aliases:  nuke
-L0303@0027.  errcode <= ok, STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
+Line 302: resolved aliases:  nuke
+L0302@0023.root:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
 
-Line 306: resolved aliases:  goto
-L0306@002A.  if false then next else nextchar;
+Line 303: resolved aliases:  col_nos, row_tos, from, disconnect
+L0303@0024.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 1;
 
-Line 315: resolved aliases:  nuke
-L0315@002C.plus:  c_flag <= zero, STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
+Line 304: resolved aliases:  col_tos, row_tos, to, connect
+L0304@0025.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0;
 
-Line 316: resolved aliases:  col_adc2, row_nos, to, connect
-L0316@002D.add:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xD;
+Line 305: resolved aliases:  col_nos, row_nos, to, connect
+L0305@0026.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
 
-Line 317: resolved aliases:  col_tos, row_sum, to, connect
-L0317@002E.pm:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0;
+Line 306: resolved aliases:  col_r7, row_r6, from, disconnect
+L0306@0027.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 6 , MT_COL = 7;
 
-Line 318: resolved aliases:  col_adc1, row_tos, to, connect, goto
-L0318@002F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC, if false then next else exec;
+Line 307: resolved aliases:  col_r7, row_tos, to, connect
+L0307@0028.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 7, div2(max, set);
 
-Line 324: resolved aliases:  nuke
-L0324@0031.minus:  c_flag <= one, STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
+Line 311: resolved aliases:  nuke
+L0311@002A.root_loop:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 
-Line 325: resolved aliases:  col_not, row_nos, to, connect
-L0325@0032.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 9;
+Line 312: resolved aliases:  col_tos, row_tos, to, connect
+L0312@002B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0;
 
-Line 326: resolved aliases:  col_adc2, row_not, to, connect, goto
-L0326@0033.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, if false then next else pm;
+Line 313: resolved aliases:  col_adc1, row_tos, to, connect
+L0313@002C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC;
 
-Warning: else clause missing in if statement, default value '' will be used
-Line 335: resolved aliases:  col_q, row_q, from, disconnect
-L0335@0037.div_loop:  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
+Line 314: resolved aliases:  col_not, row_r7, to, connect
+L0314@002D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 9;
 
-Line 336: resolved aliases:  col_q, row_delay, to, connect
-L0336@0038.  d_flag <= zero, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 1;
+Line 315: resolved aliases:  col_adc2, row_not, to, connect
+L0315@002E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, c_flag <= one, div2(max, set);
 
-Line 337: resolved aliases:  col_a, row_q, to, connect
-L0337@0039.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
+Line 317: resolved aliases:  col_tos, row_tos, from, disconnect, goto
+L0317@0030.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 0, if false then next else r7_to_tos;
 
-Line 339: resolved aliases:  col_q, row_delay, from, disconnect
-L0339@003B.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 8 , MT_COL = 1;
+Line 319: resolved aliases:  col_r7, row_r7, from, disconnect
+L0319@0031.root_cont:  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
 
-Line 340: resolved aliases:  col_a, row_q, from, disconnect
-L0340@003C.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 0;
+Line 320: resolved aliases:  col_r7, row_tos, to, connect
+L0320@0032.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 7, div2(max, set);
 
-Line 341: resolved aliases:  col_q, row_q, to, connect
-L0341@003D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+Line 322: resolved aliases:  goto
+L0322@0034.  if false then next else root_loop;
 
-Line 344: resolved aliases:  col_not, row_m, to, connect
-L0344@003E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 9;
+Line 328: resolved aliases:  reset_flags, nuke, goto
+L0328@0035.  c_flag <= zero, d_flag <= zero, z_flags <= set, errcode <= ok, STATUS = busy_using_mt, MT_CTRL = clear, if false then next else exec;
 
-Line 345: resolved aliases:  col_adc2, row_not, to, connect
-L0345@003F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, a_pm_m(one);
+Line 334: resolved aliases:  reset_flags, nuke
+L0334@0036.  c_flag <= zero, d_flag <= zero, z_flags <= set, errcode <= ok, STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 
-Line 347: resolved aliases:  col_adc2, row_not, from, disconnect
-L0347@0040.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 9 , MT_COL = 0xD, if c_flag_is_set then next else restore_a;
+Line 337: resolved aliases:  goto
+L0337@0039.  if false then next else nextchar;
 
-Line 350: resolved aliases:  col_a, row_a, to, connect
-L0350@0041.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0;
+Line 344: resolved aliases:  nuke
+L0344@003A.plus:  c_flag <= zero, STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
 
-Line 351: resolved aliases:  col_q, row_q, from, disconnect
-L0351@0042.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
+Line 345: resolved aliases:  col_adc2, row_nos, to, connect
+L0345@003B.add:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xD;
 
-Line 352: resolved aliases:  col_delay, row_q, to, connect
-L0352@0043.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 8;
+Line 346: resolved aliases:  col_tos, row_sum, to, connect
+L0346@003C.pm:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0;
 
-Line 353: resolved aliases:  col_q, row_delay, to, connect
-L0353@0044.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 1;
+Line 347: resolved aliases:  col_adc1, row_tos, to, connect, goto
+L0347@003D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC, if false then next else exec;
 
-Line 357: resolved aliases:  nuke
-L0357@0048.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+Line 352: resolved aliases:  nuke
+L0352@003E.minus:  c_flag <= one, STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
 
-Warning: else clause missing in if statement, default value '' will be used
+Line 353: resolved aliases:  col_not, row_nos, to, connect
+L0353@003F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 9;
+
+Line 354: resolved aliases:  col_adc2, row_not, to, connect, goto
+L0354@0040.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, if false then next else pm;
+
 Line 360: resolved aliases:  goto
-L0360@004A.  loopcnt <= dec, if false then next else div_loop;
-
-Line 363: resolved aliases:  col_adc2, row_m, to, connect
-L0363@004B.restore_a:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0xD, a_pm_m(zero);
-
-Line 364: resolved aliases:  col_adc2, row_m, from, disconnect, goto
-L0364@004C.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 0xD, if false then next else div_next;
+L0360@0042.  if false then next else swap;
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 373: resolved aliases:  col_delay, row_nos, to, connect
-L0373@0050.m_loop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 8;
+Line 365: resolved aliases:  col_q, row_q, from, disconnect
+L0365@0045.div_loop:  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
 
-Line 376: resolved aliases:  col_delay, row_nos, from, disconnect
-L0376@0053.  c_flag <= zero, STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 8, if d_flag_is_set then m_add_r7 else m_shift0;
+Line 366: resolved aliases:  col_q, row_delay, to, connect
+L0366@0046.  d_flag <= zero, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 1;
 
-Line 379: resolved aliases:  col_adc1, row_r7, to, connect
-L0379@0054.m_add_r7:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0xC;
+Line 367: resolved aliases:  col_a, row_q, to, connect
+L0367@0047.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
 
-Line 380: resolved aliases:  col_adc2, row_tos, to, connect
-L0380@0055.m_add:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xD;
+Line 369: resolved aliases:  col_q, row_delay, from, disconnect
+L0369@0049.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 8 , MT_COL = 1;
 
-Line 381: resolved aliases:  col_tos, row_sum, to, connect
-L0381@0056.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, div2(max, set);
+Line 370: resolved aliases:  col_a, row_q, from, disconnect
+L0370@004A.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 0;
 
-Line 382: resolved aliases:  col_tos, row_sum, from, disconnect
-L0382@0057.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, if c_flag_is_set then m_shift1;
+Line 371: resolved aliases:  col_q, row_q, to, connect
+L0371@004B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
 
-Warning: else clause missing in if statement, default value '' will be used
-Line 385: resolved aliases:  col_nos, row_tos, to, connect, goto
-L0385@0058.m_shift0:  d_flag <= zero, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1, if false then next else m_shift;
+Line 374: resolved aliases:  col_not, row_m, to, connect
+L0374@004C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 9;
 
-Line 386: resolved aliases:  col_nos, row_tos, to, connect
-L0386@0059.m_shift1:  d_flag <= one, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+Line 375: resolved aliases:  col_adc2, row_not, to, connect
+L0375@004D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, a_pm_m(one);
 
-Line 387: resolved aliases:  col_tos, row_delay, to, connect
-L0387@005A.m_shift:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 0;
+Line 377: resolved aliases:  col_adc2, row_not, from, disconnect
+L0377@004E.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 9 , MT_COL = 0xD, if c_flag_is_set then next else restore_a;
 
-Line 388: resolved aliases:  col_nos, row_nos, from, disconnect
-L0388@005B.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1, opr = d2_d2_np;
+Line 380: resolved aliases:  col_a, row_a, to, connect
+L0380@004F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0;
 
-Line 391: resolved aliases:  col_nos, row_tos, from, disconnect
-L0391@005C.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 1;
+Line 381: resolved aliases:  col_q, row_q, from, disconnect
+L0381@0050.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
 
-Line 392: resolved aliases:  col_tos, row_delay, from, disconnect
-L0392@005D.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 8 , MT_COL = 0;
+Line 382: resolved aliases:  col_delay, row_q, to, connect
+L0382@0051.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 8;
 
-Line 393: resolved aliases:  col_nos, row_nos, to, connect
-L0393@005E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1, if loopcnt_is_zero then done;
+Line 383: resolved aliases:  col_q, row_delay, to, connect
+L0383@0052.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 1;
 
-Warning: else clause missing in if statement, default value '' will be used
-Line 394: resolved aliases:  goto
-L0394@005F.  loopcnt <= dec, if false then next else m_loop;
-
-Line 400: resolved aliases:  nuke
-L0400@0061.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
+Line 387: resolved aliases:  nuke
+L0387@0056.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 403: resolved aliases:  nuke
-L0403@0064.bitcnt_s0:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+Line 390: resolved aliases:  goto
+L0390@0058.  loopcnt <= dec, if false then next else div_loop;
 
-Line 404: resolved aliases:  col_tos, row_nos, to, connect
-L0404@0065.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
+Line 393: resolved aliases:  col_adc2, row_m, to, connect
+L0393@0059.restore_a:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0xD, a_pm_m(zero);
 
-Line 406: resolved aliases:  col_tos, row_nos, from, disconnect
-L0406@0067.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 0;
-
-Line 409: resolved aliases:  col_delay, row_nos, to, connect
-L0409@006A.loopcnt_s0:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 8;
-
-Line 410: resolved aliases:  col_nos, row_nos, to, connect
-L0410@006B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+Line 394: resolved aliases:  col_adc2, row_m, from, disconnect, goto
+L0394@005A.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 0xD, if false then next else div_next;
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 420: resolved aliases:  goto
-L0420@0074.  bitcnt <= dec, if false then next else bitcnt_s0;
+Line 403: resolved aliases:  col_delay, row_nos, to, connect
+L0403@005D.m_loop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 8;
 
-Line 421: resolved aliases:  nuke
-L0421@0075.conv_done0:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
+Line 406: resolved aliases:  col_delay, row_nos, from, disconnect
+L0406@0060.  c_flag <= zero, STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 8, if d_flag_is_set then m_add_r7 else m_shift0;
 
-Line 422: resolved aliases:  col_tos, row_tos, to, connect, goto
-L0422@0076.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, if false then next else exec;
+Line 409: resolved aliases:  col_adc1, row_r7, to, connect
+L0409@0061.m_add_r7:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0xC;
 
-Line 428: resolved aliases:  nuke
-L0428@0078.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+Line 410: resolved aliases:  col_adc2, row_tos, to, connect
+L0410@0062.m_add:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xD;
 
-Line 429: resolved aliases:  col_r7, row_r7, from, disconnect
-L0429@0079.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
+Line 411: resolved aliases:  col_tos, row_sum, to, connect
+L0411@0063.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, div2(max, set);
 
-Line 430: resolved aliases:  col_r7, row_nos, to, connect
-L0430@007A.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 7;
-
-Line 431: resolved aliases:  col_tos, row_tos, to, connect
-L0431@007B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, div2(max, set);
+Line 412: resolved aliases:  col_tos, row_sum, from, disconnect
+L0412@0064.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, if c_flag_is_set then m_shift1;
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 433: resolved aliases:  nuke
-L0433@007D.bitcnt_s1:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
+Line 415: resolved aliases:  col_nos, row_tos, to, connect, goto
+L0415@0065.m_shift0:  d_flag <= zero, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1, if false then next else m_shift;
 
-Line 434: resolved aliases:  col_nos, row_tos, to, connect
-L0434@007E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+Line 416: resolved aliases:  col_nos, row_tos, to, connect
+L0416@0066.m_shift1:  d_flag <= one, STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
 
-Line 435: resolved aliases:  noop
-L0435@007F.  if true then next else next;
+Line 417: resolved aliases:  col_tos, row_delay, to, connect
+L0417@0067.m_shift:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 0;
 
-Line 437: resolved aliases:  col_nos, row_tos, from, disconnect
-L0437@0081.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 1;
+Line 418: resolved aliases:  col_nos, row_nos, from, disconnect
+L0418@0068.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1, opr = d2_d2_np;
 
-Line 440: resolved aliases:  data
-L0440@0084.loopcnt_s1:  c_flag <= one, opr = np_np_ld, MT_COL = 5;
+Line 421: resolved aliases:  col_nos, row_tos, from, disconnect
+L0421@0069.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 1;
 
-Line 441: resolved aliases:  col_nos, row_nos, to, connect
-L0441@0085.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+Line 422: resolved aliases:  col_tos, row_delay, from, disconnect
+L0422@006A.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 8 , MT_COL = 0;
 
-Line 442: resolved aliases:  col_adc1, row_nos, to, connect
-L0442@0086.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
-
-Line 443: resolved aliases:  col_not, row_direct, to, connect
-L0443@0087.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
-
-Line 444: resolved aliases:  col_adc2, row_not, to, connect
-L0444@0088.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD;
-
-Line 452: resolved aliases:  col_adc2, row_not, from, disconnect
-L0452@008F.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 9 , MT_COL = 0xD;
+Line 423: resolved aliases:  col_nos, row_nos, to, connect
+L0423@006B.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1, if loopcnt_is_zero then done;
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 456: resolved aliases:  goto
-L0456@0093.  bitcnt <= dec, if false then next else bitcnt_s1;
+Line 424: resolved aliases:  goto
+L0424@006C.  loopcnt <= dec, if false then next else m_loop;
 
-Line 457: resolved aliases:  nuke
-L0457@0094.conv_done1:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
-
-Line 458: resolved aliases:  col_r7, row_r7, from, disconnect
-L0458@0095.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
-
-Line 459: resolved aliases:  col_tos, row_nos, to, connect
-L0459@0096.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
-
-Line 460: resolved aliases:  col_nos, row_r7, to, connect, goto
-L0460@0097.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 1, if false then next else exec;
-
-Line 473: resolved aliases:  data, goto
-L0473@0098.  opr = np_np_ld, MT_COL = 0b0000, if false then next else hexchar;
-
-Line 479: resolved aliases:  data, goto
-L0479@0099.  opr = np_np_ld, MT_COL = 0b1101, if false then next else hexchar;
-
-Line 483: resolved aliases:  data, goto
-L0483@009A.  opr = np_np_ld, MT_COL = 0b1111, if false then next else hexchar;
-
-Line 492: resolved aliases:  data
-L0492@009B.  opr = np_np_ld, MT_COL = 0b1001;
-
-Line 494: resolved aliases:  nuke, load_bitcnt
-L0494@009D.  bitcnt <= load, MT_COL = 3, c_flag <= zero, STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
-
-Line 495: resolved aliases:  col_adc1, row_const, to, connect
-L0495@009E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xC , MT_COL = 0xC;
-
-Line 496: resolved aliases:  col_adc2, row_direct, to, connect
-L0496@009F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
-
-Line 497: resolved aliases:  col_tos, row_sum, to, connect
-L0497@00A0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0;
-
-Line 499: resolved aliases:  col_tos, row_sum, from, disconnect
-L0499@00A2.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, bitcnt <= max;
-
-Line 500: resolved aliases:  col_tos, row_tos, to, connect
-L0500@00A3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, bitcnt <= dec;
-
-Line 510: resolved aliases:  col_adc1, row_a, to, connect
-L0510@00A8.a_pm_m:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC;
-
-Line 511: resolved aliases:  col_a, row_sum, to, connect
-L0511@00A9.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, div2(max, set);
-
-Line 512: resolved aliases:  col_a, row_sum, from, disconnect, back
-L0512@00AA.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, if true then return else return;
-
-Line 515: resolved aliases:  nuke
-L0515@00AB.prep_regs:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
-
-Line 516: resolved aliases:  col_r7, row_r7, from, disconnect
-L0516@00AC.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
-
-Line 517: resolved aliases:  col_r7, row_tos, to, connect
-L0517@00AD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 7, div2(max, set);
-
-Line 518: resolved aliases:  col_r7, row_r7, to, connect
-L0518@00AE.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7;
-
-Line 519: resolved aliases:  col_r7, row_tos, from, disconnect, back
-L0519@00AF.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 7, if true then return else return;
-
-Line 523: resolved aliases:  nuke
-L0523@00B1.lsr:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
-
-Line 524: resolved aliases:  col_delay, row_tos, to, connect
-L0524@00B2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 8;
-
-Line 525: resolved aliases:  col_tos, row_delay, to, connect
-L0525@00B3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 0;
-
-Line 526: resolved aliases:  back
-L0526@00B4.  d_flag <= zero, bitcnt <= max, z_flags <= set, if true then return else return;
+Line 429: resolved aliases:  nuke
+L0429@006D.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
 
 Warning: else clause missing in if statement, default value '' will be used
-Line 530: resolved aliases:  goto
-L0530@00B6.  bitcnt <= dec, if false then next else div2;
+Line 432: resolved aliases:  nuke
+L0432@0070.bitcnt_s0:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
 
-Line 533: resolved aliases:  col_nos, row_tos, to, connect
-L0533@00B7.matrix_swap:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+Line 433: resolved aliases:  col_tos, row_nos, to, connect
+L0433@0071.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
 
-Line 534: resolved aliases:  col_tos, row_nos, to, connect, goto
-L0534@00B8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0, if false then next else matrix_nop;
+Line 435: resolved aliases:  col_tos, row_nos, from, disconnect
+L0435@0073.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 0;
 
-Line 537: resolved aliases:  col_nos, row_nos, to, connect
-L0537@00B9.matrix_nop1:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+Line 438: resolved aliases:  col_delay, row_nos, to, connect
+L0438@0076.loopcnt_s0:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 8;
 
-Line 539: resolved aliases:  col_r2, row_r2, to, connect
-L0539@00BA.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
+Line 439: resolved aliases:  col_nos, row_nos, to, connect
+L0439@0077.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
 
-Line 540: resolved aliases:  col_r3, row_r3, to, connect
-L0540@00BB.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
+Warning: else clause missing in if statement, default value '' will be used
+Line 447: resolved aliases:  goto
+L0447@007E.  bitcnt <= dec, if false then next else bitcnt_s0;
 
-Line 541: resolved aliases:  col_r4, row_r4, to, connect
-L0541@00BC.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
+Line 448: resolved aliases:  nuke
+L0448@007F.conv_done0:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_pop();
 
-Line 542: resolved aliases:  col_r5, row_r5, to, connect
-L0542@00BD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
+Line 449: resolved aliases:  col_tos, row_tos, to, connect, goto
+L0449@0080.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, if false then next else exec;
 
-Line 543: resolved aliases:  col_r6, row_r6, to, connect
-L0543@00BE.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
+Line 454: resolved aliases:  nuke
+L0454@0081.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
 
-Line 544: resolved aliases:  col_r7, row_r7, to, connect, back
-L0544@00BF.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
+Line 455: resolved aliases:  col_r7, row_r7, from, disconnect
+L0455@0082.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
 
-Line 547: resolved aliases:  col_nos, row_tos, to, connect
-L0547@00C0.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+Line 456: resolved aliases:  col_r7, row_nos, to, connect
+L0456@0083.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 7;
 
-Line 548: resolved aliases:  col_r2, row_nos, to, connect
-L0548@00C1.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
+Line 457: resolved aliases:  col_tos, row_tos, to, connect
+L0457@0084.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, div2(max, set);
 
-Line 549: resolved aliases:  col_r3, row_r2, to, connect
-L0549@00C2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
+Warning: else clause missing in if statement, default value '' will be used
+Line 459: resolved aliases:  nuke
+L0459@0086.bitcnt_s1:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
 
-Line 550: resolved aliases:  col_r4, row_r3, to, connect
-L0550@00C3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
+Line 460: resolved aliases:  col_nos, row_tos, to, connect
+L0460@0087.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
 
-Line 551: resolved aliases:  col_r5, row_r4, to, connect
-L0551@00C4.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
+Line 462: resolved aliases:  col_nos, row_tos, from, disconnect
+L0462@0089.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 1;
 
-Line 552: resolved aliases:  col_r6, row_r5, to, connect
-L0552@00C5.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
+Line 465: resolved aliases:  data
+L0465@008C.loopcnt_s1:  c_flag <= one, opr = np_np_ld, MT_COL = 5;
 
-Line 553: resolved aliases:  col_r7, row_r6, to, connect, back
-L0553@00C6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
+Line 466: resolved aliases:  col_nos, row_nos, to, connect
+L0466@008D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
 
-Line 556: resolved aliases:  col_nos, row_r2, to, connect
-L0556@00C7.matrix_pop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
+Line 467: resolved aliases:  col_adc1, row_nos, to, connect
+L0467@008E.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
 
-Line 557: resolved aliases:  col_r2, row_r3, to, connect
-L0557@00C8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 2;
+Line 468: resolved aliases:  col_not, row_direct, to, connect
+L0468@008F.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
 
-Line 558: resolved aliases:  col_r3, row_r4, to, connect
-L0558@00C9.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 3;
+Line 469: resolved aliases:  col_adc2, row_not, to, connect
+L0469@0090.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD;
 
-Line 559: resolved aliases:  col_r4, row_r5, to, connect
-L0559@00CA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 4;
+Line 475: resolved aliases:  col_adc2, row_not, from, disconnect
+L0475@0095.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 9 , MT_COL = 0xD;
 
-Line 560: resolved aliases:  col_r5, row_r6, to, connect
-L0560@00CB.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 5;
+Warning: else clause missing in if statement, default value '' will be used
+Line 479: resolved aliases:  goto
+L0479@0099.  bitcnt <= dec, if false then next else bitcnt_s1;
 
-Line 561: resolved aliases:  col_r6, row_r7, to, connect, back
-L0561@00CC.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 6, if true then return else return;
+Line 480: resolved aliases:  nuke
+L0480@009A.conv_done1:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop();
 
-Line 571: resolved aliases:  col_nos, row_nos, from, disconnect
-L0571@00D1.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
+Line 481: resolved aliases:  col_r7, row_r7, from, disconnect
+L0481@009B.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
 
-Line 572: resolved aliases:  col_adc1, row_nos, to, connect
-L0572@00D2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
+Line 482: resolved aliases:  col_tos, row_nos, to, connect
+L0482@009C.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0;
 
-Line 573: resolved aliases:  data
-L0573@00D3.  opr = np_np_ld, MT_COL = 3, if c_flag_is_set then next else bcd_add3;
+Line 483: resolved aliases:  col_nos, row_r7, to, connect, goto
+L0483@009D.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 1, if false then next else exec;
 
-Line 576: resolved aliases:  col_not, row_direct, to, connect
-L0576@00D4.bcd_sub3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
+Line 496: resolved aliases:  data, goto
+L0496@009E.  opr = np_np_ld, MT_COL = 0b0000, if false then next else hexchar;
 
-Line 577: resolved aliases:  col_adc2, row_not, to, connect, goto
-L0577@00D5.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, if false then next else bcd_3;
+Line 502: resolved aliases:  data, goto
+L0502@009F.  opr = np_np_ld, MT_COL = 0b1101, if false then next else hexchar;
 
-Line 580: resolved aliases:  col_adc2, row_direct, to, connect
-L0580@00D6.bcd_add3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
+Line 506: resolved aliases:  data, goto
+L0506@00A0.  opr = np_np_ld, MT_COL = 0b1111, if false then next else hexchar;
 
-Line 582: resolved aliases:  col_nos, row_sum, to, connect
-L0582@00D7.bcd_3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 1;
+Line 515: resolved aliases:  data
+L0515@00A1.  opr = np_np_ld, MT_COL = 0b1001;
 
-Line 587: resolved aliases:  col_nos, row_sum, from, disconnect
-L0587@00DC.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 1;
+Line 516: resolved aliases:  nuke, load_bitcnt
+L0516@00A2.hexchar:  bitcnt <= load, MT_COL = 3, c_flag <= zero, STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
 
-Line 588: resolved aliases:  col_adc2, row_direct, from, disconnect, back
-L0588@00DD.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xD , MT_COL = 0xD, if true then return else return;
+Line 517: resolved aliases:  col_adc1, row_const, to, connect
+L0517@00A3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xC , MT_COL = 0xC;
 
-Line 608: resolved aliases:  back
-L0608@00EC.  TXDCHAR <= char_zero, if true then return else return;
+Line 518: resolved aliases:  col_adc2, row_direct, to, connect
+L0518@00A4.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
 
-Success: pass 1 650 line(s) read, 366 statement(s) parsed.
+Line 519: resolved aliases:  col_tos, row_sum, to, connect
+L0519@00A5.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0;
+
+Line 521: resolved aliases:  col_tos, row_sum, from, disconnect
+L0521@00A7.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, bitcnt <= max;
+
+Line 522: resolved aliases:  col_tos, row_tos, to, connect
+L0522@00A8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, bitcnt <= dec;
+
+Line 531: resolved aliases:  col_adc1, row_a, to, connect
+L0531@00AD.a_pm_m:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0xC;
+
+Line 532: resolved aliases:  col_a, row_sum, to, connect
+L0532@00AE.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, div2(max, set);
+
+Line 533: resolved aliases:  col_a, row_sum, from, disconnect, back
+L0533@00AF.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 0, if true then return else return;
+
+Line 536: resolved aliases:  nuke
+L0536@00B0.prep_regs:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
+
+Line 537: resolved aliases:  col_r7, row_r7, from, disconnect
+L0537@00B1.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 7 , MT_COL = 7;
+
+Line 538: resolved aliases:  col_r7, row_tos, to, connect
+L0538@00B2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 7, div2(max, set);
+
+Line 539: resolved aliases:  col_r7, row_r7, to, connect
+L0539@00B3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7;
+
+Line 540: resolved aliases:  col_r7, row_tos, from, disconnect, back
+L0540@00B4.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0 , MT_COL = 7, if true then return else return;
+
+Line 543: resolved aliases:  nuke
+L0543@00B5.heron_step:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
+
+Line 544: resolved aliases:  col_tos, row_r7, to, connect
+L0544@00B6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0, div2(max, set);
+
+Line 546: resolved aliases:  nuke
+L0546@00B8.  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
+
+Line 547: resolved aliases:  col_nos, row_nos, from, disconnect
+L0547@00B9.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
+
+Line 548: resolved aliases:  col_nos, row_r2, to, connect
+L0548@00BA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
+
+Line 549: resolved aliases:  col_adc1, row_nos, to, connect
+L0549@00BB.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
+
+Line 550: resolved aliases:  col_adc2, row_r7, to, connect
+L0550@00BC.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 0xD;
+
+Line 551: resolved aliases:  col_tos, row_sum, to, connect
+L0551@00BD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 0, c_flag <= zero, div2(max, set);
+
+Warning: else clause missing in if statement, default value '' will be used
+Line 558: resolved aliases:  goto
+L0558@00C0.  bitcnt <= dec, if false then next else shift_dloop;
+
+Warning: else clause missing in if statement, default value '' will be used
+Line 563: resolved aliases:  goto
+L0563@00C3.  bitcnt <= dec, if false then next else shift_uloop;
+
+Line 566: resolved aliases:  nuke
+L0566@00C4.prep_shift:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_nop1();
+
+Line 567: resolved aliases:  col_delay, row_tos, to, connect
+L0567@00C5.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 8;
+
+Line 568: resolved aliases:  col_tos, row_delay, to, connect, back
+L0568@00C6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 8 , MT_COL = 0, d_flag <= zero, bitcnt <= max, z_flags <= set, if true then return else return;
+
+Line 570: resolved aliases:  nuke
+L0570@00C7.dup:  STATUS = busy_using_mt, MT_CTRL = clear, matrix_push();
+
+Line 571: resolved aliases:  col_tos, row_tos, to, connect
+L0571@00C8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 0, bitcnt <= max, z_flags <= set;
+
+Warning: else clause missing in if statement, default value '' will be used
+Line 576: resolved aliases:  goto
+L0576@00CA.  bitcnt <= dec, if false then next else div2;
+
+Line 579: resolved aliases:  col_nos, row_tos, to, connect
+L0579@00CB.matrix_swap:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+
+Line 580: resolved aliases:  col_tos, row_nos, to, connect, goto
+L0580@00CC.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0, if false then next else matrix_nop;
+
+Line 583: resolved aliases:  col_nos, row_nos, to, connect
+L0583@00CD.matrix_nop1:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 1;
+
+Line 585: resolved aliases:  col_r2, row_r2, to, connect
+L0585@00CE.matrix_nop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 2;
+
+Line 586: resolved aliases:  col_r3, row_r3, to, connect
+L0586@00CF.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 3;
+
+Line 587: resolved aliases:  col_r4, row_r4, to, connect
+L0587@00D0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 4;
+
+Line 588: resolved aliases:  col_r5, row_r5, to, connect
+L0588@00D1.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 5;
+
+Line 589: resolved aliases:  col_r6, row_r6, to, connect
+L0589@00D2.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 6;
+
+Line 590: resolved aliases:  col_r7, row_r7, to, connect, back
+L0590@00D3.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 7, if true then return else return;
+
+Line 593: resolved aliases:  col_nos, row_tos, to, connect
+L0593@00D4.matrix_push:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0 , MT_COL = 1;
+
+Line 594: resolved aliases:  col_r2, row_nos, to, connect
+L0594@00D5.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 2;
+
+Line 595: resolved aliases:  col_r3, row_r2, to, connect
+L0595@00D6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 3;
+
+Line 596: resolved aliases:  col_r4, row_r3, to, connect
+L0596@00D7.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 4;
+
+Line 597: resolved aliases:  col_r5, row_r4, to, connect
+L0597@00D8.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 5;
+
+Line 598: resolved aliases:  col_r6, row_r5, to, connect
+L0598@00D9.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 6;
+
+Line 599: resolved aliases:  col_r7, row_r6, to, connect, back
+L0599@00DA.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 7, if true then return else return;
+
+Line 602: resolved aliases:  col_nos, row_r2, to, connect
+L0602@00DB.matrix_pop:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 2 , MT_COL = 1;
+
+Line 603: resolved aliases:  col_r2, row_r3, to, connect
+L0603@00DC.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 3 , MT_COL = 2;
+
+Line 604: resolved aliases:  col_r3, row_r4, to, connect
+L0604@00DD.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 4 , MT_COL = 3;
+
+Line 605: resolved aliases:  col_r4, row_r5, to, connect
+L0605@00DE.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 5 , MT_COL = 4;
+
+Line 606: resolved aliases:  col_r5, row_r6, to, connect
+L0606@00DF.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 6 , MT_COL = 5;
+
+Line 607: resolved aliases:  col_r6, row_r7, to, connect, back
+L0607@00E0.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 7 , MT_COL = 6, if true then return else return;
+
+Line 617: resolved aliases:  col_nos, row_nos, from, disconnect
+L0617@00E5.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 1 , MT_COL = 1;
+
+Line 618: resolved aliases:  col_adc1, row_nos, to, connect
+L0618@00E6.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 1 , MT_COL = 0xC;
+
+Line 619: resolved aliases:  data
+L0619@00E7.  opr = np_np_ld, MT_COL = 3, if c_flag_is_set then next else bcd_add3;
+
+Line 622: resolved aliases:  col_not, row_direct, to, connect
+L0622@00E8.bcd_sub3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 9;
+
+Line 623: resolved aliases:  col_adc2, row_not, to, connect, goto
+L0623@00E9.  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 9 , MT_COL = 0xD, if false then next else bcd_3;
+
+Line 626: resolved aliases:  col_adc2, row_direct, to, connect
+L0626@00EA.bcd_add3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xD , MT_COL = 0xD;
+
+Line 628: resolved aliases:  col_nos, row_sum, to, connect
+L0628@00EB.bcd_3:  STATUS = busy_using_mt, MT_CTRL = on, MT_ROW = 0xB , MT_COL = 1;
+
+Line 633: resolved aliases:  col_nos, row_sum, from, disconnect
+L0633@00F0.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xB , MT_COL = 1;
+
+Line 634: resolved aliases:  col_adc2, row_direct, from, disconnect, back
+L0634@00F1.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xD , MT_COL = 0xD, if true then return else return;
+
+Line 652: resolved aliases:  back
+L0652@00FE.  TXDCHAR <= char_zero, if true then return else return;
+
+Success: pass 1 694 line(s) read, 392 statement(s) parsed.
 Compiling HexCalc.mcc, pass 2 out of 2.
 Info: line -1 - symbol[0000] <= 'System.Byte[]'
 Info: line -1 - symbol[0001] <= 'System.Byte[]'
@@ -714,832 +795,872 @@ Field 'c_flag' 6 .. 5
 Field 'z_flags' 4 .. 3
 Field 'loopcnt' 2 .. 1
 Field 'selreg' 0 .. 0
-Info: line 9 - code[0000] <= '11_0000_0000_00_10_0000_00000000_00000000_0000_000_00_00_00_00_00_0'
+Info: line 9 - code[0000] <= '11_0000_0000_00_10_0000_00000000_00000000_0000_000_00_10_10_11_00_0'
 Info: line -1 - symbol[0000] <= 'System.Byte[]'
-Info: line 9 - code[0001] <= '11_0000_0000_00_10_0000_00000000_00000000_0000_000_00_00_00_00_00_0'
+Info: line 9 - code[0001] <= '11_0000_0000_00_10_0000_00000000_00000000_0000_000_00_10_10_11_00_0'
 Info: line -1 - symbol[0001] <= 'System.Byte[]'
-Info: line 9 - code[0002] <= '11_0000_0000_00_10_0000_00000000_00000000_0000_000_00_00_00_00_00_0'
+Info: line 9 - code[0002] <= '11_0000_0000_00_10_0000_00000000_00000000_0000_000_00_10_10_11_00_0'
 Info: line -1 - symbol[0002] <= 'System.Byte[]'
-Info: line 9 - code[0003] <= '11_0000_0000_00_10_0000_00000000_00000000_0000_000_00_00_00_00_00_0'
+Info: line 9 - code[0003] <= '11_0000_0000_00_10_0000_00000000_00000000_0000_000_00_10_10_11_00_0'
 Info: line -1 - symbol[0003] <= 'System.Byte[]'
 Info: line 9 - code[0004] <= '00_0000_0000_00_00_0001_00000001_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0004] <= 'System.Byte[]'
-Info: line 9 - code[0005] <= '00_0000_0000_00_10_0000_00000011_00000011_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0005] <= '00_0000_0000_00_10_0000_11111000_11111000_1011_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0005] <= 'System.Byte[]'
-Info: line 10 - mapper[0000] <= '00000110'
-Info: line 10 - mapper[0001] <= '00000110'
-Info: line 10 - mapper[0002] <= '00000110'
-Info: line 10 - mapper[0003] <= '00000110'
-Info: line 10 - mapper[0004] <= '00000110'
-Info: line 10 - mapper[0005] <= '00000110'
-Info: line 10 - mapper[0006] <= '00000110'
-Info: line 10 - mapper[0007] <= '00000110'
-Info: line 10 - mapper[0008] <= '00000110'
-Info: line 10 - mapper[0009] <= '00000110'
-Info: line 10 - mapper[000A] <= '00000110'
-Info: line 10 - mapper[000B] <= '00000110'
-Info: line 10 - mapper[000C] <= '00000110'
-Info: line 10 - mapper[000D] <= '00000110'
-Info: line 10 - mapper[000E] <= '00000110'
-Info: line 10 - mapper[000F] <= '00000110'
-Info: line 10 - mapper[0010] <= '00000110'
-Info: line 10 - mapper[0011] <= '00000110'
-Info: line 10 - mapper[0012] <= '00000110'
-Info: line 10 - mapper[0013] <= '00000110'
-Info: line 10 - mapper[0014] <= '00000110'
-Info: line 10 - mapper[0015] <= '00000110'
-Info: line 10 - mapper[0016] <= '00000110'
-Info: line 10 - mapper[0017] <= '00000110'
-Info: line 10 - mapper[0018] <= '00000110'
-Info: line 10 - mapper[0019] <= '00000110'
-Info: line 10 - mapper[001A] <= '00000110'
-Info: line 10 - mapper[001B] <= '00000110'
-Info: line 10 - mapper[001C] <= '00000110'
-Info: line 10 - mapper[001D] <= '00000110'
-Info: line 10 - mapper[001E] <= '00000110'
-Info: line 10 - mapper[001F] <= '00000110'
-Info: line 10 - mapper[0020] <= '00000110'
-Info: line 10 - mapper[0021] <= '00000110'
-Info: line 10 - mapper[0022] <= '00000110'
-Info: line 10 - mapper[0023] <= '00000110'
-Info: line 10 - mapper[0024] <= '00000110'
-Info: line 10 - mapper[0025] <= '00000110'
-Info: line 10 - mapper[0026] <= '00000110'
-Info: line 10 - mapper[0027] <= '00000110'
-Info: line 10 - mapper[0028] <= '00000110'
-Info: line 10 - mapper[0029] <= '00000110'
-Info: line 10 - mapper[002A] <= '00000110'
-Info: line 10 - mapper[002B] <= '00000110'
-Info: line 10 - mapper[002C] <= '00000110'
-Info: line 10 - mapper[002D] <= '00000110'
-Info: line 10 - mapper[002E] <= '00000110'
-Info: line 10 - mapper[002F] <= '00000110'
-Info: line 10 - mapper[0030] <= '00000110'
-Info: line 10 - mapper[0031] <= '00000110'
-Info: line 10 - mapper[0032] <= '00000110'
-Info: line 10 - mapper[0033] <= '00000110'
-Info: line 10 - mapper[0034] <= '00000110'
-Info: line 10 - mapper[0035] <= '00000110'
-Info: line 10 - mapper[0036] <= '00000110'
-Info: line 10 - mapper[0037] <= '00000110'
-Info: line 10 - mapper[0038] <= '00000110'
-Info: line 10 - mapper[0039] <= '00000110'
-Info: line 10 - mapper[003A] <= '00000110'
-Info: line 10 - mapper[003B] <= '00000110'
-Info: line 10 - mapper[003C] <= '00000110'
-Info: line 10 - mapper[003D] <= '00000110'
-Info: line 10 - mapper[003E] <= '00000110'
-Info: line 10 - mapper[003F] <= '00000110'
-Info: line 10 - mapper[0040] <= '00000110'
-Info: line 10 - mapper[0041] <= '00000110'
-Info: line 10 - mapper[0042] <= '00000110'
-Info: line 10 - mapper[0043] <= '00000110'
-Info: line 10 - mapper[0044] <= '00000110'
-Info: line 10 - mapper[0045] <= '00000110'
-Info: line 10 - mapper[0046] <= '00000110'
-Info: line 10 - mapper[0047] <= '00000110'
-Info: line 10 - mapper[0048] <= '00000110'
-Info: line 10 - mapper[0049] <= '00000110'
-Info: line 10 - mapper[004A] <= '00000110'
-Info: line 10 - mapper[004B] <= '00000110'
-Info: line 10 - mapper[004C] <= '00000110'
-Info: line 10 - mapper[004D] <= '00000110'
-Info: line 10 - mapper[004E] <= '00000110'
-Info: line 10 - mapper[004F] <= '00000110'
-Info: line 10 - mapper[0050] <= '00000110'
-Info: line 10 - mapper[0051] <= '00000110'
-Info: line 10 - mapper[0052] <= '00000110'
-Info: line 10 - mapper[0053] <= '00000110'
-Info: line 10 - mapper[0054] <= '00000110'
-Info: line 10 - mapper[0055] <= '00000110'
-Info: line 10 - mapper[0056] <= '00000110'
-Info: line 10 - mapper[0057] <= '00000110'
-Info: line 10 - mapper[0058] <= '00000110'
-Info: line 10 - mapper[0059] <= '00000110'
-Info: line 10 - mapper[005A] <= '00000110'
-Info: line 10 - mapper[005B] <= '00000110'
-Info: line 10 - mapper[005C] <= '00000110'
-Info: line 10 - mapper[005D] <= '00000110'
-Info: line 10 - mapper[005E] <= '00000110'
-Info: line 10 - mapper[005F] <= '00000110'
-Info: line 10 - mapper[0060] <= '00000110'
-Info: line 10 - mapper[0061] <= '00000110'
-Info: line 10 - mapper[0062] <= '00000110'
-Info: line 10 - mapper[0063] <= '00000110'
-Info: line 10 - mapper[0064] <= '00000110'
-Info: line 10 - mapper[0065] <= '00000110'
-Info: line 10 - mapper[0066] <= '00000110'
-Info: line 10 - mapper[0067] <= '00000110'
-Info: line 10 - mapper[0068] <= '00000110'
-Info: line 10 - mapper[0069] <= '00000110'
-Info: line 10 - mapper[006A] <= '00000110'
-Info: line 10 - mapper[006B] <= '00000110'
-Info: line 10 - mapper[006C] <= '00000110'
-Info: line 10 - mapper[006D] <= '00000110'
-Info: line 10 - mapper[006E] <= '00000110'
-Info: line 10 - mapper[006F] <= '00000110'
-Info: line 10 - mapper[0070] <= '00000110'
-Info: line 10 - mapper[0071] <= '00000110'
-Info: line 10 - mapper[0072] <= '00000110'
-Info: line 10 - mapper[0073] <= '00000110'
-Info: line 10 - mapper[0074] <= '00000110'
-Info: line 10 - mapper[0075] <= '00000110'
-Info: line 10 - mapper[0076] <= '00000110'
-Info: line 10 - mapper[0077] <= '00000110'
-Info: line 10 - mapper[0078] <= '00000110'
-Info: line 10 - mapper[0079] <= '00000110'
-Info: line 10 - mapper[007A] <= '00000110'
-Info: line 10 - mapper[007B] <= '00000110'
-Info: line 10 - mapper[007C] <= '00000110'
-Info: line 10 - mapper[007D] <= '00000110'
-Info: line 10 - mapper[007E] <= '00000110'
-Info: line 10 - mapper[007F] <= '00000110'
-Info: line 10 - mapper[0080] <= '00000110'
-Info: line 10 - mapper[0081] <= '00000110'
-Info: line 10 - mapper[0082] <= '00000110'
-Info: line 10 - mapper[0083] <= '00000110'
-Info: line 10 - mapper[0084] <= '00000110'
-Info: line 10 - mapper[0085] <= '00000110'
-Info: line 10 - mapper[0086] <= '00000110'
-Info: line 10 - mapper[0087] <= '00000110'
-Info: line 10 - mapper[0088] <= '00000110'
-Info: line 10 - mapper[0089] <= '00000110'
-Info: line 10 - mapper[008A] <= '00000110'
-Info: line 10 - mapper[008B] <= '00000110'
-Info: line 10 - mapper[008C] <= '00000110'
-Info: line 10 - mapper[008D] <= '00000110'
-Info: line 10 - mapper[008E] <= '00000110'
-Info: line 10 - mapper[008F] <= '00000110'
-Info: line 10 - mapper[0090] <= '00000110'
-Info: line 10 - mapper[0091] <= '00000110'
-Info: line 10 - mapper[0092] <= '00000110'
-Info: line 10 - mapper[0093] <= '00000110'
-Info: line 10 - mapper[0094] <= '00000110'
-Info: line 10 - mapper[0095] <= '00000110'
-Info: line 10 - mapper[0096] <= '00000110'
-Info: line 10 - mapper[0097] <= '00000110'
-Info: line 10 - mapper[0098] <= '00000110'
-Info: line 10 - mapper[0099] <= '00000110'
-Info: line 10 - mapper[009A] <= '00000110'
-Info: line 10 - mapper[009B] <= '00000110'
-Info: line 10 - mapper[009C] <= '00000110'
-Info: line 10 - mapper[009D] <= '00000110'
-Info: line 10 - mapper[009E] <= '00000110'
-Info: line 10 - mapper[009F] <= '00000110'
-Info: line 10 - mapper[00A0] <= '00000110'
-Info: line 10 - mapper[00A1] <= '00000110'
-Info: line 10 - mapper[00A2] <= '00000110'
-Info: line 10 - mapper[00A3] <= '00000110'
-Info: line 10 - mapper[00A4] <= '00000110'
-Info: line 10 - mapper[00A5] <= '00000110'
-Info: line 10 - mapper[00A6] <= '00000110'
-Info: line 10 - mapper[00A7] <= '00000110'
-Info: line 10 - mapper[00A8] <= '00000110'
-Info: line 10 - mapper[00A9] <= '00000110'
-Info: line 10 - mapper[00AA] <= '00000110'
-Info: line 10 - mapper[00AB] <= '00000110'
-Info: line 10 - mapper[00AC] <= '00000110'
-Info: line 10 - mapper[00AD] <= '00000110'
-Info: line 10 - mapper[00AE] <= '00000110'
-Info: line 10 - mapper[00AF] <= '00000110'
-Info: line 10 - mapper[00B0] <= '00000110'
-Info: line 10 - mapper[00B1] <= '00000110'
-Info: line 10 - mapper[00B2] <= '00000110'
-Info: line 10 - mapper[00B3] <= '00000110'
-Info: line 10 - mapper[00B4] <= '00000110'
-Info: line 10 - mapper[00B5] <= '00000110'
-Info: line 10 - mapper[00B6] <= '00000110'
-Info: line 10 - mapper[00B7] <= '00000110'
-Info: line 10 - mapper[00B8] <= '00000110'
-Info: line 10 - mapper[00B9] <= '00000110'
-Info: line 10 - mapper[00BA] <= '00000110'
-Info: line 10 - mapper[00BB] <= '00000110'
-Info: line 10 - mapper[00BC] <= '00000110'
-Info: line 10 - mapper[00BD] <= '00000110'
-Info: line 10 - mapper[00BE] <= '00000110'
-Info: line 10 - mapper[00BF] <= '00000110'
-Info: line 10 - mapper[00C0] <= '00000110'
-Info: line 10 - mapper[00C1] <= '00000110'
-Info: line 10 - mapper[00C2] <= '00000110'
-Info: line 10 - mapper[00C3] <= '00000110'
-Info: line 10 - mapper[00C4] <= '00000110'
-Info: line 10 - mapper[00C5] <= '00000110'
-Info: line 10 - mapper[00C6] <= '00000110'
-Info: line 10 - mapper[00C7] <= '00000110'
-Info: line 10 - mapper[00C8] <= '00000110'
-Info: line 10 - mapper[00C9] <= '00000110'
-Info: line 10 - mapper[00CA] <= '00000110'
-Info: line 10 - mapper[00CB] <= '00000110'
-Info: line 10 - mapper[00CC] <= '00000110'
-Info: line 10 - mapper[00CD] <= '00000110'
-Info: line 10 - mapper[00CE] <= '00000110'
-Info: line 10 - mapper[00CF] <= '00000110'
-Info: line 10 - mapper[00D0] <= '00000110'
-Info: line 10 - mapper[00D1] <= '00000110'
-Info: line 10 - mapper[00D2] <= '00000110'
-Info: line 10 - mapper[00D3] <= '00000110'
-Info: line 10 - mapper[00D4] <= '00000110'
-Info: line 10 - mapper[00D5] <= '00000110'
-Info: line 10 - mapper[00D6] <= '00000110'
-Info: line 10 - mapper[00D7] <= '00000110'
-Info: line 10 - mapper[00D8] <= '00000110'
-Info: line 10 - mapper[00D9] <= '00000110'
-Info: line 10 - mapper[00DA] <= '00000110'
-Info: line 10 - mapper[00DB] <= '00000110'
-Info: line 10 - mapper[00DC] <= '00000110'
-Info: line 10 - mapper[00DD] <= '00000110'
-Info: line 10 - mapper[00DE] <= '00000110'
-Info: line 10 - mapper[00DF] <= '00000110'
-Info: line 10 - mapper[00E0] <= '00000110'
-Info: line 10 - mapper[00E1] <= '00000110'
-Info: line 10 - mapper[00E2] <= '00000110'
-Info: line 10 - mapper[00E3] <= '00000110'
-Info: line 10 - mapper[00E4] <= '00000110'
-Info: line 10 - mapper[00E5] <= '00000110'
-Info: line 10 - mapper[00E6] <= '00000110'
-Info: line 10 - mapper[00E7] <= '00000110'
-Info: line 10 - mapper[00E8] <= '00000110'
-Info: line 10 - mapper[00E9] <= '00000110'
-Info: line 10 - mapper[00EA] <= '00000110'
-Info: line 10 - mapper[00EB] <= '00000110'
-Info: line 10 - mapper[00EC] <= '00000110'
-Info: line 10 - mapper[00ED] <= '00000110'
-Info: line 10 - mapper[00EE] <= '00000110'
-Info: line 10 - mapper[00EF] <= '00000110'
-Info: line 10 - mapper[00F0] <= '00000110'
-Info: line 10 - mapper[00F1] <= '00000110'
-Info: line 10 - mapper[00F2] <= '00000110'
-Info: line 10 - mapper[00F3] <= '00000110'
-Info: line 10 - mapper[00F4] <= '00000110'
-Info: line 10 - mapper[00F5] <= '00000110'
-Info: line 10 - mapper[00F6] <= '00000110'
-Info: line 10 - mapper[00F7] <= '00000110'
-Info: line 10 - mapper[00F8] <= '00000110'
-Info: line 10 - mapper[00F9] <= '00000110'
-Info: line 10 - mapper[00FA] <= '00000110'
-Info: line 10 - mapper[00FB] <= '00000110'
-Info: line 10 - mapper[00FC] <= '00000110'
-Info: line 10 - mapper[00FD] <= '00000110'
-Info: line 10 - mapper[00FE] <= '00000110'
-Info: line 10 - mapper[00FF] <= '00000110'
-Info: 256 mapper locations from 0 to 255 set to value '00000110'
-Info: line 9 - code[0006] <= '00_0000_0000_00_10_1111_00000000_00001000_0000_000_01_00_00_00_00_0'
+Info: line 9 - code[0006] <= '00_0000_0000_00_10_0000_00000011_00000011_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0006] <= 'System.Byte[]'
-Info: line 9 - code[0007] <= '00_0000_0000_00_10_1111_00000000_00001000_0000_000_10_00_00_00_00_0'
+Info: line 10 - mapper[0000] <= '00000111'
+Info: line 10 - mapper[0001] <= '00000111'
+Info: line 10 - mapper[0002] <= '00000111'
+Info: line 10 - mapper[0003] <= '00000111'
+Info: line 10 - mapper[0004] <= '00000111'
+Info: line 10 - mapper[0005] <= '00000111'
+Info: line 10 - mapper[0006] <= '00000111'
+Info: line 10 - mapper[0007] <= '00000111'
+Info: line 10 - mapper[0008] <= '00000111'
+Info: line 10 - mapper[0009] <= '00000111'
+Info: line 10 - mapper[000A] <= '00000111'
+Info: line 10 - mapper[000B] <= '00000111'
+Info: line 10 - mapper[000C] <= '00000111'
+Info: line 10 - mapper[000D] <= '00000111'
+Info: line 10 - mapper[000E] <= '00000111'
+Info: line 10 - mapper[000F] <= '00000111'
+Info: line 10 - mapper[0010] <= '00000111'
+Info: line 10 - mapper[0011] <= '00000111'
+Info: line 10 - mapper[0012] <= '00000111'
+Info: line 10 - mapper[0013] <= '00000111'
+Info: line 10 - mapper[0014] <= '00000111'
+Info: line 10 - mapper[0015] <= '00000111'
+Info: line 10 - mapper[0016] <= '00000111'
+Info: line 10 - mapper[0017] <= '00000111'
+Info: line 10 - mapper[0018] <= '00000111'
+Info: line 10 - mapper[0019] <= '00000111'
+Info: line 10 - mapper[001A] <= '00000111'
+Info: line 10 - mapper[001B] <= '00000111'
+Info: line 10 - mapper[001C] <= '00000111'
+Info: line 10 - mapper[001D] <= '00000111'
+Info: line 10 - mapper[001E] <= '00000111'
+Info: line 10 - mapper[001F] <= '00000111'
+Info: line 10 - mapper[0020] <= '00000111'
+Info: line 10 - mapper[0021] <= '00000111'
+Info: line 10 - mapper[0022] <= '00000111'
+Info: line 10 - mapper[0023] <= '00000111'
+Info: line 10 - mapper[0024] <= '00000111'
+Info: line 10 - mapper[0025] <= '00000111'
+Info: line 10 - mapper[0026] <= '00000111'
+Info: line 10 - mapper[0027] <= '00000111'
+Info: line 10 - mapper[0028] <= '00000111'
+Info: line 10 - mapper[0029] <= '00000111'
+Info: line 10 - mapper[002A] <= '00000111'
+Info: line 10 - mapper[002B] <= '00000111'
+Info: line 10 - mapper[002C] <= '00000111'
+Info: line 10 - mapper[002D] <= '00000111'
+Info: line 10 - mapper[002E] <= '00000111'
+Info: line 10 - mapper[002F] <= '00000111'
+Info: line 10 - mapper[0030] <= '00000111'
+Info: line 10 - mapper[0031] <= '00000111'
+Info: line 10 - mapper[0032] <= '00000111'
+Info: line 10 - mapper[0033] <= '00000111'
+Info: line 10 - mapper[0034] <= '00000111'
+Info: line 10 - mapper[0035] <= '00000111'
+Info: line 10 - mapper[0036] <= '00000111'
+Info: line 10 - mapper[0037] <= '00000111'
+Info: line 10 - mapper[0038] <= '00000111'
+Info: line 10 - mapper[0039] <= '00000111'
+Info: line 10 - mapper[003A] <= '00000111'
+Info: line 10 - mapper[003B] <= '00000111'
+Info: line 10 - mapper[003C] <= '00000111'
+Info: line 10 - mapper[003D] <= '00000111'
+Info: line 10 - mapper[003E] <= '00000111'
+Info: line 10 - mapper[003F] <= '00000111'
+Info: line 10 - mapper[0040] <= '00000111'
+Info: line 10 - mapper[0041] <= '00000111'
+Info: line 10 - mapper[0042] <= '00000111'
+Info: line 10 - mapper[0043] <= '00000111'
+Info: line 10 - mapper[0044] <= '00000111'
+Info: line 10 - mapper[0045] <= '00000111'
+Info: line 10 - mapper[0046] <= '00000111'
+Info: line 10 - mapper[0047] <= '00000111'
+Info: line 10 - mapper[0048] <= '00000111'
+Info: line 10 - mapper[0049] <= '00000111'
+Info: line 10 - mapper[004A] <= '00000111'
+Info: line 10 - mapper[004B] <= '00000111'
+Info: line 10 - mapper[004C] <= '00000111'
+Info: line 10 - mapper[004D] <= '00000111'
+Info: line 10 - mapper[004E] <= '00000111'
+Info: line 10 - mapper[004F] <= '00000111'
+Info: line 10 - mapper[0050] <= '00000111'
+Info: line 10 - mapper[0051] <= '00000111'
+Info: line 10 - mapper[0052] <= '00000111'
+Info: line 10 - mapper[0053] <= '00000111'
+Info: line 10 - mapper[0054] <= '00000111'
+Info: line 10 - mapper[0055] <= '00000111'
+Info: line 10 - mapper[0056] <= '00000111'
+Info: line 10 - mapper[0057] <= '00000111'
+Info: line 10 - mapper[0058] <= '00000111'
+Info: line 10 - mapper[0059] <= '00000111'
+Info: line 10 - mapper[005A] <= '00000111'
+Info: line 10 - mapper[005B] <= '00000111'
+Info: line 10 - mapper[005C] <= '00000111'
+Info: line 10 - mapper[005D] <= '00000111'
+Info: line 10 - mapper[005E] <= '00000111'
+Info: line 10 - mapper[005F] <= '00000111'
+Info: line 10 - mapper[0060] <= '00000111'
+Info: line 10 - mapper[0061] <= '00000111'
+Info: line 10 - mapper[0062] <= '00000111'
+Info: line 10 - mapper[0063] <= '00000111'
+Info: line 10 - mapper[0064] <= '00000111'
+Info: line 10 - mapper[0065] <= '00000111'
+Info: line 10 - mapper[0066] <= '00000111'
+Info: line 10 - mapper[0067] <= '00000111'
+Info: line 10 - mapper[0068] <= '00000111'
+Info: line 10 - mapper[0069] <= '00000111'
+Info: line 10 - mapper[006A] <= '00000111'
+Info: line 10 - mapper[006B] <= '00000111'
+Info: line 10 - mapper[006C] <= '00000111'
+Info: line 10 - mapper[006D] <= '00000111'
+Info: line 10 - mapper[006E] <= '00000111'
+Info: line 10 - mapper[006F] <= '00000111'
+Info: line 10 - mapper[0070] <= '00000111'
+Info: line 10 - mapper[0071] <= '00000111'
+Info: line 10 - mapper[0072] <= '00000111'
+Info: line 10 - mapper[0073] <= '00000111'
+Info: line 10 - mapper[0074] <= '00000111'
+Info: line 10 - mapper[0075] <= '00000111'
+Info: line 10 - mapper[0076] <= '00000111'
+Info: line 10 - mapper[0077] <= '00000111'
+Info: line 10 - mapper[0078] <= '00000111'
+Info: line 10 - mapper[0079] <= '00000111'
+Info: line 10 - mapper[007A] <= '00000111'
+Info: line 10 - mapper[007B] <= '00000111'
+Info: line 10 - mapper[007C] <= '00000111'
+Info: line 10 - mapper[007D] <= '00000111'
+Info: line 10 - mapper[007E] <= '00000111'
+Info: line 10 - mapper[007F] <= '00000111'
+Info: line 10 - mapper[0080] <= '00000111'
+Info: line 10 - mapper[0081] <= '00000111'
+Info: line 10 - mapper[0082] <= '00000111'
+Info: line 10 - mapper[0083] <= '00000111'
+Info: line 10 - mapper[0084] <= '00000111'
+Info: line 10 - mapper[0085] <= '00000111'
+Info: line 10 - mapper[0086] <= '00000111'
+Info: line 10 - mapper[0087] <= '00000111'
+Info: line 10 - mapper[0088] <= '00000111'
+Info: line 10 - mapper[0089] <= '00000111'
+Info: line 10 - mapper[008A] <= '00000111'
+Info: line 10 - mapper[008B] <= '00000111'
+Info: line 10 - mapper[008C] <= '00000111'
+Info: line 10 - mapper[008D] <= '00000111'
+Info: line 10 - mapper[008E] <= '00000111'
+Info: line 10 - mapper[008F] <= '00000111'
+Info: line 10 - mapper[0090] <= '00000111'
+Info: line 10 - mapper[0091] <= '00000111'
+Info: line 10 - mapper[0092] <= '00000111'
+Info: line 10 - mapper[0093] <= '00000111'
+Info: line 10 - mapper[0094] <= '00000111'
+Info: line 10 - mapper[0095] <= '00000111'
+Info: line 10 - mapper[0096] <= '00000111'
+Info: line 10 - mapper[0097] <= '00000111'
+Info: line 10 - mapper[0098] <= '00000111'
+Info: line 10 - mapper[0099] <= '00000111'
+Info: line 10 - mapper[009A] <= '00000111'
+Info: line 10 - mapper[009B] <= '00000111'
+Info: line 10 - mapper[009C] <= '00000111'
+Info: line 10 - mapper[009D] <= '00000111'
+Info: line 10 - mapper[009E] <= '00000111'
+Info: line 10 - mapper[009F] <= '00000111'
+Info: line 10 - mapper[00A0] <= '00000111'
+Info: line 10 - mapper[00A1] <= '00000111'
+Info: line 10 - mapper[00A2] <= '00000111'
+Info: line 10 - mapper[00A3] <= '00000111'
+Info: line 10 - mapper[00A4] <= '00000111'
+Info: line 10 - mapper[00A5] <= '00000111'
+Info: line 10 - mapper[00A6] <= '00000111'
+Info: line 10 - mapper[00A7] <= '00000111'
+Info: line 10 - mapper[00A8] <= '00000111'
+Info: line 10 - mapper[00A9] <= '00000111'
+Info: line 10 - mapper[00AA] <= '00000111'
+Info: line 10 - mapper[00AB] <= '00000111'
+Info: line 10 - mapper[00AC] <= '00000111'
+Info: line 10 - mapper[00AD] <= '00000111'
+Info: line 10 - mapper[00AE] <= '00000111'
+Info: line 10 - mapper[00AF] <= '00000111'
+Info: line 10 - mapper[00B0] <= '00000111'
+Info: line 10 - mapper[00B1] <= '00000111'
+Info: line 10 - mapper[00B2] <= '00000111'
+Info: line 10 - mapper[00B3] <= '00000111'
+Info: line 10 - mapper[00B4] <= '00000111'
+Info: line 10 - mapper[00B5] <= '00000111'
+Info: line 10 - mapper[00B6] <= '00000111'
+Info: line 10 - mapper[00B7] <= '00000111'
+Info: line 10 - mapper[00B8] <= '00000111'
+Info: line 10 - mapper[00B9] <= '00000111'
+Info: line 10 - mapper[00BA] <= '00000111'
+Info: line 10 - mapper[00BB] <= '00000111'
+Info: line 10 - mapper[00BC] <= '00000111'
+Info: line 10 - mapper[00BD] <= '00000111'
+Info: line 10 - mapper[00BE] <= '00000111'
+Info: line 10 - mapper[00BF] <= '00000111'
+Info: line 10 - mapper[00C0] <= '00000111'
+Info: line 10 - mapper[00C1] <= '00000111'
+Info: line 10 - mapper[00C2] <= '00000111'
+Info: line 10 - mapper[00C3] <= '00000111'
+Info: line 10 - mapper[00C4] <= '00000111'
+Info: line 10 - mapper[00C5] <= '00000111'
+Info: line 10 - mapper[00C6] <= '00000111'
+Info: line 10 - mapper[00C7] <= '00000111'
+Info: line 10 - mapper[00C8] <= '00000111'
+Info: line 10 - mapper[00C9] <= '00000111'
+Info: line 10 - mapper[00CA] <= '00000111'
+Info: line 10 - mapper[00CB] <= '00000111'
+Info: line 10 - mapper[00CC] <= '00000111'
+Info: line 10 - mapper[00CD] <= '00000111'
+Info: line 10 - mapper[00CE] <= '00000111'
+Info: line 10 - mapper[00CF] <= '00000111'
+Info: line 10 - mapper[00D0] <= '00000111'
+Info: line 10 - mapper[00D1] <= '00000111'
+Info: line 10 - mapper[00D2] <= '00000111'
+Info: line 10 - mapper[00D3] <= '00000111'
+Info: line 10 - mapper[00D4] <= '00000111'
+Info: line 10 - mapper[00D5] <= '00000111'
+Info: line 10 - mapper[00D6] <= '00000111'
+Info: line 10 - mapper[00D7] <= '00000111'
+Info: line 10 - mapper[00D8] <= '00000111'
+Info: line 10 - mapper[00D9] <= '00000111'
+Info: line 10 - mapper[00DA] <= '00000111'
+Info: line 10 - mapper[00DB] <= '00000111'
+Info: line 10 - mapper[00DC] <= '00000111'
+Info: line 10 - mapper[00DD] <= '00000111'
+Info: line 10 - mapper[00DE] <= '00000111'
+Info: line 10 - mapper[00DF] <= '00000111'
+Info: line 10 - mapper[00E0] <= '00000111'
+Info: line 10 - mapper[00E1] <= '00000111'
+Info: line 10 - mapper[00E2] <= '00000111'
+Info: line 10 - mapper[00E3] <= '00000111'
+Info: line 10 - mapper[00E4] <= '00000111'
+Info: line 10 - mapper[00E5] <= '00000111'
+Info: line 10 - mapper[00E6] <= '00000111'
+Info: line 10 - mapper[00E7] <= '00000111'
+Info: line 10 - mapper[00E8] <= '00000111'
+Info: line 10 - mapper[00E9] <= '00000111'
+Info: line 10 - mapper[00EA] <= '00000111'
+Info: line 10 - mapper[00EB] <= '00000111'
+Info: line 10 - mapper[00EC] <= '00000111'
+Info: line 10 - mapper[00ED] <= '00000111'
+Info: line 10 - mapper[00EE] <= '00000111'
+Info: line 10 - mapper[00EF] <= '00000111'
+Info: line 10 - mapper[00F0] <= '00000111'
+Info: line 10 - mapper[00F1] <= '00000111'
+Info: line 10 - mapper[00F2] <= '00000111'
+Info: line 10 - mapper[00F3] <= '00000111'
+Info: line 10 - mapper[00F4] <= '00000111'
+Info: line 10 - mapper[00F5] <= '00000111'
+Info: line 10 - mapper[00F6] <= '00000111'
+Info: line 10 - mapper[00F7] <= '00000111'
+Info: line 10 - mapper[00F8] <= '00000111'
+Info: line 10 - mapper[00F9] <= '00000111'
+Info: line 10 - mapper[00FA] <= '00000111'
+Info: line 10 - mapper[00FB] <= '00000111'
+Info: line 10 - mapper[00FC] <= '00000111'
+Info: line 10 - mapper[00FD] <= '00000111'
+Info: line 10 - mapper[00FE] <= '00000111'
+Info: line 10 - mapper[00FF] <= '00000111'
+Info: 256 mapper locations from 0 to 255 set to value '00000111'
+Info: line 9 - code[0007] <= '00_0000_0000_00_10_1111_00000000_00001001_0000_000_01_00_00_00_00_0'
 Info: line -1 - symbol[0007] <= 'System.Byte[]'
-Info: line 9 - code[0008] <= '00_0000_0000_00_10_0000_11101001_11101001_0100_000_11_00_00_00_00_0'
+Info: line 9 - code[0008] <= '00_0000_0000_00_10_1111_00000000_00001001_0000_000_10_00_00_00_00_0'
 Info: line -1 - symbol[0008] <= 'System.Byte[]'
-Info: line 9 - code[0009] <= '00_0000_0000_00_10_0000_11101001_11101001_0101_000_11_00_00_00_00_0'
+Info: line 9 - code[0009] <= '00_0000_0000_00_10_0000_11111011_11111011_0100_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0009] <= 'System.Byte[]'
-Info: line 9 - code[000A] <= '00_0000_0000_00_10_0000_11101001_11101001_0101_000_11_00_00_00_00_0'
+Info: line 9 - code[000A] <= '00_0000_0000_00_10_0000_11111011_11111011_0101_000_11_00_00_00_00_0'
 Info: line -1 - symbol[000A] <= 'System.Byte[]'
-Info: line 9 - code[000B] <= '00_0000_0000_00_10_0000_11101001_11101001_1111_000_11_00_00_00_00_0'
+Info: line 9 - code[000B] <= '00_0000_0000_00_10_0000_11111011_11111011_0101_000_11_00_00_00_00_0'
 Info: line -1 - symbol[000B] <= 'System.Byte[]'
-Info: line 9 - code[000C] <= '00_0000_0000_00_10_0000_11101001_11101001_0001_000_11_00_00_00_00_0'
+Info: line 9 - code[000C] <= '00_0000_0000_00_10_0000_11111011_11111011_1111_000_11_00_00_00_00_0'
 Info: line -1 - symbol[000C] <= 'System.Byte[]'
-Info: line 9 - code[000D] <= '00_0000_0000_00_10_0000_11101001_11101001_1010_000_11_00_00_00_00_0'
+Info: line 9 - code[000D] <= '00_0000_0000_00_10_0000_11111011_11111011_0001_000_11_00_00_00_00_0'
 Info: line -1 - symbol[000D] <= 'System.Byte[]'
-Info: line 9 - code[000E] <= '00_0000_0000_00_10_0000_11101001_11101001_1001_000_11_00_00_00_00_0'
+Info: line 9 - code[000E] <= '00_0000_0000_00_10_0000_11111011_11111011_1010_000_11_00_00_00_00_0'
 Info: line -1 - symbol[000E] <= 'System.Byte[]'
-Info: line 9 - code[000F] <= '00_0000_0000_00_10_0000_11100111_11100111_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[000F] <= '00_0000_0000_00_10_0000_11111011_11111011_1001_000_11_00_00_00_00_0'
 Info: line -1 - symbol[000F] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '00010000' at mapper[0000]
-Info: Mapper location 0 set to value '00010000'
-Warning in line 10: overwriting '00000110' with '00010000' at mapper[0009]
-Info: Mapper location 9 set to value '00010000'
-Warning in line 10: overwriting '00000110' with '00010000' at mapper[0020]
-Info: Mapper location 32 set to value '00010000'
-Info: line 9 - code[0010] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[0010] <= '00_0000_0000_00_10_0000_11111001_11111001_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0010] <= 'System.Byte[]'
+Warning in line 10: overwriting '00000111' with '00010001' at mapper[0000]
+Info: Mapper location 0 set to value '00010001'
+Warning in line 10: overwriting '00000111' with '00010001' at mapper[0009]
+Info: Mapper location 9 set to value '00010001'
+Warning in line 10: overwriting '00000111' with '00010001' at mapper[0020]
+Info: Mapper location 32 set to value '00010001'
 Info: line 9 - code[0011] <= '00_0000_0000_00_01_1111_00000000_00000100_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0011] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '00010010' at mapper[000D]
+Warning in line 10: overwriting '00000111' with '00010010' at mapper[000D]
 Info: Mapper location 13 set to value '00010010'
-Info: line 9 - code[0012] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[0012] <= '11_0000_0000_00_11_0000_11010100_11010100_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0012] <= 'System.Byte[]'
-Info: line 9 - code[0013] <= '11_0000_0000_00_11_0000_11000000_11000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0013] <= '00_0000_0000_00_10_1111_00000000_00110111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0013] <= 'System.Byte[]'
-Info: line 9 - code[0014] <= '00_0000_0000_00_10_1111_00000000_00101000_0000_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '00010100' at mapper[0075]
+Info: Mapper location 117 set to value '00010100'
+Warning in line 10: overwriting '00000111' with '00010100' at mapper[0055]
+Info: Mapper location 85 set to value '00010100'
+Info: line 9 - code[0014] <= '00_0000_0000_00_10_0000_11000111_11000111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0014] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '00010101' at mapper[0075]
-Info: Mapper location 117 set to value '00010101'
-Warning in line 10: overwriting '00000110' with '00010101' at mapper[0055]
-Info: Mapper location 85 set to value '00010101'
-Info: line 9 - code[0015] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[0015] <= '00_0000_0000_00_10_1111_00000000_00111000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0015] <= 'System.Byte[]'
-Info: line 9 - code[0016] <= '11_0000_0000_00_11_0000_11000000_11000000_0000_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '00010110' at mapper[0072]
+Info: Mapper location 114 set to value '00010110'
+Warning in line 10: overwriting '00000111' with '00010110' at mapper[0052]
+Info: Mapper location 82 set to value '00010110'
+Info: line 9 - code[0016] <= '11_0000_0000_00_11_0000_11010100_11010100_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0016] <= 'System.Byte[]'
-Info: line 9 - code[0017] <= '01_0000_0000_00_11_1111_00000000_00101000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0017] <= '01_0111_0000_00_11_1111_00000000_00110111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0017] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '00011000' at mapper[0072]
-Info: Mapper location 114 set to value '00011000'
-Warning in line 10: overwriting '00000110' with '00011000' at mapper[0052]
-Info: Mapper location 82 set to value '00011000'
-Info: line 9 - code[0018] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '00011000' at mapper[0073]
+Info: Mapper location 115 set to value '00011000'
+Warning in line 10: overwriting '00000111' with '00011000' at mapper[0053]
+Info: Mapper location 83 set to value '00011000'
+Info: line 9 - code[0018] <= '11_0000_0000_00_11_0000_11001011_11001011_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0018] <= 'System.Byte[]'
-Info: line 9 - code[0019] <= '11_0000_0000_00_11_0000_11000000_11000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0019] <= '00_0000_0000_00_10_1111_00000000_00110111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0019] <= 'System.Byte[]'
-Info: line 9 - code[001A] <= '01_0111_0000_00_11_1111_00000000_00101000_0000_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '00011010' at mapper[003E]
+Info: Mapper location 62 set to value '00011010'
+Info: line 9 - code[001A] <= '00_0000_0000_00_10_0000_10111110_10111110_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[001A] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '00011011' at mapper[0073]
-Info: Mapper location 115 set to value '00011011'
-Warning in line 10: overwriting '00000110' with '00011011' at mapper[0053]
-Info: Mapper location 83 set to value '00011011'
-Info: line 9 - code[001B] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[001B] <= '00_0000_0000_00_10_1111_00000000_00111000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[001B] <= 'System.Byte[]'
-Info: line 9 - code[001C] <= '11_0000_0000_00_11_0000_10110111_10110111_0000_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '00011100' at mapper[003C]
+Info: Mapper location 60 set to value '00011100'
+Info: line 9 - code[001C] <= '00_0000_0000_00_10_0000_11000001_11000001_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[001C] <= 'System.Byte[]'
-Info: line 9 - code[001D] <= '00_0000_0000_00_10_1111_00000000_00101000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[001D] <= '00_0000_0000_00_10_1111_00000000_00111000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[001D] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '00011110' at mapper[003E]
-Info: Mapper location 62 set to value '00011110'
-Info: line 9 - code[001E] <= '00_0000_0000_00_10_0000_10110000_10110000_0000_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '00011110' at mapper[0071]
+Info: Mapper location 113 set to value '00011110'
+Warning in line 10: overwriting '00000111' with '00011110' at mapper[0051]
+Info: Mapper location 81 set to value '00011110'
+Info: line 9 - code[001E] <= '00_0000_0000_00_10_0000_11000111_11000111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[001E] <= 'System.Byte[]'
-Info: line 9 - code[001F] <= '00_0000_0000_00_11_0110_00101001_00000000_0000_111_11_01_00_01_00_0'
+Info: line 9 - code[001F] <= '00_0000_0000_00_10_0000_10111110_10111110_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[001F] <= 'System.Byte[]'
-Info: line 9 - code[0020] <= '00_0000_0000_11_10_1111_00000000_00011111_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0020] <= '00_0000_0000_00_10_1100_00000000_00100011_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0020] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '00100001' at mapper[003C]
-Info: Mapper location 60 set to value '00100001'
-Info: line 9 - code[0021] <= '00_0000_0000_00_10_0000_10110000_10110000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0021] <= '11_0000_0000_00_11_0000_11011011_11011011_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0021] <= 'System.Byte[]'
-Info: line 9 - code[0022] <= '00_0000_0000_00_11_0110_00101001_00000000_0000_101_11_01_00_01_00_0'
+Info: line 9 - code[0022] <= '00_0000_0000_00_10_1111_00000000_00110111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0022] <= 'System.Byte[]'
-Info: line 9 - code[0023] <= '00_0000_0000_11_10_1111_00000000_00100010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0023] <= '11_0000_0000_00_11_0000_11010100_11010100_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0023] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '00100100' at mapper[006E]
-Info: Mapper location 110 set to value '00100100'
-Warning in line 10: overwriting '00000110' with '00100100' at mapper[004E]
-Info: Mapper location 78 set to value '00100100'
-Info: line 9 - code[0024] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[0024] <= '10_0000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0024] <= 'System.Byte[]'
-Info: line 9 - code[0025] <= '11_0000_0000_00_11_1111_00000000_00101000_0000_000_00_00_00_00_00_0'
+Info: line 9 - code[0025] <= '01_0000_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0025] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '00100110' at mapper[007A]
-Info: Mapper location 122 set to value '00100110'
-Warning in line 10: overwriting '00000110' with '00100110' at mapper[005A]
-Info: Mapper location 90 set to value '00100110'
-Info: line 9 - code[0026] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[0026] <= '01_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0026] <= 'System.Byte[]'
-Info: line 9 - code[0027] <= '11_0000_0000_00_11_0000_10111001_10111001_0000_000_00_00_00_00_00_0'
+Info: line 9 - code[0027] <= '10_0110_0111_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0027] <= 'System.Byte[]'
-Info: line 9 - code[0028] <= '00_0000_0000_10_10_0000_10110101_10110101_0000_000_11_00_00_11_00_0'
+Info: line 9 - code[0028] <= '01_0000_0111_10_11_0000_11001001_11001001_0000_000_11_00_00_11_00_0'
 Info: line -1 - symbol[0028] <= 'System.Byte[]'
-Info: line 9 - code[0029] <= '00_0000_0000_00_10_0000_11011110_11011110_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0029] <= '00_0000_0000_00_10_0000_10110101_10110101_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0029] <= 'System.Byte[]'
-Info: line 9 - code[002A] <= '00_0000_0000_00_10_1111_00000000_00010001_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[002A] <= '11_0000_0000_00_11_0000_11001101_11001101_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[002A] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '00101011' at mapper[002B]
-Info: Mapper location 43 set to value '00101011'
-Info: line 9 - code[002B] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[002B] <= '01_0000_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[002B] <= 'System.Byte[]'
-Info: line 9 - code[002C] <= '11_0000_0000_00_11_0000_11000111_11000111_0000_000_11_00_10_00_00_0'
+Info: line 9 - code[002C] <= '01_0000_1100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[002C] <= 'System.Byte[]'
-Info: line 9 - code[002D] <= '01_0001_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[002D] <= '01_0111_1001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[002D] <= 'System.Byte[]'
-Info: line 9 - code[002E] <= '01_1011_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[002E] <= '01_1001_1101_10_11_0000_11001001_11001001_0000_000_11_00_11_11_00_0'
 Info: line -1 - symbol[002E] <= 'System.Byte[]'
-Info: line 9 - code[002F] <= '01_0000_1100_00_11_1111_00000000_00101000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[002F] <= '00_0000_0000_00_10_1001_00000000_00110001_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[002F] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '00110000' at mapper[002D]
-Info: Mapper location 45 set to value '00110000'
-Info: line 9 - code[0030] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[0030] <= '10_0000_0000_00_11_1111_00000000_00010111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0030] <= 'System.Byte[]'
-Info: line 9 - code[0031] <= '11_0000_0000_00_11_0000_11000111_11000111_0000_000_11_00_11_00_00_0'
+Info: line 9 - code[0031] <= '10_0111_0111_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0031] <= 'System.Byte[]'
-Info: line 9 - code[0032] <= '01_0001_1001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0032] <= '01_0000_0111_10_11_0000_11001001_11001001_0000_000_11_00_00_11_00_0'
 Info: line -1 - symbol[0032] <= 'System.Byte[]'
-Info: line 9 - code[0033] <= '01_1001_1101_00_11_1111_00000000_00101110_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0033] <= '00_0000_0000_00_10_0000_10110101_10110101_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0033] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '00110100' at mapper[002F]
-Info: Mapper location 47 set to value '00110100'
-Info: line 9 - code[0034] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[0034] <= '00_0000_0000_00_10_1111_00000000_00101010_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0034] <= 'System.Byte[]'
-Info: line 9 - code[0035] <= '00_0000_0000_00_10_0000_10101011_10101011_0000_000_11_00_00_00_10_0'
+Warning in line 10: overwriting '00000111' with '00110101' at mapper[006E]
+Info: Mapper location 110 set to value '00110101'
+Warning in line 10: overwriting '00000111' with '00110101' at mapper[004E]
+Info: Mapper location 78 set to value '00110101'
+Info: line 9 - code[0035] <= '11_0000_0000_00_11_1111_00000000_00110111_0000_000_00_10_10_11_00_0'
 Info: line -1 - symbol[0035] <= 'System.Byte[]'
-Info: line 9 - code[0036] <= '00_0000_0000_00_10_1100_00000111_00000000_0000_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '00110110' at mapper[007A]
+Info: Mapper location 122 set to value '00110110'
+Warning in line 10: overwriting '00000111' with '00110110' at mapper[005A]
+Info: Mapper location 90 set to value '00110110'
+Info: line 9 - code[0036] <= '11_0000_0000_00_11_0000_11001101_11001101_0000_000_00_10_10_11_00_0'
 Info: line -1 - symbol[0036] <= 'System.Byte[]'
-Info: line 9 - code[0037] <= '10_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0037] <= '00_0000_0000_10_10_0000_11001001_11001001_0000_000_11_00_00_11_00_0'
 Info: line -1 - symbol[0037] <= 'System.Byte[]'
-Info: line 9 - code[0038] <= '01_1000_0001_00_11_0000_00000000_00000000_0000_000_11_10_00_00_00_0'
+Info: line 9 - code[0038] <= '00_0000_0000_00_10_0000_11110010_11110010_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0038] <= 'System.Byte[]'
-Info: line 9 - code[0039] <= '01_0001_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0039] <= '00_0000_0000_00_10_1111_00000000_00010001_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0039] <= 'System.Byte[]'
-Info: line 9 - code[003A] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_111_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '00111010' at mapper[002B]
+Info: Mapper location 43 set to value '00111010'
+Info: line 9 - code[003A] <= '11_0000_0000_00_11_0000_11011011_11011011_0000_000_11_00_10_00_00_0'
 Info: line -1 - symbol[003A] <= 'System.Byte[]'
-Info: line 9 - code[003B] <= '10_1000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[003B] <= '01_0001_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[003B] <= 'System.Byte[]'
-Info: line 9 - code[003C] <= '10_0001_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[003C] <= '01_1011_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[003C] <= 'System.Byte[]'
-Info: line 9 - code[003D] <= '01_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[003D] <= '01_0000_1100_00_11_1111_00000000_00110111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[003D] <= 'System.Byte[]'
-Info: line 9 - code[003E] <= '01_0111_1001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '00111110' at mapper[002D]
+Info: Mapper location 45 set to value '00111110'
+Info: line 9 - code[003E] <= '11_0000_0000_00_11_0000_11011011_11011011_0000_000_11_00_11_00_00_0'
 Info: line -1 - symbol[003E] <= 'System.Byte[]'
-Info: line 9 - code[003F] <= '01_1001_1101_00_11_0000_10101000_10101000_0000_000_11_00_11_00_00_0'
+Info: line 9 - code[003F] <= '01_0001_1001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[003F] <= 'System.Byte[]'
-Info: line 9 - code[0040] <= '10_1001_1101_00_11_1001_00000000_01001011_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0040] <= '01_1001_1101_00_11_1111_00000000_00111100_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0040] <= 'System.Byte[]'
-Info: line 9 - code[0041] <= '01_0000_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '01000001' at mapper[002F]
+Info: Mapper location 47 set to value '01000001'
+Info: line 9 - code[0041] <= '00_0000_0000_00_10_0000_01000011_01000011_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0041] <= 'System.Byte[]'
-Info: line 9 - code[0042] <= '10_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0042] <= '00_0000_0000_00_10_1111_00000000_00011000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0042] <= 'System.Byte[]'
-Info: line 9 - code[0043] <= '01_0001_1000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0043] <= '00_0000_0000_00_10_0000_10110000_10110000_0000_000_11_00_00_00_10_0'
 Info: line -1 - symbol[0043] <= 'System.Byte[]'
-Info: line 9 - code[0044] <= '01_1000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0044] <= '00_0000_0000_00_10_1100_00001000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0044] <= 'System.Byte[]'
-Info: line 9 - code[0045] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_101_11_00_00_00_00_0'
+Info: line 9 - code[0045] <= '10_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0045] <= 'System.Byte[]'
-Info: line 9 - code[0046] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_11_00_00_00_0'
+Info: line 9 - code[0046] <= '01_1000_0001_00_11_0000_00000000_00000000_0000_000_11_10_00_00_00_0'
 Info: line -1 - symbol[0046] <= 'System.Byte[]'
-Info: line 9 - code[0047] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_111_11_00_00_00_00_0'
+Info: line 9 - code[0047] <= '01_0001_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0047] <= 'System.Byte[]'
-Info: line 9 - code[0048] <= '11_0000_0000_00_11_0000_10111010_10111010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0048] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_111_11_00_00_00_00_0'
 Info: line -1 - symbol[0048] <= 'System.Byte[]'
-Info: line 9 - code[0049] <= '00_0000_0000_00_10_0111_00011100_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0049] <= '10_1000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0049] <= 'System.Byte[]'
-Info: line 9 - code[004A] <= '00_0000_0000_00_10_1111_00000000_00110111_0000_000_11_00_00_00_11_0'
+Info: line 9 - code[004A] <= '10_0001_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[004A] <= 'System.Byte[]'
-Info: line 9 - code[004B] <= '01_0111_1101_00_11_0000_10101000_10101000_0000_000_11_00_10_00_00_0'
+Info: line 9 - code[004B] <= '01_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[004B] <= 'System.Byte[]'
-Info: line 9 - code[004C] <= '10_0111_1101_00_11_1111_00000000_01001001_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[004C] <= '01_0111_1001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[004C] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '01001101' at mapper[002A]
-Info: Mapper location 42 set to value '01001101'
-Info: line 9 - code[004D] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[004D] <= '01_1001_1101_00_11_0000_10101101_10101101_0000_000_11_00_11_00_00_0'
 Info: line -1 - symbol[004D] <= 'System.Byte[]'
-Info: line 9 - code[004E] <= '00_0000_0000_00_10_0000_10101011_10101011_0000_000_11_00_00_00_10_0'
+Info: line 9 - code[004E] <= '10_1001_1101_00_11_1001_00000000_01011001_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[004E] <= 'System.Byte[]'
-Info: line 9 - code[004F] <= '00_0000_0000_00_10_1101_00101001_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[004F] <= '01_0000_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[004F] <= 'System.Byte[]'
-Info: line 9 - code[0050] <= '01_0001_1000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0050] <= '10_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0050] <= 'System.Byte[]'
-Info: line 9 - code[0051] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_01_00_00_00_0'
+Info: line 9 - code[0051] <= '01_0001_1000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0051] <= 'System.Byte[]'
-Info: line 9 - code[0052] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_011_11_00_00_00_00_0'
+Info: line 9 - code[0052] <= '01_1000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0052] <= 'System.Byte[]'
-Info: line 9 - code[0053] <= '10_0001_1000_00_11_1000_01010100_01011000_0000_000_11_00_10_00_00_0'
+Info: line 9 - code[0053] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_101_11_00_00_00_00_0'
 Info: line -1 - symbol[0053] <= 'System.Byte[]'
-Info: line 9 - code[0054] <= '01_0111_1100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0054] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_11_00_00_00_0'
 Info: line -1 - symbol[0054] <= 'System.Byte[]'
-Info: line 9 - code[0055] <= '01_0000_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0055] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_111_11_00_00_00_00_0'
 Info: line -1 - symbol[0055] <= 'System.Byte[]'
-Info: line 9 - code[0056] <= '01_1011_0000_10_11_0000_10110101_10110101_0000_000_11_00_00_11_00_0'
+Info: line 9 - code[0056] <= '11_0000_0000_00_11_0000_11001110_11001110_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0056] <= 'System.Byte[]'
-Info: line 9 - code[0057] <= '10_1011_0000_00_11_1001_01011001_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0057] <= '00_0000_0000_00_10_0111_00000010_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0057] <= 'System.Byte[]'
-Info: line 9 - code[0058] <= '01_0000_0001_00_11_1111_00000000_01011010_0000_000_11_10_00_00_00_0'
+Info: line 9 - code[0058] <= '00_0000_0000_00_10_1111_00000000_01000101_0000_000_11_00_00_00_11_0'
 Info: line -1 - symbol[0058] <= 'System.Byte[]'
-Info: line 9 - code[0059] <= '01_0000_0001_00_11_0000_00000000_00000000_0000_000_11_11_00_00_00_0'
+Info: line 9 - code[0059] <= '01_0111_1101_00_11_0000_10101101_10101101_0000_000_11_00_10_00_00_0'
 Info: line -1 - symbol[0059] <= 'System.Byte[]'
-Info: line 9 - code[005A] <= '01_1000_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[005A] <= '10_0111_1101_00_11_1111_00000000_01010111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[005A] <= 'System.Byte[]'
-Info: line 9 - code[005B] <= '10_0001_0001_00_11_0000_00000000_00000000_0000_101_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '01011011' at mapper[002A]
+Info: Mapper location 42 set to value '01011011'
+Info: line 9 - code[005B] <= '00_0000_0000_00_10_0000_10110000_10110000_0000_000_11_00_00_00_10_0'
 Info: line -1 - symbol[005B] <= 'System.Byte[]'
-Info: line 9 - code[005C] <= '10_0000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[005C] <= '00_0000_0000_00_10_1101_00111000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[005C] <= 'System.Byte[]'
-Info: line 9 - code[005D] <= '10_1000_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[005D] <= '01_0001_1000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[005D] <= 'System.Byte[]'
-Info: line 9 - code[005E] <= '01_0001_0001_00_11_0111_00101001_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[005E] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_01_00_00_00_0'
 Info: line -1 - symbol[005E] <= 'System.Byte[]'
-Info: line 9 - code[005F] <= '00_0000_0000_00_10_1111_00000000_01010000_0000_000_11_00_00_00_11_0'
+Info: line 9 - code[005F] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_011_11_00_00_00_00_0'
 Info: line -1 - symbol[005F] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '01100000' at mapper[0024]
-Info: Mapper location 36 set to value '01100000'
-Info: line 9 - code[0060] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[0060] <= '10_0001_1000_00_11_1000_01100001_01100101_0000_000_11_00_10_00_00_0'
 Info: line -1 - symbol[0060] <= 'System.Byte[]'
-Info: line 9 - code[0061] <= '11_0000_0000_00_11_0000_11000000_11000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0061] <= '01_0111_1100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0061] <= 'System.Byte[]'
-Info: line 9 - code[0062] <= '00_0000_0000_10_10_0000_10110101_10110101_0000_000_11_00_00_11_00_0'
+Info: line 9 - code[0062] <= '01_0000_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0062] <= 'System.Byte[]'
-Info: line 9 - code[0063] <= '00_0000_0000_10_10_1100_01110101_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0063] <= '01_1011_0000_10_11_0000_11001001_11001001_0000_000_11_00_00_11_00_0'
 Info: line -1 - symbol[0063] <= 'System.Byte[]'
-Info: line 9 - code[0064] <= '11_0000_0000_00_11_0000_10111010_10111010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0064] <= '10_1011_0000_00_11_1001_01100110_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0064] <= 'System.Byte[]'
-Info: line 9 - code[0065] <= '01_0001_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0065] <= '01_0000_0001_00_11_1111_00000000_01100111_0000_000_11_10_00_00_00_0'
 Info: line -1 - symbol[0065] <= 'System.Byte[]'
-Info: line 9 - code[0066] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_101_11_00_00_00_00_0'
+Info: line 9 - code[0066] <= '01_0000_0001_00_11_0000_00000000_00000000_0000_000_11_11_00_00_00_0'
 Info: line -1 - symbol[0066] <= 'System.Byte[]'
-Info: line 9 - code[0067] <= '10_0001_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0067] <= '01_1000_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0067] <= 'System.Byte[]'
-Info: line 9 - code[0068] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_10_0'
+Info: line 9 - code[0068] <= '10_0001_0001_00_11_0000_00000000_00000000_0000_101_11_00_00_00_00_0'
 Info: line -1 - symbol[0068] <= 'System.Byte[]'
-Info: line 9 - code[0069] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_01_0'
+Info: line 9 - code[0069] <= '10_0000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0069] <= 'System.Byte[]'
-Info: line 9 - code[006A] <= '01_0001_1000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[006A] <= '10_1000_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[006A] <= 'System.Byte[]'
-Info: line 9 - code[006B] <= '01_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[006B] <= '01_0001_0001_00_11_0111_00111000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[006B] <= 'System.Byte[]'
-Info: line 9 - code[006C] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_01_00_00_11_0'
+Info: line 9 - code[006C] <= '00_0000_0000_00_10_1111_00000000_01011101_0000_000_11_00_00_00_11_0'
 Info: line -1 - symbol[006C] <= 'System.Byte[]'
-Info: line 9 - code[006D] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_01_00_00_11_0'
+Warning in line 10: overwriting '00000111' with '01101101' at mapper[0024]
+Info: Mapper location 36 set to value '01101101'
+Info: line 9 - code[006D] <= '11_0000_0000_00_11_0000_11010100_11010100_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[006D] <= 'System.Byte[]'
-Info: line 9 - code[006E] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_01_00_00_11_0'
+Info: line 9 - code[006E] <= '00_0000_0000_10_10_0000_11001001_11001001_0000_000_11_00_00_11_00_0'
 Info: line -1 - symbol[006E] <= 'System.Byte[]'
-Info: line 9 - code[006F] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_01_00_00_11_0'
+Info: line 9 - code[006F] <= '00_0000_0000_10_10_1100_01111111_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[006F] <= 'System.Byte[]'
-Info: line 9 - code[0070] <= '00_0000_0000_00_10_1000_00000000_01110010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0070] <= '11_0000_0000_00_11_0000_11001110_11001110_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0070] <= 'System.Byte[]'
-Info: line 9 - code[0071] <= '00_0000_0000_00_10_0000_11001101_11001101_0000_000_11_00_11_00_00_0'
+Info: line 9 - code[0071] <= '01_0001_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0071] <= 'System.Byte[]'
-Info: line 9 - code[0072] <= '00_0000_0000_00_10_0111_00000000_01101010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0072] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_101_11_00_00_00_00_0'
 Info: line -1 - symbol[0072] <= 'System.Byte[]'
-Info: line 9 - code[0073] <= '00_0000_0000_00_10_0110_01110101_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0073] <= '10_0001_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0073] <= 'System.Byte[]'
-Info: line 9 - code[0074] <= '00_0000_0000_11_10_1111_00000000_01100100_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0074] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_10_0'
 Info: line -1 - symbol[0074] <= 'System.Byte[]'
-Info: line 9 - code[0075] <= '11_0000_0000_00_11_0000_11000111_11000111_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0075] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_01_0'
 Info: line -1 - symbol[0075] <= 'System.Byte[]'
-Info: line 9 - code[0076] <= '01_0000_0000_00_11_1111_00000000_00101000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0076] <= '01_0001_1000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0076] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '01110111' at mapper[0023]
-Info: Mapper location 35 set to value '01110111'
-Info: line 9 - code[0077] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[0077] <= '01_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0077] <= 'System.Byte[]'
-Info: line 9 - code[0078] <= '11_0000_0000_00_11_0000_10111010_10111010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0078] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_01_00_00_11_0'
 Info: line -1 - symbol[0078] <= 'System.Byte[]'
-Info: line 9 - code[0079] <= '10_0111_0111_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0079] <= '00_0000_0000_00_10_1110_00000000_01111000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0079] <= 'System.Byte[]'
-Info: line 9 - code[007A] <= '01_0001_0111_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[007A] <= '00_0000_0000_00_10_1000_00000000_01111100_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[007A] <= 'System.Byte[]'
-Info: line 9 - code[007B] <= '01_0000_0000_10_11_0000_10110101_10110101_0000_000_11_00_00_11_00_0'
+Info: line 9 - code[007B] <= '00_0000_0000_00_10_0000_11100001_11100001_0000_000_11_00_11_00_00_0'
 Info: line -1 - symbol[007B] <= 'System.Byte[]'
-Info: line 9 - code[007C] <= '00_0000_0000_10_10_1100_00101001_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[007C] <= '00_0000_0000_00_10_0111_00000000_01110110_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[007C] <= 'System.Byte[]'
-Info: line 9 - code[007D] <= '11_0000_0000_00_11_0000_10111010_10111010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[007D] <= '00_0000_0000_00_10_0110_01111111_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[007D] <= 'System.Byte[]'
-Info: line 9 - code[007E] <= '01_0000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[007E] <= '00_0000_0000_11_10_1111_00000000_01110000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[007E] <= 'System.Byte[]'
-Info: line 9 - code[007F] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[007F] <= '11_0000_0000_00_11_0000_11011011_11011011_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[007F] <= 'System.Byte[]'
-Info: line 9 - code[0080] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_111_11_00_00_00_00_0'
+Info: line 9 - code[0080] <= '01_0000_0000_00_11_1111_00000000_00110111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0080] <= 'System.Byte[]'
-Info: line 9 - code[0081] <= '10_0000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '10000001' at mapper[0023]
+Info: Mapper location 35 set to value '10000001'
+Info: line 9 - code[0081] <= '11_0000_0000_00_11_0000_11001110_11001110_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0081] <= 'System.Byte[]'
-Info: line 9 - code[0082] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_10_0'
+Info: line 9 - code[0082] <= '10_0111_0111_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0082] <= 'System.Byte[]'
-Info: line 9 - code[0083] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_01_0'
+Info: line 9 - code[0083] <= '01_0001_0111_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0083] <= 'System.Byte[]'
-Info: line 9 - code[0084] <= '00_0000_0101_00_10_0000_00000000_00000000_0000_001_11_00_11_00_00_0'
+Info: line 9 - code[0084] <= '01_0000_0000_10_11_0000_11001001_11001001_0000_000_11_00_00_11_00_0'
 Info: line -1 - symbol[0084] <= 'System.Byte[]'
-Info: line 9 - code[0085] <= '01_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0085] <= '00_0000_0000_10_10_1100_00111000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0085] <= 'System.Byte[]'
-Info: line 9 - code[0086] <= '01_0001_1100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0086] <= '11_0000_0000_00_11_0000_11001110_11001110_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0086] <= 'System.Byte[]'
-Info: line 9 - code[0087] <= '01_1101_1001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0087] <= '01_0000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0087] <= 'System.Byte[]'
-Info: line 9 - code[0088] <= '01_1001_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0088] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_111_11_00_00_00_00_0'
 Info: line -1 - symbol[0088] <= 'System.Byte[]'
-Info: line 9 - code[0089] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_11_0'
+Info: line 9 - code[0089] <= '10_0000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0089] <= 'System.Byte[]'
-Info: line 9 - code[008A] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_11_0'
+Info: line 9 - code[008A] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_10_0'
 Info: line -1 - symbol[008A] <= 'System.Byte[]'
-Info: line 9 - code[008B] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_11_0'
+Info: line 9 - code[008B] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_01_0'
 Info: line -1 - symbol[008B] <= 'System.Byte[]'
-Info: line 9 - code[008C] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_11_0'
+Info: line 9 - code[008C] <= '00_0000_0101_00_10_0000_00000000_00000000_0000_001_11_00_11_00_00_0'
 Info: line -1 - symbol[008C] <= 'System.Byte[]'
-Info: line 9 - code[008D] <= '00_0000_0000_00_10_1001_00000000_10010001_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[008D] <= '01_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[008D] <= 'System.Byte[]'
-Info: line 9 - code[008E] <= '00_0000_0000_00_10_0110_10010001_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[008E] <= '01_0001_1100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[008E] <= 'System.Byte[]'
-Info: line 9 - code[008F] <= '10_1001_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[008F] <= '01_1101_1001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[008F] <= 'System.Byte[]'
-Info: line 9 - code[0090] <= '00_0000_0000_00_10_0000_11001101_11001101_0000_000_11_00_10_00_00_0'
+Info: line 9 - code[0090] <= '01_1001_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0090] <= 'System.Byte[]'
-Info: line 9 - code[0091] <= '00_0000_0000_00_10_0111_00000000_10000100_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0091] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_11_0'
 Info: line -1 - symbol[0091] <= 'System.Byte[]'
-Info: line 9 - code[0092] <= '00_0000_0000_00_10_0110_10010100_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0092] <= '00_0000_0000_00_10_1110_00000000_10010001_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0092] <= 'System.Byte[]'
-Info: line 9 - code[0093] <= '00_0000_0000_11_10_1111_00000000_01111101_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0093] <= '00_0000_0000_00_10_1001_00000000_10010111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0093] <= 'System.Byte[]'
-Info: line 9 - code[0094] <= '11_0000_0000_00_11_0000_10111010_10111010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0094] <= '00_0000_0000_00_10_0110_10010111_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0094] <= 'System.Byte[]'
-Info: line 9 - code[0095] <= '10_0111_0111_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0095] <= '10_1001_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0095] <= 'System.Byte[]'
-Info: line 9 - code[0096] <= '01_0001_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0096] <= '00_0000_0000_00_10_0000_11100001_11100001_0000_000_11_00_10_00_00_0'
 Info: line -1 - symbol[0096] <= 'System.Byte[]'
-Info: line 9 - code[0097] <= '01_0111_0001_00_11_1111_00000000_00101000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[0097] <= '00_0000_0000_00_10_0111_00000000_10001100_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0097] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '10011000' at mapper[0030]
-Info: Mapper location 48 set to value '10011000'
-Warning in line 10: overwriting '00000110' with '10011000' at mapper[0031]
-Info: Mapper location 49 set to value '10011000'
-Warning in line 10: overwriting '00000110' with '10011000' at mapper[0032]
-Info: Mapper location 50 set to value '10011000'
-Warning in line 10: overwriting '00000110' with '10011000' at mapper[0033]
-Info: Mapper location 51 set to value '10011000'
-Warning in line 10: overwriting '00000110' with '10011000' at mapper[0034]
-Info: Mapper location 52 set to value '10011000'
-Warning in line 10: overwriting '00000110' with '10011000' at mapper[0035]
-Info: Mapper location 53 set to value '10011000'
-Warning in line 10: overwriting '00000110' with '10011000' at mapper[0036]
-Info: Mapper location 54 set to value '10011000'
-Warning in line 10: overwriting '00000110' with '10011000' at mapper[0037]
-Info: Mapper location 55 set to value '10011000'
-Warning in line 10: overwriting '00000110' with '10011000' at mapper[0038]
-Info: Mapper location 56 set to value '10011000'
-Warning in line 10: overwriting '00000110' with '10011000' at mapper[0039]
-Info: Mapper location 57 set to value '10011000'
-Info: line 9 - code[0098] <= '00_0000_0000_00_10_1111_00000000_10011100_0000_001_11_00_00_00_00_0'
+Info: line 9 - code[0098] <= '00_0000_0000_00_10_0110_10011010_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0098] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '10011001' at mapper[0061]
-Info: Mapper location 97 set to value '10011001'
-Warning in line 10: overwriting '00000110' with '10011001' at mapper[0041]
-Info: Mapper location 65 set to value '10011001'
-Warning in line 10: overwriting '00000110' with '10011001' at mapper[0065]
-Info: Mapper location 101 set to value '10011001'
-Warning in line 10: overwriting '00000110' with '10011001' at mapper[0045]
-Info: Mapper location 69 set to value '10011001'
-Info: line 9 - code[0099] <= '00_0000_1101_00_10_1111_00000000_10011100_0000_001_11_00_00_00_00_0'
+Info: line 9 - code[0099] <= '00_0000_0000_11_10_1111_00000000_10000110_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[0099] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '10011010' at mapper[0063]
-Info: Mapper location 99 set to value '10011010'
-Warning in line 10: overwriting '00000110' with '10011010' at mapper[0043]
-Info: Mapper location 67 set to value '10011010'
-Info: line 9 - code[009A] <= '00_0000_1111_00_10_1111_00000000_10011100_0000_001_11_00_00_00_00_0'
+Info: line 9 - code[009A] <= '11_0000_0000_00_11_0000_11001110_11001110_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[009A] <= 'System.Byte[]'
-Warning in line 10: overwriting '00000110' with '10011011' at mapper[0062]
-Info: Mapper location 98 set to value '10011011'
-Warning in line 10: overwriting '00000110' with '10011011' at mapper[0042]
-Info: Mapper location 66 set to value '10011011'
-Warning in line 10: overwriting '00000110' with '10011011' at mapper[0064]
-Info: Mapper location 100 set to value '10011011'
-Warning in line 10: overwriting '00000110' with '10011011' at mapper[0044]
-Info: Mapper location 68 set to value '10011011'
-Warning in line 10: overwriting '00000110' with '10011011' at mapper[0066]
-Info: Mapper location 102 set to value '10011011'
-Warning in line 10: overwriting '00000110' with '10011011' at mapper[0046]
-Info: Mapper location 70 set to value '10011011'
-Info: line 9 - code[009B] <= '00_0000_1001_00_10_0000_00000000_00000000_0000_001_11_00_00_00_00_0'
+Info: line 9 - code[009B] <= '10_0111_0111_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[009B] <= 'System.Byte[]'
-Info: line 9 - code[009C] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[009C] <= '01_0001_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[009C] <= 'System.Byte[]'
-Info: line 9 - code[009D] <= '11_0000_0011_01_11_0000_10111001_10111001_0000_000_11_00_10_00_00_0'
+Info: line 9 - code[009D] <= '01_0111_0001_00_11_1111_00000000_00110111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[009D] <= 'System.Byte[]'
-Info: line 9 - code[009E] <= '01_1100_1100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '10011110' at mapper[0030]
+Info: Mapper location 48 set to value '10011110'
+Warning in line 10: overwriting '00000111' with '10011110' at mapper[0031]
+Info: Mapper location 49 set to value '10011110'
+Warning in line 10: overwriting '00000111' with '10011110' at mapper[0032]
+Info: Mapper location 50 set to value '10011110'
+Warning in line 10: overwriting '00000111' with '10011110' at mapper[0033]
+Info: Mapper location 51 set to value '10011110'
+Warning in line 10: overwriting '00000111' with '10011110' at mapper[0034]
+Info: Mapper location 52 set to value '10011110'
+Warning in line 10: overwriting '00000111' with '10011110' at mapper[0035]
+Info: Mapper location 53 set to value '10011110'
+Warning in line 10: overwriting '00000111' with '10011110' at mapper[0036]
+Info: Mapper location 54 set to value '10011110'
+Warning in line 10: overwriting '00000111' with '10011110' at mapper[0037]
+Info: Mapper location 55 set to value '10011110'
+Warning in line 10: overwriting '00000111' with '10011110' at mapper[0038]
+Info: Mapper location 56 set to value '10011110'
+Warning in line 10: overwriting '00000111' with '10011110' at mapper[0039]
+Info: Mapper location 57 set to value '10011110'
+Info: line 9 - code[009E] <= '00_0000_0000_00_10_1111_00000000_10100010_0000_001_11_00_00_00_00_0'
 Info: line -1 - symbol[009E] <= 'System.Byte[]'
-Info: line 9 - code[009F] <= '01_1101_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '10011111' at mapper[0061]
+Info: Mapper location 97 set to value '10011111'
+Warning in line 10: overwriting '00000111' with '10011111' at mapper[0041]
+Info: Mapper location 65 set to value '10011111'
+Warning in line 10: overwriting '00000111' with '10011111' at mapper[0065]
+Info: Mapper location 101 set to value '10011111'
+Warning in line 10: overwriting '00000111' with '10011111' at mapper[0045]
+Info: Mapper location 69 set to value '10011111'
+Info: line 9 - code[009F] <= '00_0000_1101_00_10_1111_00000000_10100010_0000_001_11_00_00_00_00_0'
 Info: line -1 - symbol[009F] <= 'System.Byte[]'
-Info: line 9 - code[00A0] <= '01_1011_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '10100000' at mapper[0063]
+Info: Mapper location 99 set to value '10100000'
+Warning in line 10: overwriting '00000111' with '10100000' at mapper[0043]
+Info: Mapper location 67 set to value '10100000'
+Info: line 9 - code[00A0] <= '00_0000_1111_00_10_1111_00000000_10100010_0000_001_11_00_00_00_00_0'
 Info: line -1 - symbol[00A0] <= 'System.Byte[]'
-Info: line 9 - code[00A1] <= '00_0000_0000_11_11_0110_00000000_00000001_0000_010_11_00_00_00_00_0'
+Warning in line 10: overwriting '00000111' with '10100001' at mapper[0062]
+Info: Mapper location 98 set to value '10100001'
+Warning in line 10: overwriting '00000111' with '10100001' at mapper[0042]
+Info: Mapper location 66 set to value '10100001'
+Warning in line 10: overwriting '00000111' with '10100001' at mapper[0064]
+Info: Mapper location 100 set to value '10100001'
+Warning in line 10: overwriting '00000111' with '10100001' at mapper[0044]
+Info: Mapper location 68 set to value '10100001'
+Warning in line 10: overwriting '00000111' with '10100001' at mapper[0066]
+Info: Mapper location 102 set to value '10100001'
+Warning in line 10: overwriting '00000111' with '10100001' at mapper[0046]
+Info: Mapper location 70 set to value '10100001'
+Info: line 9 - code[00A1] <= '00_0000_1001_00_10_0000_00000000_00000000_0000_001_11_00_00_00_00_0'
 Info: line -1 - symbol[00A1] <= 'System.Byte[]'
-Info: line 9 - code[00A2] <= '10_1011_0000_10_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00A2] <= '11_0000_0011_01_11_0000_11001101_11001101_0000_000_11_00_10_00_00_0'
 Info: line -1 - symbol[00A2] <= 'System.Byte[]'
-Info: line 9 - code[00A3] <= '01_0000_0000_11_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00A3] <= '01_1100_1100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00A3] <= 'System.Byte[]'
-Info: line 9 - code[00A4] <= '00_0000_0000_11_10_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00A4] <= '01_1101_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00A4] <= 'System.Byte[]'
-Info: line 9 - code[00A5] <= '00_0000_0000_11_10_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00A5] <= '01_1011_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00A5] <= 'System.Byte[]'
-Info: line 9 - code[00A6] <= '00_0000_0000_11_10_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00A6] <= '00_0000_0000_11_11_0110_00000000_00000001_0000_010_11_00_00_00_00_0'
 Info: line -1 - symbol[00A6] <= 'System.Byte[]'
-Info: line 9 - code[00A7] <= '00_0000_0000_11_11_0110_00010001_00000001_0000_110_11_00_00_00_00_0'
+Info: line 9 - code[00A7] <= '10_1011_0000_10_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00A7] <= 'System.Byte[]'
-Info: line 9 - code[00A8] <= '01_0000_1100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00A8] <= '01_0000_0000_11_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00A8] <= 'System.Byte[]'
-Info: line 9 - code[00A9] <= '01_1011_0000_10_11_0000_10110101_10110101_0000_000_11_00_00_11_00_0'
+Info: line 9 - code[00A9] <= '00_0000_0000_11_10_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00A9] <= 'System.Byte[]'
-Info: line 9 - code[00AA] <= '10_1011_0000_00_11_0000_00000010_00000010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00AA] <= '00_0000_0000_11_10_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00AA] <= 'System.Byte[]'
-Info: line 9 - code[00AB] <= '11_0000_0000_00_11_0000_10111001_10111001_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00AB] <= '00_0000_0000_11_10_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00AB] <= 'System.Byte[]'
-Info: line 9 - code[00AC] <= '10_0111_0111_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00AC] <= '00_0000_0000_11_11_0110_00010001_00000001_0000_110_11_00_00_00_00_0'
 Info: line -1 - symbol[00AC] <= 'System.Byte[]'
-Info: line 9 - code[00AD] <= '01_0000_0111_10_11_0000_10110101_10110101_0000_000_11_00_00_11_00_0'
+Info: line 9 - code[00AD] <= '01_0000_1100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00AD] <= 'System.Byte[]'
-Info: line 9 - code[00AE] <= '01_0111_0111_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00AE] <= '01_1011_0000_10_11_0000_11001001_11001001_0000_000_11_00_00_11_00_0'
 Info: line -1 - symbol[00AE] <= 'System.Byte[]'
-Info: line 9 - code[00AF] <= '10_0000_0111_00_11_0000_00000010_00000010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00AF] <= '10_1011_0000_00_11_0000_00000010_00000010_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00AF] <= 'System.Byte[]'
-Info: line 9 - code[00B0] <= '00_0000_0000_00_10_0000_11100110_11100110_1011_000_11_00_00_00_00_0'
+Info: line 9 - code[00B0] <= '11_0000_0000_00_11_0000_11001101_11001101_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00B0] <= 'System.Byte[]'
-Info: line 9 - code[00B1] <= '11_0000_0000_00_11_0000_10111001_10111001_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00B1] <= '10_0111_0111_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00B1] <= 'System.Byte[]'
-Info: line 9 - code[00B2] <= '01_0000_1000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00B2] <= '01_0000_0111_10_11_0000_11001001_11001001_0000_000_11_00_00_11_00_0'
 Info: line -1 - symbol[00B2] <= 'System.Byte[]'
-Info: line 9 - code[00B3] <= '01_1000_0000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00B3] <= '01_0111_0111_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00B3] <= 'System.Byte[]'
-Info: line 9 - code[00B4] <= '00_0000_0000_10_10_0000_00000010_00000010_0000_000_11_10_00_11_00_0'
+Info: line 9 - code[00B4] <= '10_0000_0111_00_11_0000_00000010_00000010_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00B4] <= 'System.Byte[]'
-Info: line 9 - code[00B5] <= '00_0000_0000_00_11_0110_00000010_00000000_0000_100_11_00_01_01_00_0'
+Info: line 9 - code[00B5] <= '11_0000_0000_00_11_0000_11001101_11001101_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00B5] <= 'System.Byte[]'
-Info: line 9 - code[00B6] <= '00_0000_0000_11_10_1111_00000000_10110101_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00B6] <= '01_0111_0000_10_11_0000_11001001_11001001_0000_000_11_00_00_11_00_0'
 Info: line -1 - symbol[00B6] <= 'System.Byte[]'
-Info: line 9 - code[00B7] <= '01_0000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00B7] <= '00_0000_0000_00_10_0000_01000011_01000011_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00B7] <= 'System.Byte[]'
-Info: line 9 - code[00B8] <= '01_0001_0000_00_11_1111_00000000_10111010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00B8] <= '11_0000_0000_00_11_0000_11001101_11001101_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00B8] <= 'System.Byte[]'
-Info: line 9 - code[00B9] <= '01_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00B9] <= '10_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00B9] <= 'System.Byte[]'
-Info: line 9 - code[00BA] <= '01_0010_0010_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00BA] <= '01_0010_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00BA] <= 'System.Byte[]'
-Info: line 9 - code[00BB] <= '01_0011_0011_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00BB] <= '01_0001_1100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00BB] <= 'System.Byte[]'
-Info: line 9 - code[00BC] <= '01_0100_0100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00BC] <= '01_0111_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00BC] <= 'System.Byte[]'
-Info: line 9 - code[00BD] <= '01_0101_0101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00BD] <= '01_1011_0000_10_11_0000_11001001_11001001_0000_000_11_00_10_11_00_0'
 Info: line -1 - symbol[00BD] <= 'System.Byte[]'
-Info: line 9 - code[00BE] <= '01_0110_0110_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00BE] <= '00_0000_0000_00_10_0000_11000100_11000100_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00BE] <= 'System.Byte[]'
-Info: line 9 - code[00BF] <= '01_0111_0111_00_11_0000_00000010_00000010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00BF] <= '00_0000_0000_00_11_0110_00000010_00000000_0000_111_11_01_00_01_00_0'
 Info: line -1 - symbol[00BF] <= 'System.Byte[]'
-Info: line 9 - code[00C0] <= '01_0000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00C0] <= '00_0000_0000_11_10_1111_00000000_10111111_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00C0] <= 'System.Byte[]'
-Info: line 9 - code[00C1] <= '01_0001_0010_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00C1] <= '00_0000_0000_00_10_0000_11000100_11000100_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00C1] <= 'System.Byte[]'
-Info: line 9 - code[00C2] <= '01_0010_0011_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00C2] <= '00_0000_0000_00_11_0110_00000010_00000000_0000_101_11_01_00_01_00_0'
 Info: line -1 - symbol[00C2] <= 'System.Byte[]'
-Info: line 9 - code[00C3] <= '01_0011_0100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00C3] <= '00_0000_0000_11_10_1111_00000000_11000010_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00C3] <= 'System.Byte[]'
-Info: line 9 - code[00C4] <= '01_0100_0101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00C4] <= '11_0000_0000_00_11_0000_11001101_11001101_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00C4] <= 'System.Byte[]'
-Info: line 9 - code[00C5] <= '01_0101_0110_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00C5] <= '01_0000_1000_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00C5] <= 'System.Byte[]'
-Info: line 9 - code[00C6] <= '01_0110_0111_00_11_0000_00000010_00000010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00C6] <= '01_1000_0000_10_11_0000_00000010_00000010_0000_000_11_10_00_11_00_0'
 Info: line -1 - symbol[00C6] <= 'System.Byte[]'
-Info: line 9 - code[00C7] <= '01_0010_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00C7] <= '11_0000_0000_00_11_0000_11010100_11010100_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00C7] <= 'System.Byte[]'
-Info: line 9 - code[00C8] <= '01_0011_0010_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00C8] <= '01_0000_0000_10_11_0000_00000000_00000000_0000_000_11_00_00_11_00_0'
 Info: line -1 - symbol[00C8] <= 'System.Byte[]'
-Info: line 9 - code[00C9] <= '01_0100_0011_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00C9] <= '00_0000_0000_00_11_0110_00000010_00000000_0000_100_11_00_01_01_00_0'
 Info: line -1 - symbol[00C9] <= 'System.Byte[]'
-Info: line 9 - code[00CA] <= '01_0101_0100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00CA] <= '00_0000_0000_11_10_1111_00000000_11001001_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00CA] <= 'System.Byte[]'
-Info: line 9 - code[00CB] <= '01_0110_0101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00CB] <= '01_0000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00CB] <= 'System.Byte[]'
-Info: line 9 - code[00CC] <= '01_0111_0110_00_11_0000_00000010_00000010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00CC] <= '01_0001_0000_00_11_1111_00000000_11001110_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00CC] <= 'System.Byte[]'
-Info: line 9 - code[00CD] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_011_11_00_00_00_00_0'
+Info: line 9 - code[00CD] <= '01_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00CD] <= 'System.Byte[]'
-Info: line 9 - code[00CE] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_011_11_00_00_00_00_0'
+Info: line 9 - code[00CE] <= '01_0010_0010_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00CE] <= 'System.Byte[]'
-Info: line 9 - code[00CF] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_011_11_00_00_00_00_0'
+Info: line 9 - code[00CF] <= '01_0011_0011_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00CF] <= 'System.Byte[]'
-Info: line 9 - code[00D0] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_011_11_00_00_00_00_0'
+Info: line 9 - code[00D0] <= '01_0100_0100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00D0] <= 'System.Byte[]'
-Info: line 9 - code[00D1] <= '10_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00D1] <= '01_0101_0101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00D1] <= 'System.Byte[]'
-Info: line 9 - code[00D2] <= '01_0001_1100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00D2] <= '01_0110_0110_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00D2] <= 'System.Byte[]'
-Info: line 9 - code[00D3] <= '00_0000_0011_00_10_1001_00000000_11010110_0000_001_11_00_00_00_00_0'
+Info: line 9 - code[00D3] <= '01_0111_0111_00_11_0000_00000010_00000010_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00D3] <= 'System.Byte[]'
-Info: line 9 - code[00D4] <= '01_1101_1001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00D4] <= '01_0000_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00D4] <= 'System.Byte[]'
-Info: line 9 - code[00D5] <= '01_1001_1101_00_11_1111_00000000_11010111_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00D5] <= '01_0001_0010_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00D5] <= 'System.Byte[]'
-Info: line 9 - code[00D6] <= '01_1101_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00D6] <= '01_0010_0011_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00D6] <= 'System.Byte[]'
-Info: line 9 - code[00D7] <= '01_1011_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00D7] <= '01_0011_0100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00D7] <= 'System.Byte[]'
-Info: line 9 - code[00D8] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_00_0'
+Info: line 9 - code[00D8] <= '01_0100_0101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00D8] <= 'System.Byte[]'
-Info: line 9 - code[00D9] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_00_0'
+Info: line 9 - code[00D9] <= '01_0101_0110_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00D9] <= 'System.Byte[]'
-Info: line 9 - code[00DA] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_00_0'
+Info: line 9 - code[00DA] <= '01_0110_0111_00_11_0000_00000010_00000010_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00DA] <= 'System.Byte[]'
-Info: line 9 - code[00DB] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_00_0'
+Info: line 9 - code[00DB] <= '01_0010_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00DB] <= 'System.Byte[]'
-Info: line 9 - code[00DC] <= '10_1011_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00DC] <= '01_0011_0010_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00DC] <= 'System.Byte[]'
-Info: line 9 - code[00DD] <= '10_1101_1101_00_11_0000_00000010_00000010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00DD] <= '01_0100_0011_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00DD] <= 'System.Byte[]'
-Info: line 9 - code[00DE] <= '00_0000_0000_00_10_0011_00000000_00000010_0000_000_11_00_00_00_10_0'
+Info: line 9 - code[00DE] <= '01_0101_0100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00DE] <= 'System.Byte[]'
-Info: line 9 - code[00DF] <= '00_0000_0000_00_10_0000_11100111_11100111_0000_000_11_00_00_00_01_0'
+Info: line 9 - code[00DF] <= '01_0110_0101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00DF] <= 'System.Byte[]'
-Info: line 9 - code[00E0] <= '00_0000_0000_00_10_0000_11101001_11101001_1100_000_11_00_00_00_00_1'
+Info: line 9 - code[00E0] <= '01_0111_0110_00_11_0000_00000010_00000010_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00E0] <= 'System.Byte[]'
-Info: line 9 - code[00E1] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_01_0'
+Info: line 9 - code[00E1] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_011_11_00_00_00_00_0'
 Info: line -1 - symbol[00E1] <= 'System.Byte[]'
-Info: line 9 - code[00E2] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_01_0'
+Info: line 9 - code[00E2] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_011_11_00_00_00_00_0'
 Info: line -1 - symbol[00E2] <= 'System.Byte[]'
-Info: line 9 - code[00E3] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_01_0'
+Info: line 9 - code[00E3] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_011_11_00_00_00_00_0'
 Info: line -1 - symbol[00E3] <= 'System.Byte[]'
-Info: line 9 - code[00E4] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_01_0'
+Info: line 9 - code[00E4] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_011_11_00_00_00_00_0'
 Info: line -1 - symbol[00E4] <= 'System.Byte[]'
-Info: line 9 - code[00E5] <= '00_0000_0000_00_10_0111_11100111_11100000_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00E5] <= '10_0001_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00E5] <= 'System.Byte[]'
-Info: line 9 - code[00E6] <= '00_0000_0000_00_10_0010_11101001_00000010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00E6] <= '01_0001_1100_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00E6] <= 'System.Byte[]'
-Info: line 9 - code[00E7] <= '00_0000_0000_00_10_0000_11101001_11101001_0010_000_11_00_00_00_00_0'
+Info: line 9 - code[00E7] <= '00_0000_0011_00_10_1001_00000000_11101010_0000_001_11_00_00_00_00_0'
 Info: line -1 - symbol[00E7] <= 'System.Byte[]'
-Info: line 9 - code[00E8] <= '00_0000_0000_00_10_0000_00000000_00000000_0011_000_11_00_00_00_00_0'
+Info: line 9 - code[00E8] <= '01_1101_1001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00E8] <= 'System.Byte[]'
-Info: line 9 - code[00E9] <= '00_0000_0000_00_10_0101_00000000_00000001_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00E9] <= '01_1001_1101_00_11_1111_00000000_11101011_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00E9] <= 'System.Byte[]'
-Info: line 9 - code[00EA] <= '00_0000_0000_00_10_0100_00000000_00000001_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00EA] <= '01_1101_1101_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00EA] <= 'System.Byte[]'
-Info: line 9 - code[00EB] <= '00_0000_0000_00_10_0100_00000000_00000001_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00EB] <= '01_1011_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00EB] <= 'System.Byte[]'
-Info: line 9 - code[00EC] <= '00_0000_0000_00_10_0000_00000010_00000010_1000_000_11_00_00_00_00_0'
+Info: line 9 - code[00EC] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_00_0'
 Info: line -1 - symbol[00EC] <= 'System.Byte[]'
+Info: line 9 - code[00ED] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_00_0'
+Info: line -1 - symbol[00ED] <= 'System.Byte[]'
+Info: line 9 - code[00EE] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_00_0'
+Info: line -1 - symbol[00EE] <= 'System.Byte[]'
+Info: line 9 - code[00EF] <= '00_0000_0000_00_11_0000_00000000_00000000_0000_110_11_00_01_01_00_0'
+Info: line -1 - symbol[00EF] <= 'System.Byte[]'
+Info: line 9 - code[00F0] <= '10_1011_0001_00_11_0000_00000000_00000000_0000_000_11_00_00_00_00_0'
+Info: line -1 - symbol[00F0] <= 'System.Byte[]'
+Info: line 9 - code[00F1] <= '10_1101_1101_00_11_0000_00000010_00000010_0000_000_11_00_00_00_00_0'
+Info: line -1 - symbol[00F1] <= 'System.Byte[]'
+Info: line 9 - code[00F2] <= '00_0000_0000_00_10_0011_00000000_00000010_0000_000_11_00_00_00_10_0'
+Info: line -1 - symbol[00F2] <= 'System.Byte[]'
+Info: line 9 - code[00F3] <= '00_0000_0000_00_10_0000_11111001_11111001_0000_000_11_00_00_00_01_0'
+Info: line -1 - symbol[00F3] <= 'System.Byte[]'
+Info: line 9 - code[00F4] <= '00_0000_0000_00_10_0000_11111011_11111011_1100_000_11_00_00_00_00_1'
+Info: line -1 - symbol[00F4] <= 'System.Byte[]'
+Info: line 9 - code[00F5] <= '00_0000_0000_00_10_0000_00000000_00000000_0000_000_11_00_00_00_01_0'
+Info: line -1 - symbol[00F5] <= 'System.Byte[]'
+Info: line 9 - code[00F6] <= '00_0000_0000_00_10_1110_00000000_11110101_0000_000_11_00_00_00_00_0'
+Info: line -1 - symbol[00F6] <= 'System.Byte[]'
+Info: line 9 - code[00F7] <= '00_0000_0000_00_10_0111_11111001_11110100_0000_000_11_00_00_00_00_0'
+Info: line -1 - symbol[00F7] <= 'System.Byte[]'
+Info: line 9 - code[00F8] <= '00_0000_0000_00_10_0010_11111011_00000010_0000_000_11_00_00_00_00_0'
+Info: line -1 - symbol[00F8] <= 'System.Byte[]'
+Info: line 9 - code[00F9] <= '00_0000_0000_00_10_0000_11111011_11111011_0010_000_11_00_00_00_00_0'
+Info: line -1 - symbol[00F9] <= 'System.Byte[]'
+Info: line 9 - code[00FA] <= '00_0000_0000_00_10_0000_00000000_00000000_0011_000_11_00_00_00_00_0'
+Info: line -1 - symbol[00FA] <= 'System.Byte[]'
+Info: line 9 - code[00FB] <= '00_0000_0000_00_10_0101_00000000_00000001_0000_000_11_00_00_00_00_0'
+Info: line -1 - symbol[00FB] <= 'System.Byte[]'
+Info: line 9 - code[00FC] <= '00_0000_0000_00_10_0100_00000000_00000001_0000_000_11_00_00_00_00_0'
+Info: line -1 - symbol[00FC] <= 'System.Byte[]'
+Info: line 9 - code[00FD] <= '00_0000_0000_00_10_0100_00000000_00000001_0000_000_11_00_00_00_00_0'
+Info: line -1 - symbol[00FD] <= 'System.Byte[]'
+Info: line 9 - code[00FE] <= '00_0000_0000_00_10_0000_00000010_00000010_1000_000_11_00_00_00_00_0'
+Info: line -1 - symbol[00FE] <= 'System.Byte[]'
 Generating code: 
-Warning in line 9: found 19 uninitialized locations:
-00ED .. 00FF
+Warning in line 9: found 1 uninitialized locations:
+00FF .. 00FF
 
 Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_code.mif' ... Done.
 Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_code.cgf' ... Done.
-Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_code.coe' (LF only) ... Done (initialized locations: 237, empty locations: 19, total locations: 256).
+Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_code.coe' (LF only) ... Done (initialized locations: 255, empty locations: 1, total locations: 256).
 Generating code 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_code.vhd' ... Done.
 Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_code.hex' ... Done.
 Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_code_lendian.bin' ... Done.
@@ -1553,4 +1674,5 @@ Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\
 Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_map.bin' ... Done.
 Generating symbol: 
 Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_sym.mif' ... Done.
-Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc
+Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_sym.cgf' ... Done.
+Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_sym.coe' (LF only) ... Done (initialized locations: 256, e
