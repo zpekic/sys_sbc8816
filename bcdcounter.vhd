@@ -33,7 +33,7 @@ entity bcdcounter is
     Port ( reset : in  STD_LOGIC;
            clk : in  STD_LOGIC;
            enable : in  STD_LOGIC;
-           value : buffer  STD_LOGIC_VECTOR (15 downto 0));
+           value : buffer  STD_LOGIC_VECTOR (31 downto 0));
 end bcdcounter;
 
 architecture Behavioral of bcdcounter is
@@ -49,7 +49,8 @@ component adder16 is
            cout : out  STD_LOGIC);
 end component;
 
-signal sum: std_logic_vector(15 downto 0);
+signal sum: std_logic_vector(31 downto 0);
+signal c: std_logic_vector(2 downto 0);
 
 begin
 
@@ -64,15 +65,21 @@ begin
 	end if;
 end process;
 
-adder: adder16 port map (
-	cin => enable,
-	a => value,
-	b => X"0000",
-	na => '0',
-	nb => '0',
-	bcd => '1',
-	y => sum
-);
+c(0) <= enable;
+--cout <= c(2);
+
+generate_adder32: for i in 0 to 1 generate
+	adder: adder16 Port map ( 
+				cin => c(i), 
+				a => value((((i + 1) * 16) - 1) downto (i * 16)),
+				b => X"0000",
+				na => '0',
+				nb => '0',
+				bcd => '1',
+				y => sum((((i + 1) * 16) - 1) downto (i * 16)),
+				cout => c(i + 1) 
+			);
+end generate;
 
 end Behavioral;
 

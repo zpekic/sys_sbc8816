@@ -306,7 +306,7 @@ component bcdcounter is
     Port ( reset : in  STD_LOGIC;
            clk : in  STD_LOGIC;
            enable : in  STD_LOGIC;
-           value : buffer  STD_LOGIC_VECTOR (15 downto 0));
+           value : buffer  STD_LOGIC_VECTOR (31 downto 0));
 end component;
 	
 type table_8x16 is array (0 to 7) of std_logic_vector(15 downto 0);
@@ -442,11 +442,7 @@ constant kypd2ascii: table_32x8 := (
 );
 
 -- HC (hexcalc core) connections
-signal hc_status: std_logic_vector(1 downto 0);
-constant hc_status_ready: std_logic_vector(1 downto 0) := "00";
-constant hc_status_done: std_logic_vector(1 downto 0) := "01";
-constant hc_status_busy: std_logic_vector(1 downto 0) := "10";
-constant hc_status_busy_using_mt: std_logic_vector(1 downto 0) := "11";
+signal hc_status, hc_status_old: std_logic_vector(1 downto 0);
 signal hc_tos: std_logic_vector(31 downto 0); -- capture value of TOS (R0)
 signal hc_txdsend, hc_txdready, hc_error, hc_clk, hc_clk_uart: std_logic := '0';
 signal hc_txdchar: std_logic_vector(7 downto 0);
@@ -456,9 +452,9 @@ signal hc_delay, hc_carry, hc_daa: std_logic;	-- calculator internal flags
 signal hc_zero: std_logic_vector(15 downto 0);
 signal hc_dbg, hc_led: std_logic_vector(23 downto 0);
 -- calculator counters
-signal i_done: std_logic; -- pulse when done with instruction
-signal i_cnt: std_logic_vector(15 downto 0);	-- instructions executed
-signal c_cnt: std_logic_vector(15 downto 0); -- clock cycles per instruction
+signal i_done, i_new: std_logic; -- pulse when done with instruction
+signal i_cnt: std_logic_vector(31 downto 0);	-- instructions executed
+signal c_cnt: std_logic_vector(31 downto 0); -- clock cycles per instruction
 signal sy_cnt: std_logic_vector(3 downto 0);
 
 -- MT8816 connections
@@ -839,7 +835,11 @@ win: hardwin Port map(
 
 -- sy_cnt is either instruction count or clock cycle count (BCD) of last executed instruction
 with (win_x(3 downto 0)) select sy_cnt <=
-		-- instruction clock count, up to 9999
+		-- instruction clock count, up to 99999999
+		c_cnt(31 downto 28)	when X"0",
+		c_cnt(27 downto 24)	when X"1",
+		c_cnt(23 downto 20)	when X"2",
+		c_cnt(19 downto 16)	when X"3",
 		c_cnt(15 downto 12)	when X"4",
 		c_cnt(11 downto 8)	when X"5",
 		c_cnt(7 downto 4)		when X"6",
@@ -853,14 +853,22 @@ with (win_x(3 downto 0)) select sy_cnt <=
 	
 -- count clock cycles per instruction	
 cclkcnt: bcdcounter Port map ( 
-		reset => RESET,
+		reset => (RESET or i_new),
       clk => hc_clk,		
-		enable => hc_status(1),	-- only count when status is "busy"
+		enable => (hc_status(1) and hc_txdready),	-- only count when status is "busy" and not waiting for UART
       value => c_cnt
 	);
 
+i_new <= hc_status(1) when (hc_status_old = status_ready) else '0';
+on_hc_clk: process(hc_clk)
+begin
+	if (rising_edge(hc_clk)) then
+		hc_status_old <= hc_status;
+	end if;
+end process;
+
 -- count number of instructions executed
-i_done <= '1' when (hc_status = hc_status_done) else '0';	-- generate pulse at done of each instruction
+i_done <= '1' when (hc_status = status_done) else '0';	-- generate pulse at done of each instruction
 instcnt: bcdcounter Port map ( 
 		reset => RESET,
       clk => hc_clk,		
@@ -942,7 +950,7 @@ kypd: keypad4x4 Port map (
 		);
 		
 key <= rx_ready or kypd_keypressed;
-input_clear <= '1' when (hc_status = hc_status_done) else reset;
+input_clear <= '1' when (hc_status = status_done) else reset;
 
 on_key: process(key, kypd_hex, kypd_shift, rx_char, input_clear)
 begin

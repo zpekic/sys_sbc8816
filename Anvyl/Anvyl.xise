@@ -342,7 +342,7 @@
     <property xil_pn:name="Power Reduction Xst" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Preferred Language" xil_pn:value="VHDL" xil_pn:valueState="non-default"/>
     <property xil_pn:name="Produce Verbose Report" xil_pn:value="false" xil_pn:valueState="default"/>
-    <property xil_pn:name="Project Description" xil_pn:value="TIM-011 components running on Digilent Anvyl board:&#xA;&#xA;https://store.digilentinc.com/anvyl-spartan-6-fpga-trainer-board/" xil_pn:valueState="non-default"/>
+    <property xil_pn:name="Project Description" xil_pn:value="https://hackaday.io/project/184782-cross-bar-switch-serial-cpu-and-rpn-calculator&#xA;&#xA;Implemented on: https://store.digilentinc.com/anvyl-spartan-6-fpga-trainer-board/" xil_pn:valueState="non-default"/>
     <property xil_pn:name="Project Generator" xil_pn:value="ProjNav" xil_pn:valueState="default"/>
     <property xil_pn:name="Property Specification in Project File" xil_pn:value="Store all values" xil_pn:valueState="default"/>
     <property xil_pn:name="RAM Extraction" xil_pn:value="true" xil_pn:valueState="default"/>
