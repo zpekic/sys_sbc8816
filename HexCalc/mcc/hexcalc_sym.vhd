@@ -1039,8 +1039,8 @@ constant hxc_symbol_entry: t_hxc_symbol_entry := (
 -- if loopcnt_is_zero then print_crlf else st_loop;
 247 => X"69_66_20_6C_6F_6F_70_63_6E_74_5F_69_73_5F_7A_65_72_6F_20_74_68_65_6E_20_70_72_69_6E_74_5F_63_72",
 
--- L0642@00F8.echo:  if TRACE_INPUT then emit else return;
--- echo: if TRACE_INPUT then emit else return;
+-- L0642@00F8.echo:  if TRACE_INPUT then emit else emit0;
+-- echo: if TRACE_INPUT then emit else emit0;
 248 => X"65_63_68_6F_3A_20_69_66_20_54_52_41_43_45_5F_49_4E_50_55_54_20_74_68_65_6E_20_65_6D_69_74_20_65",
 
 -- L0644@00F9.print_crlf:  emit(char_cr);
@@ -1063,9 +1063,9 @@ constant hxc_symbol_entry: t_hxc_symbol_entry := (
 -- if TXDREADY then next else repeat;
 253 => X"69_66_20_54_58_44_52_45_41_44_59_20_74_68_65_6E_20_6E_65_78_74_20_65_6C_73_65_20_72_65_70_65_61",
 
--- L0650@00FE.  TXDCHAR <= char_zero, if true then return else return;
--- TXDCHAR <= char_zero, if true then return else return;
-254 => X"54_58_44_43_48_41_52_20_3C_3D_20_63_68_61_72_5F_7A_65_72_6F_2C_20_69_66_20_74_72_75_65_20_74_68",
+-- L0650@00FE.emit0:  TXDCHAR <= char_zero, if true then return else return;
+-- emit0: TXDCHAR <= char_zero, if true then return else return;
+254 => X"65_6D_69_74_30_3A_20_54_58_44_43_48_41_52_20_3C_3D_20_63_68_61_72_5F_7A_65_72_6F_2C_20_69_66_20",
 
 255 => X"20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20_20");
 

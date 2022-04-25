@@ -54,7 +54,7 @@ signal c: std_logic_vector(2 downto 0);
 
 begin
 
-on_clk: process(clk, reset)
+on_clk: process(clk, reset, sum)
 begin
 	if (reset = '1') then
 		value <= (others => '0');
@@ -66,7 +66,6 @@ begin
 end process;
 
 c(0) <= enable;
---cout <= c(2);
 
 generate_adder32: for i in 0 to 1 generate
 	adder: adder16 Port map ( 

@@ -639,7 +639,7 @@ st_loop1:	loopcnt <= inc;
 			if loopcnt_nibble then next else st_loop1;
 			if loopcnt_is_zero then print_crlf else st_loop;
 			
-echo:		if TRACE_INPUT then emit else return;
+echo:		if TRACE_INPUT then emit else emit0;
 
 print_crlf: emit(char_cr);
 			TXDCHAR <= char_lf;
@@ -647,7 +647,7 @@ print_crlf: emit(char_cr);
 emit:		if TXDSEND then next else repeat;	// generate a send pulse for UART sender
 			if TXDREADY then next else repeat;
 			if TXDREADY then next else repeat;
-			TXDCHAR <= char_zero, back;
+emit0:		TXDCHAR <= char_zero, back;
 
 //* -- BCD addition -- (example only, not used) ------------
 // TOS <= TOS + NOS (only TOS changed, other not affected

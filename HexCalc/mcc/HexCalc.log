@@ -519,7 +519,7 @@ Line 632: resolved aliases:  col_adc2, row_direct, from, disconnect, back
 L0632@00F1.  STATUS = busy_using_mt, MT_CTRL = off, MT_ROW = 0xD , MT_COL = 0xD, if true then return else return;
 
 Line 650: resolved aliases:  back
-L0650@00FE.  TXDCHAR <= char_zero, if true then return else return;
+L0650@00FE.emit0:  TXDCHAR <= char_zero, if true then return else return;
 
 Success: pass 1 692 line(s) read, 390 statement(s) parsed.
 Compiling HexCalc.mcc, pass 2 out of 2.
@@ -1640,7 +1640,7 @@ Info: line 9 - code[00F6] <= '00_0000_0000_00_10_1110_00000000_11110101_0000_000
 Info: line -1 - symbol[00F6] <= 'System.Byte[]'
 Info: line 9 - code[00F7] <= '00_0000_0000_00_10_0111_11111001_11110100_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00F7] <= 'System.Byte[]'
-Info: line 9 - code[00F8] <= '00_0000_0000_00_10_0010_11111011_00000010_0000_000_11_00_00_00_00_0'
+Info: line 9 - code[00F8] <= '00_0000_0000_00_10_0010_11111011_11111110_0000_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00F8] <= 'System.Byte[]'
 Info: line 9 - code[00F9] <= '00_0000_0000_00_10_0000_11111011_11111011_0010_000_11_00_00_00_00_0'
 Info: line -1 - symbol[00F9] <= 'System.Byte[]'
@@ -1675,4 +1675,4 @@ Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\
 Generating symbol: 
 Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_sym.mif' ... Done.
 Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_sym.cgf' ... Done.
-Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_sym.coe' (LF only) ... Done (initialized locations: 256, e
+Writing 'C:\Users\zoltanp\Documents\HexCalc\sys_sbc8816\sys_sbc8816\HexCalc\mcc\hexcalc_sym.coe' (LF only) ... Done (initialized locations: 

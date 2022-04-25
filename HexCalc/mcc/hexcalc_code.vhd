@@ -1393,9 +1393,9 @@ constant hxc_microcode: hxc_code_memory := (
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0111) then 11111001 else 11110100, TXDCHAR <= 0000, opr = 000, errcode <= 11, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00, selreg = 0;
 247 => "00" & X"0" & X"0" & "00" & "10" & X"7" & X"F9" & X"F4" & X"0" & O"0" & "11" & "00" & "00" & "00" & "00" & '0',
 
--- L0642@00F8.echo:  if TRACE_INPUT then emit else return;
---  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0010) then 11111011 else 00000010, TXDCHAR <= 0000, opr = 000, errcode <= 11, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00, selreg = 0;
-248 => "00" & X"0" & X"0" & "00" & "10" & X"2" & X"FB" & X"02" & X"0" & O"0" & "11" & "00" & "00" & "00" & "00" & '0',
+-- L0642@00F8.echo:  if TRACE_INPUT then emit else emit0;
+--  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0010) then 11111011 else 11111110, TXDCHAR <= 0000, opr = 000, errcode <= 11, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00, selreg = 0;
+248 => "00" & X"0" & X"0" & "00" & "10" & X"2" & X"FB" & X"FE" & X"0" & O"0" & "11" & "00" & "00" & "00" & "00" & '0',
 
 -- L0644@00F9.print_crlf:  emit(char_cr);
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 11111011 else 11111011, TXDCHAR <= 0010, opr = 000, errcode <= 11, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00, selreg = 0;
@@ -1417,7 +1417,7 @@ constant hxc_microcode: hxc_code_memory := (
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0100) then 00000000 else 00000001, TXDCHAR <= 0000, opr = 000, errcode <= 11, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00, selreg = 0;
 253 => "00" & X"0" & X"0" & "00" & "10" & X"4" & X"00" & X"01" & X"0" & O"0" & "11" & "00" & "00" & "00" & "00" & '0',
 
--- L0650@00FE.  TXDCHAR <= char_zero, if true then return else return;
+-- L0650@00FE.emit0:  TXDCHAR <= char_zero, if true then return else return;
 --  MT_CTRL = 00, MT_ROW = 0000, MT_COL = 0000, bitcnt <= 00, STATUS = 10, if (0000) then 00000010 else 00000010, TXDCHAR <= 1000, opr = 000, errcode <= 11, d_flag <= 00, c_flag <= 00, z_flags <= 00, loopcnt <= 00, selreg = 0;
 254 => "00" & X"0" & X"0" & "00" & "10" & X"0" & X"02" & X"02" & X"8" & O"0" & "11" & "00" & "00" & "00" & "00" & '0',
 

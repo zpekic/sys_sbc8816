@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2022-04-24T10:35:41</DateModified>
+  <DateModified>2022-04-24T21:48:27</DateModified>
   <ModuleName>sys_sbc8816</ModuleName>
-  <SummaryTimeStamp>2022-04-23T19:12:21</SummaryTimeStamp>
+  <SummaryTimeStamp>2022-04-24T19:34:51</SummaryTimeStamp>
   <SavedFilePath>C:/Users/zoltanp/Documents/HexCalc/sys_sbc8816/sys_sbc8816/Anvyl/iseconfig/sys_sbc8816.xreport</SavedFilePath>
   <ImplementationReportsDirectory>C:/Users/zoltanp/Documents/HexCalc/sys_sbc8816/sys_sbc8816/Anvyl\</ImplementationReportsDirectory>
   <DateInitialized>2021-12-26T13:00:14</DateInitialized>
