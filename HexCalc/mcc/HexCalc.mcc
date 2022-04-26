@@ -198,7 +198,7 @@ matrix_push:.sub;
 matrix_swap:.sub;
 matrix_pop:	.sub;
 matrix_push:.sub;
-divmod:		.sub;
+divmod:		.sub d_flag;
 div2:		.sub bitcnt, z_flags;
 dup:		.sub;
 prep_regs:	.sub loopcnt;
@@ -356,43 +356,9 @@ minus:		c_flag <= one, nuke, matrix_pop();
 // TOS <= NOS div TOS, NOS <= NOS mod TOS, ----------------
 			.map '/';	// div/mod
 // Note: R7 destroyed -------------------------------------
-			divmod();
+			divmod(zero);
 			goto swap; // quotient on TOS, remainder on NOS
-			
-divmod:		prep_regs(max);
-			if z_flagtos_is_set then divzero;
-			// A < Q < 0
-div_loop:	disconnect row_q from col_q;
-			d_flag <= zero, connect row_delay to col_q;
-			connect row_q to col_a;
-			STATUS = busy_using_mt, opr = m2_m2_np;
-			disconnect row_delay from col_q;
-			disconnect row_q from col_a;
-			connect row_q to col_q; 
-			
-			// A <= A - M
-			connect row_m to col_not;
-			connect row_not to col_adc2, a_pm_m(one);
-			
-			disconnect row_not from col_adc2, if c_flag_is_set then next else restore_a;
-
-			// Q(0) <= 1
-			connect row_a to col_a;
-			disconnect row_q from col_q;
-			connect row_q to col_delay;
-			connect row_delay to col_q;
-			STATUS = busy_using_mt, opr = d2_d2_np;
-			d_flag <= one;
-			STATUS = busy_using_mt, opr = m2_m2_np;
-			nuke, matrix_nop();
-
-div_next:	if loopcnt_is_zero then return;	
-			loopcnt <= dec, goto div_loop;
-			
-			// A <= A + M, Q(0) <= 0
-restore_a:	connect row_m to col_adc2, a_pm_m(zero);
-			disconnect row_m from col_adc2, goto div_next;
-			
+						
 // TOS, NOS <= TOS * NOS ----------------------------------
 			.map '*';	// multiply
 // Note: R7 destroyed -------------------------------------
@@ -524,9 +490,45 @@ hexchar:	load_bitcnt 3, c_flag <= zero, nuke, matrix_nop1();
 			bitcnt <= dec;
 			STATUS = busy_using_mt, opr = np_d2_d2, bitcnt <= dec, if bitcnt_is_zero then nextchar else repeat;
 			
-// -----------------------------------------------------------			
-// subroutines (keep in mind max stack call level is 4!)
-// -----------------------------------------------------------
+// ---------------------------------------------------------------------------			
+// subroutines (keep in mind max stack call level from .controller directive!)
+// ---------------------------------------------------------------------------
+divmod:		prep_regs(max);
+			if z_flagtos_is_set then next else div_loop;
+			if d_flag_is_set then swap else divzero;		// catch special case of isqrt(1)
+			// A < Q < 0
+div_loop:	disconnect row_q from col_q;
+			d_flag <= zero, connect row_delay to col_q;
+			connect row_q to col_a;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			disconnect row_delay from col_q;
+			disconnect row_q from col_a;
+			connect row_q to col_q; 
+			
+			// A <= A - M
+			connect row_m to col_not;
+			connect row_not to col_adc2, a_pm_m(one);
+			
+			disconnect row_not from col_adc2, if c_flag_is_set then next else restore_a;
+
+			// Q(0) <= 1
+			connect row_a to col_a;
+			disconnect row_q from col_q;
+			connect row_q to col_delay;
+			connect row_delay to col_q;
+			STATUS = busy_using_mt, opr = d2_d2_np;
+			d_flag <= one;
+			STATUS = busy_using_mt, opr = m2_m2_np;
+			nuke, matrix_nop();
+
+div_next:	if loopcnt_is_zero then return;	
+			loopcnt <= dec, goto div_loop;
+			
+			// A <= A + M, Q(0) <= 0
+restore_a:	connect row_m to col_adc2, a_pm_m(zero);
+			disconnect row_m from col_adc2, goto div_next;
+
+// prepare common connections for + and -
 a_pm_m:		connect row_a to col_adc1;
 			connect row_sum to col_a, div2(max, set);
 			disconnect row_sum from col_a, back;
@@ -541,7 +543,7 @@ prep_regs:	nuke, matrix_nop1();
 // used as step in integer square root
 heron_step:	nuke, matrix_nop1();
 			connect row_r7 to col_tos, div2(max, set); 	// X0, S, S, ?, ?, ?, ?, X0
-			divmod();									// mod, div, S, ?, ?, ?, ?, X0
+			divmod(same);								// mod, div, S, ?, ?, ?, ?, X0
 			nuke, matrix_nop1();
 			disconnect row_nos from col_nos;
 			connect row_r2 to col_nos;					// NOS <= R2 (S)
