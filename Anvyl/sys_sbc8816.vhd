@@ -889,9 +889,10 @@ baudcnt: freqcounter Port map (
 	);
 
 -- 8 single LEDs
---LED <= mt_ctrl(7 downto 0);
-LED <= hc_zero(7 downto 0);
---LED <= kypd_keypressed & "000" & kypd_hex;
+with sw_mode select LED <= 
+		kypd_keypressed & "000" & kypd_hex when mode_bd_lb_lb,	-- from hexkpd (debug mode 0)
+		rx_char 					when mode_ua_lb_lb,		-- from keyboard (debug mode 1)
+		hc_zero(7 downto 0) 	when others;				-- from hexcalc (run modes 2 and 3)
 
 -- traffic light LEDs
 LDT1G <= hc_status(1);
