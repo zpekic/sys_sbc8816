@@ -812,8 +812,8 @@ with sw_mode select tty_send <=
 
 -- hardware window that shows the system state
 win: hardwin Port map( 
-		left => X"18", -- col 24, TODO make it dynamic
-		top  => X"10",	-- row 16, TODO make it dynamic
+		left => X"10", -- col 16, TODO make it dynamic
+		top  => X"08",	-- row 08, TODO make it dynamic
 		vga_x => vga_x,
 		vga_y => vga_y,
 		active => win_active,
