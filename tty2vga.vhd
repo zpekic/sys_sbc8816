@@ -124,7 +124,7 @@ begin
 vga_x <= vga_memaddr(7 downto 0);
 vga_y <= vga_memaddr(15 downto 8);
 
-on_ascii_send: process(ascii_send, ascii, char_sent, char_sent_delayed)
+on_ascii_send: process(reset, ascii_send, ascii, char_sent, char_sent_delayed)
 begin
 	if ((reset or (char_sent and (not char_sent_delayed))) = '1') then
 		char <= X"00";	-- to stop VGA to echo forever

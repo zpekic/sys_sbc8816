@@ -150,10 +150,10 @@ begin
 
 -- outputs
 status <= hxc_status;
-dbg <= "000" & loopcnt & "000" & bitcnt & ui_address;
---dbg <= loopcnt(3 downto 0) & bitcnt(3 downto 0) & input & '0' & ui_address;
+--dbg <= "000" & loopcnt & "000" & bitcnt & ui_address;
+--dbg <= loopcnt(3 downto 0) & bitcnt(3 downto 0) & ui_address;
 --dbg <= '0' & ui_nextinstr & loopcnt(3 downto 0) & bitcnt(3 downto 0) & '0' & ui_address;
---dbg <= input & loopcnt(3 downto 0) & bitcnt(3 downto 0) & ui_address;
+dbg <= input & loopcnt(3 downto 0) & bitcnt(3 downto 0) & ui_address;
 mt_ctrl <= hxc_MT_CTRL & hxc_MT_COL & hxc_MT_ROW;
 
 reg_row <= X"0" when (hxc_selreg = selreg_internal) else dbg_row; -- select TOS if internal

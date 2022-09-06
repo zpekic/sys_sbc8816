@@ -163,6 +163,17 @@ component uart_par2ser is
            txd : out  STD_LOGIC);
 end component;
 
+component mt16x16 is
+    Port ( reset : in  STD_LOGIC;
+           strobe : in  STD_LOGIC;
+           cs : in  STD_LOGIC;
+           data : in  STD_LOGIC;
+           ax : in  STD_LOGIC_VECTOR (3 downto 0);
+           ay : in  STD_LOGIC_VECTOR (3 downto 0);
+           x : in  STD_LOGIC_VECTOR (15 downto 0);
+           y : out  STD_LOGIC_VECTOR (15 downto 0));
+end component;
+
 component hexcalc is
     Port ( -- GENERIC
 			  clk : in  STD_LOGIC;
@@ -378,7 +389,8 @@ alias freq1: std_logic is freq_2048(11);
 alias freq2: std_logic is freq_2048(10);
 alias freq128: std_logic is freq_2048(4);
 signal mt_cnt, ss_cnt: std_logic_vector(1 downto 0);
-signal phi0, phi1, phi2, phi3: std_logic;
+--signal phi0, phi1, phi2, phi3: std_logic;
+signal phi: std_logic_vector(3 downto 0);
 signal prescale_baud, prescale_power: integer range 0 to 65535;
 signal baudcnt_value: std_logic_vector(31 downto 0);
 
@@ -445,7 +457,7 @@ constant kypd2ascii: table_32x8 := (
 signal hc_status, hc_status_old: std_logic_vector(1 downto 0);
 signal hc_tos: std_logic_vector(31 downto 0); -- capture value of TOS (R0)
 signal hc_txdsend, hc_txdready, hc_error, hc_clk, hc_clk_uart: std_logic := '0';
-signal hc_txdchar: std_logic_vector(7 downto 0);
+signal hc_txdchar, hc_input: std_logic_vector(7 downto 0);
 signal hc_mt_x: std_logic_vector(15 downto 0);
 signal hc_reg: std_logic_vector(3 downto 0);
 signal hc_delay, hc_carry, hc_daa: std_logic;	-- calculator internal flags
@@ -475,6 +487,9 @@ alias MT_DATA: std_logic is BB8;
 alias MT_STROBE0: std_logic is BB9;
 alias MT_STROBE1: std_logic is BB10;
 alias MT_RESET: std_logic is JF1;
+
+-- MT16x16 connections
+signal mt256_y: std_logic_vector(15 downto 0);
 
 -- UART common 
 signal baudrate_x1, baudrate_x2, baudrate_x4, baudrate_x8: std_logic;
@@ -566,7 +581,21 @@ baudgen: sn74hc4040 port map (
 	);
 	
 ----------------------------------------
--- MT8816
+-- MT16x16 (switch matrix inside FPGA)
+----------------------------------------
+mt256: mt16x16 Port map ( 
+		reset => phi(1) and (mt_ctrl(8) and mt_ctrl(9)),
+		strobe => (mt_ctrl(8) xor mt_ctrl(9)),
+		cs => phi(1),
+		data => mt_ctrl(8),
+		ax => mt_ctrl(3 downto 0),
+		ay => mt_ctrl(7 downto 4),
+		y => mt256_y,
+		x => mt_x
+	);
+	
+----------------------------------------
+-- MT8816 (2 physical ICs outside FPGA)
 ----------------------------------------
 JB1 <= 	mt_x(0);	-- X0
 JB2 <= 	mt_x(1);	-- 1
@@ -590,7 +619,7 @@ JC10 <= 	mt_x(15);	-- X15
 mt_x <= hc_mt_x when ((hc_status = STATUS_busy_using_mt) or (win_matrix = '0')) else decode4to16(to_integer(unsigned(win_y(3 downto 0))));
 
 -- Pick up Y
-mt_y <= (JE10 & JE9 & JE8 & JE7 & JE4 & JE3 & JE2 & JE1 & JD10 & JD9 & JD8 & JD7 & JD4 & JD3 & JD2 & JD1);
+mt_y <= mt256_y when (sw_clksel(2) = '1') else (JE10 & JE9 & JE8 & JE7 & JE4 & JE3 & JE2 & JE1 & JD10 & JD9 & JD8 & JD7 & JD4 & JD3 & JD2 & JD1);
 
 -- control bus ('Z' with external 4k7 resistor and pull-up mode give 0.26V low and 5.0V hi)
 MT_AX0 <= 'Z' when (mt_ctrl(0) = '1') else '0';
@@ -601,14 +630,19 @@ MT_AY0 <= 'Z' when (mt_ctrl(4) = '1') else '0';
 MT_AY1 <= 'Z' when (mt_ctrl(5) = '1') else '0';
 MT_AY2 <= 'Z' when (mt_ctrl(6) = '1') else '0';
 MT_DATA <= 'Z' when (mt_ctrl(8) = '1') else '0';
-MT_STROBE0 <= 'Z' when ((phi1 and (mt_ctrl(8) or mt_ctrl(9)) and (not mt_ctrl(7))) = '1') else '0'; 
-MT_STROBE1 <= 'Z' when ((phi1 and (mt_ctrl(8) or mt_ctrl(9)) and mt_ctrl(7)) = '1') else '0'; 
+MT_STROBE0 <= 'Z' when ((phi(1) and (mt_ctrl(8) or mt_ctrl(9)) and (not mt_ctrl(7))) = '1') else '0'; 
+MT_STROBE1 <= 'Z' when ((phi(1) and (mt_ctrl(8) or mt_ctrl(9)) and mt_ctrl(7)) = '1') else '0'; 
 MT_RESET <= 'Z' when ((mt_ctrl(8) and mt_ctrl(9)) = '1') else '0'; 
 
 with sw_mode select mt_ctrl <= 
 		hc_mt_ctrl when mode_st_tr_hc,		-- from hexcalc
 		hc_mt_ctrl when mode_st_hc_tr,		-- from hexcalc
 		co_mt_ctrl when others;					-- from console
+
+with sw_mode select hc_input <= 
+		input when mode_st_tr_hc,		-- hexcalc input from keyboard or serial
+		input when mode_st_hc_tr,		-- hexcalc input from keyboard or serial
+		X"00" when others;				-- console mode, hexcalc is doing dead loop
 
 ---- console command 
 co_mt_ctrl(7 downto 0) <= input;	
@@ -624,19 +658,16 @@ with BTN(2 downto 0) select co_mt_ctrl(9 downto 8) <=
 -- select the clock
 with sw_clksel select mt_cnt <= 
 	ss_cnt	when "000",	-- single step
-	freq_2048(9 downto 8) when "001",	-- 4Hz
-	freq_2048(7 downto 6) when "010",	-- 16Hz
-	freq_2048(5 downto 4) when "011",	-- 64Hz
-	freq_50M(8 downto 7) when "100",		-- 0.195312
-	freq_50M(7 downto 6) when "101",		-- 0.390625
-	freq_50M(6 downto 5) when "110",		-- 0.781250
-	freq_50M(5 downto 4) when others;	-- 1.5625MHz
+	freq_2048(9 downto 8) when "001",	-- 4Hz			-- EXTERNAL MT8816
+	freq_2048(5 downto 4) when "010",	-- 64Hz			-- EXTERNAL MT8816
+	freq_50M(5 downto 4) when "011",		-- 1.5625MHz 	-- EXTERNAL MT8816
+	freq_50M(4 downto 3) when "100",		-- 3.125MHz		-- INTERNAL MT16x16
+	freq_50M(3 downto 2) when "101",		-- 6.25MHz		-- INTERNAL MT16x16
+	freq_50M(2 downto 1) when "110",		-- 12.5MHz		-- INTERNAL MT16x16
+	freq_50M(1 downto 0) when others;	-- 25MHz 		-- INTERNAL MT16x16
 	
 -- 4 phase clock to activate strobe at right time
-phi0 <= '1' when (mt_cnt = "00") else '0';
-phi1 <= '1' when (mt_cnt = "01") else '0';
-phi2 <= '1' when (mt_cnt = "10") else '0';
-phi3 <= '1' when (mt_cnt = "11") else '0';
+phi <= decode4to16(to_integer(unsigned(std_logic_vector'("00" & mt_cnt))))(3 downto 0);
 
 -- single step cnt
 on_button3: process(button(3), ss_cnt)
@@ -647,11 +678,11 @@ begin
 end process;
 
 -- lame attempt at clock sync
-hc_clk <= '1' when (hc_clk_uart = '1') else phi0;
+hc_clk <= '1' when (hc_clk_uart = '1') else phi(0);
 
-on_phi0: process(phi0, hc_txdsend, hc_txdready)
+on_phi0: process(phi(0), hc_txdsend, hc_txdready)
 begin
-	if (rising_edge(phi0)) then
+	if (rising_edge(phi(0))) then
 		hc_clk_uart <= hc_txdsend and (not hc_txdready);
 	end if;
 end process;
@@ -673,7 +704,7 @@ hc: hexcalc Port map (
 			mt_x => hc_mt_x,
 			mt_y => mt_y,
 			--
-			input => input,
+			input => hc_input,	-- set to zero to keep it in dead loop
 			--
 			c_flag => hc_carry,
 			d_flag => hc_delay,
@@ -697,7 +728,7 @@ tr: tracer Port map (
 			dev_data => hc_txdchar,
 			dev_send => hc_txdsend,
 			dev_ready => open, --hc_txdready,
-			trigger => phi1,
+			trigger => phi(1),
 			enable => tr_enable,
 --			debug(15 downto 8) => hc_dbg(23 downto 16),	-- instruction register (== input char)
 			debug(15 downto 8) => hc_dbg(15 downto 8),	-- loop and bit counters
